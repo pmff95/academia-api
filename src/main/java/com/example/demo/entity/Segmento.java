@@ -1,0 +1,19 @@
+package com.example.demo.entity;
+
+public enum Segmento {
+    BRACO_DIREITO,
+    BRACO_ESQUERDO,
+    ANTEBRACO_DIREITO,
+    ANTEBRACO_ESQUERDO,
+    OMBROS,
+    TORAX,
+    ABDOMEN,
+    CINTURA,
+    QUADRIL,
+    COXA_DIREITA,
+    COXA_ESQUERDA,
+    PANTURRILHA_DIREITA,
+    PANTURRILHA_ESQUERDA,
+    COSTAS,
+    PESCOCO
+}
