@@ -1,0 +1,46 @@
+package com.example.demo.entity;
+
+import jakarta.persistence.*;
+import lombok.Data;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.UUID;
+
+@Data
+@Entity
+public class Aluno {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(nullable = false, unique = true, updatable = false)
+    private UUID uuid = UUID.randomUUID();
+
+    @Column(nullable = false)
+    private String nome;
+
+    @Column(nullable = false, unique = true)
+    private String cpf;
+
+    private LocalDate dataNascimento;
+    private String telefone;
+
+    @Column(unique = true)
+    private String email;
+
+    private String enderecoCompleto;
+    private LocalDate dataMatricula;
+
+    @Enumerated(EnumType.STRING)
+    private StatusAluno status = StatusAluno.ATIVO;
+
+    @CreationTimestamp
+    @Column(updatable = false)
+    private LocalDateTime createdAt;
+
+    @UpdateTimestamp
+    private LocalDateTime updatedAt;
+}
