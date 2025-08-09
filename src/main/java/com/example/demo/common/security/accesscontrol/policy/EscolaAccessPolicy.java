@@ -1,0 +1,31 @@
+package com.example.demo.common.security.accesscontrol.policy;
+
+import com.example.demo.common.security.UsuarioLogado;
+import com.example.demo.common.security.accesscontrol.EntityNames;
+import com.example.demo.domain.enums.Perfil;
+import org.springframework.stereotype.Component;
+
+@Component
+public class EscolaAccessPolicy implements AccessPolicy {
+
+    @Override
+    public String getEntityName() {
+        return EntityNames.ESCOLA;
+    }
+
+    @Override
+    public boolean hasAccess(UsuarioLogado usuarioLogado, String httpMethod, boolean isStatusUpdate, Object resourceId) {
+
+        // Validação básica de entrada.
+        if (usuarioLogado == null || resourceId == null) {
+            return false;
+        }
+
+        // Cache dos resultados dos perfis para evitar chamadas duplicadas.
+        boolean isAdmin = usuarioLogado.possuiPerfil(Perfil.ADMIN);
+
+        // Outros perfis não possuem acesso.
+        return isAdmin || resourceId.equals(usuarioLogado.getEscola().getUuid());
+    }
+
+}
