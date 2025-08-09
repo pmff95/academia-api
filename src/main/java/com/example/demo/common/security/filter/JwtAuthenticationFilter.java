@@ -1,7 +1,6 @@
 package com.example.demo.common.security.filter;
 
 import com.example.demo.common.security.JwtService;
-import com.example.demo.common.security.UsuarioLogado;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -61,22 +60,22 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (username != null
                 && jwtService.isTokenValid(jwtToken)) {
 
-            UsuarioLogado user = (UsuarioLogado) userDetailsService.loadUserByUsername(username);
+//            UsuarioLogado user = (UsuarioLogado) userDetailsService.loadUserByUsername(username);
 
 //            if (user.isPrimeiroAcesso()) {
 //                response.sendRedirect("/trocar-senha");
 //                return;
 //            }
 
-            var authToken =
-                    new UsernamePasswordAuthenticationToken(
-                            user, null, user.getAuthorities());
-
-            authToken.setDetails(
-                    new WebAuthenticationDetailsSource()
-                            .buildDetails(request));
-
-            context.setAuthentication(authToken);
+//            var authToken =
+//                    new UsernamePasswordAuthenticationToken(
+//                            user, null, user.getAuthorities());
+//
+//            authToken.setDetails(
+//                    new WebAuthenticationDetailsSource()
+//                            .buildDetails(request));
+//
+//            context.setAuthentication(authToken);
         }
 
         filterChain.doFilter(request, response);

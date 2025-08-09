@@ -14,8 +14,6 @@ public class FlywayMultiSchemaConfig {
     @Value("${escola.db.scheme}")
     private String appSchema;
 
-    @Value("${escola.db.audit-scheme}")
-    private String auditSchema;
 
     /**
      * MIGRAÇÕES DO SCHEMA AUDIT
@@ -27,8 +25,6 @@ public class FlywayMultiSchemaConfig {
     public Flyway flywayAudit(DataSource ds) {
         return Flyway.configure()
                 .dataSource(ds)
-                .schemas(auditSchema)                        // só audit
-                .locations("classpath:db/migration-audit")
                 .baselineOnMigrate(true)
                 .load();
     }
