@@ -1,9 +1,6 @@
 package com.example.demo.controller;
 
-import com.example.demo.dto.AlunoDTO;
-import com.example.demo.dto.AlunoMedidaDTO;
-import com.example.demo.dto.AlunoObservacaoDTO;
-import com.example.demo.dto.ApiResponse;
+import com.example.demo.dto.*;
 import com.example.demo.service.AlunoMedidaService;
 import com.example.demo.service.AlunoObservacaoService;
 import com.example.demo.service.AlunoService;
@@ -32,9 +29,9 @@ public class AlunoController {
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponse<AlunoDTO>> criar(@Validated @RequestBody AlunoDTO dto) {
-        AlunoDTO salvo = service.create(dto);
-        return ResponseEntity.ok(new ApiResponse<>(true, "Aluno criado com sucesso", salvo, null));
+    public ResponseEntity<ApiResponse<String>> criar(@Validated @RequestBody AlunoDTO dto) {
+        String msg = service.create(dto);
+        return ResponseEntity.ok(new ApiResponse<>(true, msg, null, null));
     }
 
     @GetMapping
@@ -50,9 +47,9 @@ public class AlunoController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse<AlunoDTO>> atualizar(@PathVariable Long id, @Validated @RequestBody AlunoDTO dto) {
-        AlunoDTO atualizado = service.update(id, dto);
-        return ResponseEntity.ok(new ApiResponse<>(true, "Aluno atualizado", atualizado, null));
+    public ResponseEntity<ApiResponse<String>> atualizar(@PathVariable Long id, @Validated @RequestBody AlunoDTO dto) {
+        String msg = service.update(id, dto);
+        return ResponseEntity.ok(new ApiResponse<>(true, msg, null, null));
     }
 
     @DeleteMapping("/{id}")
