@@ -1,1 +1,0 @@
-ALTER TABLE serie_horario_aula ADD COLUMN intervalo BOOLEAN NOT NULL DEFAULT FALSE;

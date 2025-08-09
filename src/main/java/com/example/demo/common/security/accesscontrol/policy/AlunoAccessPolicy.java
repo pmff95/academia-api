@@ -1,82 +1,45 @@
-//package com.example.demo.common.security.accesscontrol.policy;
-//
-//import com.example.demo.common.response.exception.EurekaException;
-//import com.example.demo.common.security.UsuarioLogado;
-//import com.example.demo.common.security.accesscontrol.EntityNames;
-//import com.example.demo.domain.enums.Perfil;
-//import com.example.demo.domain.model.aluno.Aluno;
-//import com.example.demo.service.aluno.AlunoService;
-//import org.springframework.stereotype.Component;
-//
-//import java.util.UUID;
-//
-//@Component
-//public class AlunoAccessPolicy implements AccessPolicy {
-//
-//    private final AlunoService alunoService;
-//
-//    public AlunoAccessPolicy(AlunoService alunoService) {
-//        this.alunoService = alunoService;
-//    }
-//
-//    @Override
-//    public String getEntityName() {
-//        return EntityNames.ALUNO;
-//    }
-//
-//    @Override
-//    public boolean hasAccess(UsuarioLogado currentUser, String httpMethod, boolean isStatusUpdate, Object resourceId) {
-//
-//        UUID targetUuid = parseResourceId(resourceId);
-//        Aluno userEntity = this.alunoService.findStudentWithResponsaveisByUuid(targetUuid);
-//
-//        if (userEntity == null) {
-//            throw EurekaException.ofNotFound("Aluno (" + targetUuid + ") não encontrado.");
-//        }
-//
-//        UUID escolaUuid = currentUser.getEscola().getUuid();
-//        boolean mesmaEscola = escolaUuid != null &&
-//                userEntity.getEscola() != null &&
-//                escolaUuid.equals(userEntity.getEscola().getUuid());
-//
-//        boolean mesmoUsuario = userEntity.getUuid().equals(currentUser.getUuid());
-//
-//        // Se for ativação/inativação, apenas MASTER, ADMIN e FUNCIONÁRIO podem fazer isso
-//        if ("PUT".equals(httpMethod) && isStatusUpdate) {
-//            return (currentUser.possuiPerfil(Perfil.MASTER) || currentUser.possuiPerfil(Perfil.ADMIN) || currentUser.possuiPerfil(Perfil.FUNCIONARIO)) && mesmaEscola;
-//        }
-//
-//        // Se for uma atualização normal de dados
-//        if ("PUT".equals(httpMethod)) {
-//            // ADMIN e FUNCIONÁRIO podem editar alunos da mesma escola
-//            if ((currentUser.possuiPerfil(Perfil.ADMIN) || currentUser.possuiPerfil(Perfil.FUNCIONARIO)) && mesmaEscola) {
-//                return true;
-//            }
-//
-//            // TODO - Revisar
-//            // RESPONSAVEL só pode mudar se o aluno estiver sob sua responsabilidade
-//            // if (currentUser.possuiPerfil(Perfil.RESPONSAVEL)
-//            //     && currentUser.getUuid().equals(userEntity.getResponsavel().getUuid())) {
-//            //     return true;
-//            // }
-//
-//            // ALUNO pode editar a si mesmo.
-//            return currentUser.possuiPerfil(Perfil.ALUNO) && mesmoUsuario;
-//        }
-//
-//        // Leitura
-//        if ("GET".equalsIgnoreCase(httpMethod)) {
-//            return mesmaEscola || currentUser.possuiPerfil(Perfil.MASTER);
-//        }
-//
-//        return false;
-//    }
-//
-//    private UUID parseResourceId(Object resourceId) {
-//        try {
-//            return UUID.fromString(resourceId.toString());
-//        } catch (IllegalArgumentException e) {
-//            throw new IllegalArgumentException("ResourceId inválido: " + resourceId, e);
-//        }
-//    }
-//}
+package com.example.demo.common.security.accesscontrol.policy;
+
+import com.example.demo.common.security.UsuarioLogado;
+import com.example.demo.common.security.accesscontrol.EntityNames;
+import com.example.demo.domain.enums.Perfil;
+import org.springframework.stereotype.Component;
+
+import java.util.UUID;
+
+/**
+ * Política de acesso para recursos de Aluno.
+ */
+@Component
+public class AlunoAccessPolicy implements AccessPolicy {
+
+    @Override
+    public String getEntityName() {
+        return EntityNames.ALUNO;
+    }
+
+    @Override
+    public boolean hasAccess(UsuarioLogado currentUser, String httpMethod, boolean isStatusUpdate, Object resourceId) {
+        if (currentUser == null) {
+            return false;
+        }
+
+        // Usuário MASTER possui acesso irrestrito
+        if (currentUser.possuiPerfil(Perfil.MASTER)) {
+            return true;
+        }
+
+        // Apenas para leitura própria
+        if ("GET".equalsIgnoreCase(httpMethod)) {
+            try {
+                UUID target = UUID.fromString(resourceId.toString());
+                return currentUser.getUuid().equals(target);
+            } catch (IllegalArgumentException e) {
+                return false;
+            }
+        }
+
+        return false;
+    }
+}
+

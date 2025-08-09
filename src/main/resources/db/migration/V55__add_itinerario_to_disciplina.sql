@@ -1,2 +1,0 @@
-ALTER TABLE disciplina
-    ADD COLUMN itinerario BOOLEAN NOT NULL DEFAULT FALSE;

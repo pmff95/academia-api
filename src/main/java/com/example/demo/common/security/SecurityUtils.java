@@ -8,20 +8,20 @@ public final class SecurityUtils {
     private SecurityUtils() {
     }
 
-    public static Object getUsuarioLogado() {
-//    public static UsuarioLogado getUsuarioLogado() {
+    public static UsuarioLogado getUsuarioLogado() {
         Authentication authentication = SecurityContextHolder
                 .getContext()
                 .getAuthentication();
 
-        if (authentication == null)
+        if (authentication == null) {
             return null;
+        }
 
         Object principal = authentication.getPrincipal();
 
-        if (principal instanceof Object usuario)
-//        if (principal instanceof UsuarioLogado usuario)
+        if (principal instanceof UsuarioLogado usuario) {
             return usuario;
+        }
 
         return null;
     }

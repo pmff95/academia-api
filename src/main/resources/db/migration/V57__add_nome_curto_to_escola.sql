@@ -1,3 +1,0 @@
-ALTER TABLE escola
-    ADD COLUMN nome_curto VARCHAR(255) NOT NULL DEFAULT '';
-
