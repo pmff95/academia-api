@@ -55,7 +55,6 @@ public class ProfessorService {
         entity.setTelefone(dto.getTelefone());
         entity.setTelefoneSecundario(dto.getTelefoneSecundario());
         entity.setEmail(dto.getEmail());
-        entity.setEnderecoCompleto(dto.getEnderecoCompleto());
         repository.save(entity);
         return "Professor atualizado";
     }
