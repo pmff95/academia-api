@@ -54,7 +54,7 @@ public class UsuarioService {
         }
 
         return repository.findByUuid(usuarioLogado.getUuid())
-                .map(u -> new ApiResponse<>(true, "Usuário encontrado", mapper.map(u, UsuarioDTO.class), null))
+                .map(u -> new ApiResponse<>(true, null, mapper.map(u, UsuarioDTO.class), null))
                 .orElse(new ApiResponse<>(false, "Usuário não encontrado", null, null));
     }
 }

@@ -11,7 +11,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 @Tag(name = "Usuário Logado")
 @RestController
-@RequestMapping("/api/usuarios")
+@RequestMapping("/api/usuario")
 public class UsuarioLogadoController {
 
     private final UsuarioService service;
@@ -20,7 +20,7 @@ public class UsuarioLogadoController {
         this.service = service;
     }
 
-    @GetMapping("/me")
+    @GetMapping("/current")
     public ResponseEntity<ApiResponse<UsuarioDTO>> obterUsuarioLogado() {
         return ResponseEntity.ok(service.buscarUsuarioLogado());
     }
