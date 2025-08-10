@@ -1,5 +1,6 @@
 package com.example.demo.dto;
 
+import com.example.demo.domain.enums.Perfil;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.LocalDate;
 import java.util.UUID;
@@ -15,6 +16,7 @@ public class UsuarioDTO {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String senha;
     private String enderecoCompleto;
+    private Perfil perfil;
 
     public Long getId() {
         return id;
@@ -86,5 +88,13 @@ public class UsuarioDTO {
 
     public void setEnderecoCompleto(String enderecoCompleto) {
         this.enderecoCompleto = enderecoCompleto;
+    }
+
+    public Perfil getPerfil() {
+        return perfil;
+    }
+
+    public void setPerfil(Perfil perfil) {
+        this.perfil = perfil;
     }
 }
