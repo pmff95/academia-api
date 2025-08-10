@@ -12,10 +12,10 @@ public class UsuarioDTO {
     private String cpf;
     private LocalDate dataNascimento;
     private String telefone;
+    private String telefoneSecundario;
     private String email;
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String senha;
-    private String enderecoCompleto;
     private Perfil perfil;
 
     public Long getId() {
@@ -66,6 +66,14 @@ public class UsuarioDTO {
         this.telefone = telefone;
     }
 
+    public String getTelefoneSecundario() {
+        return telefoneSecundario;
+    }
+
+    public void setTelefoneSecundario(String telefoneSecundario) {
+        this.telefoneSecundario = telefoneSecundario;
+    }
+
     public String getEmail() {
         return email;
     }
@@ -80,14 +88,6 @@ public class UsuarioDTO {
 
     public void setSenha(String senha) {
         this.senha = senha;
-    }
-
-    public String getEnderecoCompleto() {
-        return enderecoCompleto;
-    }
-
-    public void setEnderecoCompleto(String enderecoCompleto) {
-        this.enderecoCompleto = enderecoCompleto;
     }
 
     public Perfil getPerfil() {

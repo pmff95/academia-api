@@ -13,6 +13,13 @@ public class Academia {
     @Column(nullable = false)
     private String nome;
 
+    private String uf;
+    private String cidade;
+    private String numero;
+    private String logradouro;
+    private String bairro;
+    private String telefone;
+
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "admin_id", nullable = false)
     private Usuario admin;
