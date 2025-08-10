@@ -45,6 +45,11 @@ public class UsuarioService {
 
         Usuario usuario = mapper.map(dto, Usuario.class);
         usuario.setPerfil(Perfil.MASTER);
+        usuario.setNumero(dto.getNumero());
+        usuario.setCep(dto.getCep());
+        usuario.setLogradouro(dto.getLogradouro());
+        usuario.setUf(dto.getUf());
+        usuario.setCidade(dto.getCidade());
         String senha = SenhaUtil.gerarSenhaNumerica(6);
         usuario.setSenha(passwordEncoder.encode(senha));
         repository.save(usuario);
