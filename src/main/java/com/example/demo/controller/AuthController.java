@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 
 import com.example.demo.common.security.JwtService;
+import com.example.demo.service.UsuarioService;
 import com.example.demo.dto.ApiResponse;
 import com.example.demo.dto.AuthRequest;
 import org.springframework.http.ResponseEntity;
@@ -19,10 +20,12 @@ public class AuthController {
 
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
+    private final UsuarioService usuarioService;
 
-    public AuthController(AuthenticationManager authenticationManager, JwtService jwtService) {
+    public AuthController(AuthenticationManager authenticationManager, JwtService jwtService, UsuarioService usuarioService) {
         this.authenticationManager = authenticationManager;
         this.jwtService = jwtService;
+        this.usuarioService = usuarioService;
     }
 
     @PostMapping("/login")
@@ -31,6 +34,7 @@ public class AuthController {
                 new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
         if (authentication.isAuthenticated()) {
             String token = jwtService.generateToken((UserDetails) authentication.getPrincipal());
+            usuarioService.registrarUltimoAcesso(request.getUsername());
             return ResponseEntity.ok(new ApiResponse<>(true, "Autenticado", token, null));
         }
         return ResponseEntity.status(401)
