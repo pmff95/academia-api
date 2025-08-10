@@ -50,6 +50,7 @@ public class ApplicationSecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(req -> {
                     req.requestMatchers("/api/auth/**",
+                            "/api/public/**",
                             "/swagger-ui/**",
                             "/v3/api-docs/**",
                             "/swagger-ui.html").permitAll();
