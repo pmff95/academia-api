@@ -4,6 +4,10 @@ import com.example.demo.common.security.JwtService;
 import com.example.demo.service.UsuarioService;
 import com.example.demo.dto.ApiResponse;
 import com.example.demo.dto.AuthRequest;
+import com.example.demo.dto.AuthResponse;
+import com.example.demo.dto.ReenviarSenhaDTO;
+import com.example.demo.dto.AlterarSenhaDTO;
+import com.example.demo.entity.Usuario;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -31,15 +35,33 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<ApiResponse<String>> login(@RequestBody AuthRequest request) {
+    public ResponseEntity<ApiResponse<AuthResponse>> login(@RequestBody AuthRequest request) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
         if (authentication.isAuthenticated()) {
-            String token = jwtService.generateToken((UserDetails) authentication.getPrincipal());
-            usuarioService.registrarUltimoAcesso(request.getUsername());
-            return ResponseEntity.ok(new ApiResponse<>(true, "Autenticado", token, null));
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            Usuario usuario = usuarioService.buscarPorLogin(request.getUsername());
+            boolean primeiroAcesso = usuario != null && usuario.getUltimoAcesso() == null;
+            if (usuario != null) {
+                usuarioService.registrarUltimoAcesso(usuario);
+            }
+            String token = jwtService.generateToken(userDetails);
+            AuthResponse resp = new AuthResponse(token, primeiroAcesso);
+            return ResponseEntity.ok(new ApiResponse<>(true, "Autenticado", resp, null));
         }
         return ResponseEntity.status(401)
                 .body(new ApiResponse<>(false, "Credenciais inválidas", null, null));
+    }
+
+    @PostMapping("/reenviar-senha")
+    public ResponseEntity<ApiResponse<String>> reenviarSenha(@RequestBody ReenviarSenhaDTO dto) {
+        String msg = usuarioService.reenviarSenha(dto.getLogin());
+        return ResponseEntity.ok(new ApiResponse<>(true, msg, null, null));
+    }
+
+    @PostMapping("/alterar-senha")
+    public ResponseEntity<ApiResponse<String>> alterarSenha(@RequestBody AlterarSenhaDTO dto) {
+        String msg = usuarioService.alterarSenha(dto.getLogin(), dto.getSenhaAtual(), dto.getNovaSenha());
+        return ResponseEntity.ok(new ApiResponse<>(true, msg, null, null));
     }
 }
