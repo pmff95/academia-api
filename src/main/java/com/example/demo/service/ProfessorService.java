@@ -29,6 +29,11 @@ public class ProfessorService {
 
     public String create(ProfessorDTO dto) {
         Professor entity = mapper.toEntity(dto);
+        entity.setNumero(dto.getNumero());
+        entity.setCep(dto.getCep());
+        entity.setLogradouro(dto.getLogradouro());
+        entity.setUf(dto.getUf());
+        entity.setCidade(dto.getCidade());
         String senha = SenhaUtil.gerarSenhaNumerica(6);
         entity.setSenha(passwordEncoder.encode(senha));
         entity.setPerfil(Perfil.PROFESSOR);
@@ -55,6 +60,11 @@ public class ProfessorService {
         entity.setTelefone(dto.getTelefone());
         entity.setTelefoneSecundario(dto.getTelefoneSecundario());
         entity.setEmail(dto.getEmail());
+        entity.setNumero(dto.getNumero());
+        entity.setCep(dto.getCep());
+        entity.setLogradouro(dto.getLogradouro());
+        entity.setUf(dto.getUf());
+        entity.setCidade(dto.getCidade());
         repository.save(entity);
         return "Professor atualizado";
     }

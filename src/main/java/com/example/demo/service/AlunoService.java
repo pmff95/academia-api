@@ -35,6 +35,11 @@ public class AlunoService {
 
     public String create(AlunoDTO dto) {
         Aluno entity = mapper.toEntity(dto);
+        entity.setNumero(dto.getNumero());
+        entity.setCep(dto.getCep());
+        entity.setLogradouro(dto.getLogradouro());
+        entity.setUf(dto.getUf());
+        entity.setCidade(dto.getCidade());
         String senha = SenhaUtil.gerarSenhaNumerica(6);
         entity.setSenha(passwordEncoder.encode(senha));
         entity.setPerfil(Perfil.ALUNO);
@@ -69,6 +74,11 @@ public class AlunoService {
         entity.setTelefone(dto.getTelefone());
         entity.setTelefoneSecundario(dto.getTelefoneSecundario());
         entity.setEmail(dto.getEmail());
+        entity.setNumero(dto.getNumero());
+        entity.setCep(dto.getCep());
+        entity.setLogradouro(dto.getLogradouro());
+        entity.setUf(dto.getUf());
+        entity.setCidade(dto.getCidade());
         entity.setDataMatricula(dto.getDataMatricula());
         entity.setStatus(dto.getStatus());
         if (dto.getProfessorId() != null) {
