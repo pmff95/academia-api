@@ -11,6 +11,7 @@ public class UsuarioDTO {
     private String cpf;
     private LocalDate dataNascimento;
     private String telefone;
+    private String telefoneSecundario;
     private String email;
     private String enderecoCompleto;
     private Perfil perfil;
@@ -61,6 +62,14 @@ public class UsuarioDTO {
 
     public void setTelefone(String telefone) {
         this.telefone = telefone;
+    }
+
+    public String getTelefoneSecundario() {
+        return telefoneSecundario;
+    }
+
+    public void setTelefoneSecundario(String telefoneSecundario) {
+        this.telefoneSecundario = telefoneSecundario;
     }
 
     public String getEmail() {

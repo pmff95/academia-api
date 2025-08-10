@@ -30,6 +30,7 @@ public class Usuario {
 
     private LocalDate dataNascimento;
     private String telefone;
+    private String telefoneSecundario;
 
     @Column(unique = true)
     private String email;
@@ -40,8 +41,6 @@ public class Usuario {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Perfil perfil;
-
-    private String enderecoCompleto;
 
     private LocalDateTime ultimoAcesso;
 

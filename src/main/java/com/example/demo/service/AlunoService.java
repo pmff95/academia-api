@@ -67,6 +67,7 @@ public class AlunoService {
         entity.setCpf(dto.getCpf());
         entity.setDataNascimento(dto.getDataNascimento());
         entity.setTelefone(dto.getTelefone());
+        entity.setTelefoneSecundario(dto.getTelefoneSecundario());
         entity.setEmail(dto.getEmail());
         entity.setEnderecoCompleto(dto.getEnderecoCompleto());
         entity.setDataMatricula(dto.getDataMatricula());
