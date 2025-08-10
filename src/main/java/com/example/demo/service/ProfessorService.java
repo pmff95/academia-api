@@ -8,19 +8,23 @@ import com.example.demo.repository.ProfessorRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Service
 public class ProfessorService {
     private final ProfessorRepository repository;
     private final ProfessorMapper mapper;
+    private final PasswordEncoder passwordEncoder;
 
-    public ProfessorService(ProfessorRepository repository, ProfessorMapper mapper) {
+    public ProfessorService(ProfessorRepository repository, ProfessorMapper mapper, PasswordEncoder passwordEncoder) {
         this.repository = repository;
         this.mapper = mapper;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public String create(ProfessorDTO dto) {
         Professor entity = mapper.toEntity(dto);
+        entity.setSenha(passwordEncoder.encode(dto.getSenha()));
         repository.save(entity);
         return "Professor criado com sucesso";
     }
@@ -43,6 +47,9 @@ public class ProfessorService {
         entity.setTelefone(dto.getTelefone());
         entity.setEmail(dto.getEmail());
         entity.setEnderecoCompleto(dto.getEnderecoCompleto());
+        if (dto.getSenha() != null) {
+            entity.setSenha(passwordEncoder.encode(dto.getSenha()));
+        }
         repository.save(entity);
         return "Professor atualizado";
     }

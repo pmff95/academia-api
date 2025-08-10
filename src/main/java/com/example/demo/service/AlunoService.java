@@ -10,6 +10,7 @@ import com.example.demo.repository.ProfessorRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Optional;
 
@@ -18,15 +19,18 @@ public class AlunoService {
     private final AlunoRepository repository;
     private final AlunoMapper mapper;
     private final ProfessorRepository professorRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public AlunoService(AlunoRepository repository, AlunoMapper mapper, ProfessorRepository professorRepository) {
+    public AlunoService(AlunoRepository repository, AlunoMapper mapper, ProfessorRepository professorRepository, PasswordEncoder passwordEncoder) {
         this.repository = repository;
         this.mapper = mapper;
         this.professorRepository = professorRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public String create(AlunoDTO dto) {
         Aluno entity = mapper.toEntity(dto);
+        entity.setSenha(passwordEncoder.encode(dto.getSenha()));
         if (dto.getProfessorId() != null) {
             Professor professor = professorRepository.findById(dto.getProfessorId())
                     .orElseThrow(() -> new ApiException("Professor não encontrado"));
@@ -57,6 +61,9 @@ public class AlunoService {
         entity.setTelefone(dto.getTelefone());
         entity.setEmail(dto.getEmail());
         entity.setEnderecoCompleto(dto.getEnderecoCompleto());
+        if (dto.getSenha() != null) {
+            entity.setSenha(passwordEncoder.encode(dto.getSenha()));
+        }
         entity.setDataMatricula(dto.getDataMatricula());
         entity.setStatus(dto.getStatus());
         if (dto.getProfessorId() != null) {
