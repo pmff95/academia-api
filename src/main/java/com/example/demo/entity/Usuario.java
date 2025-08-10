@@ -38,6 +38,8 @@ public class Usuario {
 
     private String enderecoCompleto;
 
+    private LocalDateTime ultimoAcesso;
+
     @CreationTimestamp
     @Column(updatable = false)
     private LocalDateTime createdAt;
