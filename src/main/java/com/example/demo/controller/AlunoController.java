@@ -4,6 +4,7 @@ import com.example.demo.dto.*;
 import com.example.demo.service.AlunoMedidaService;
 import com.example.demo.service.AlunoObservacaoService;
 import com.example.demo.service.AlunoService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -12,6 +13,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
+@Tag(name = "Alunos")
 @Slf4j
 @RestController
 @RequestMapping("/alunos")
