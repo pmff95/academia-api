@@ -35,6 +35,12 @@ public class Usuario {
     @Column(unique = true)
     private String email;
 
+    private String numero;
+    private String cep;
+    private String logradouro;
+    private String uf;
+    private String cidade;
+
     @Column(nullable = false)
     private String senha;
 
