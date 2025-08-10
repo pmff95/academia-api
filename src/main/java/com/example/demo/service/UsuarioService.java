@@ -1,9 +1,12 @@
 package com.example.demo.service;
 
 import com.example.demo.domain.enums.Perfil;
+import com.example.demo.dto.ApiResponse;
 import com.example.demo.dto.UsuarioDTO;
 import com.example.demo.entity.Usuario;
 import com.example.demo.repository.UsuarioRepository;
+import com.example.demo.common.security.SecurityUtils;
+import com.example.demo.common.security.UsuarioLogado;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -41,5 +44,17 @@ public class UsuarioService {
         usuario.setSenha(passwordEncoder.encode(dto.getSenha()));
         repository.save(usuario);
         return "Usuário master criado com sucesso";
+    }
+
+    public ApiResponse<UsuarioDTO> buscarUsuarioLogado() {
+        UsuarioLogado usuarioLogado = SecurityUtils.getUsuarioLogado();
+
+        if (usuarioLogado == null) {
+            return new ApiResponse<>(false, "Usuário não autenticado", null, null);
+        }
+
+        return repository.findByUuid(usuarioLogado.getUuid())
+                .map(u -> new ApiResponse<>(true, "Usuário encontrado", mapper.map(u, UsuarioDTO.class), null))
+                .orElse(new ApiResponse<>(false, "Usuário não encontrado", null, null));
     }
 }
