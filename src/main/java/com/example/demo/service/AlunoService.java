@@ -7,6 +7,8 @@ import com.example.demo.exception.ApiException;
 import com.example.demo.mapper.AlunoMapper;
 import com.example.demo.repository.AlunoRepository;
 import com.example.demo.repository.ProfessorRepository;
+import com.example.demo.domain.enums.Perfil;
+import com.example.demo.common.util.SenhaUtil;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -20,23 +22,29 @@ public class AlunoService {
     private final AlunoMapper mapper;
     private final ProfessorRepository professorRepository;
     private final PasswordEncoder passwordEncoder;
+    private final EmailService emailService;
 
-    public AlunoService(AlunoRepository repository, AlunoMapper mapper, ProfessorRepository professorRepository, PasswordEncoder passwordEncoder) {
+    public AlunoService(AlunoRepository repository, AlunoMapper mapper, ProfessorRepository professorRepository,
+                        PasswordEncoder passwordEncoder, EmailService emailService) {
         this.repository = repository;
         this.mapper = mapper;
         this.professorRepository = professorRepository;
         this.passwordEncoder = passwordEncoder;
+        this.emailService = emailService;
     }
 
     public String create(AlunoDTO dto) {
         Aluno entity = mapper.toEntity(dto);
-        entity.setSenha(passwordEncoder.encode(dto.getSenha()));
+        String senha = SenhaUtil.gerarSenhaNumerica(6);
+        entity.setSenha(passwordEncoder.encode(senha));
+        entity.setPerfil(Perfil.ALUNO);
         if (dto.getProfessorId() != null) {
             Professor professor = professorRepository.findById(dto.getProfessorId())
                     .orElseThrow(() -> new ApiException("Professor não encontrado"));
             entity.setProfessor(professor);
         }
         repository.save(entity);
+        emailService.enviarSenha(entity.getEmail(), senha);
         return "Aluno criado com sucesso";
     }
 
@@ -61,9 +69,6 @@ public class AlunoService {
         entity.setTelefone(dto.getTelefone());
         entity.setEmail(dto.getEmail());
         entity.setEnderecoCompleto(dto.getEnderecoCompleto());
-        if (dto.getSenha() != null) {
-            entity.setSenha(passwordEncoder.encode(dto.getSenha()));
-        }
         entity.setDataMatricula(dto.getDataMatricula());
         entity.setStatus(dto.getStatus());
         if (dto.getProfessorId() != null) {

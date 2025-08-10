@@ -7,6 +7,7 @@ import com.example.demo.entity.Usuario;
 import com.example.demo.repository.UsuarioRepository;
 import com.example.demo.common.security.SecurityUtils;
 import com.example.demo.common.security.UsuarioLogado;
+import com.example.demo.common.util.SenhaUtil;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -18,20 +19,23 @@ public class UsuarioService {
     private final UsuarioRepository repository;
     private final ModelMapper mapper;
     private final PasswordEncoder passwordEncoder;
+    private final EmailService emailService;
 
-    public UsuarioService(UsuarioRepository repository, ModelMapper mapper, PasswordEncoder passwordEncoder) {
+    public UsuarioService(UsuarioRepository repository, ModelMapper mapper, PasswordEncoder passwordEncoder,
+                          EmailService emailService) {
         this.repository = repository;
         this.mapper = mapper;
         this.passwordEncoder = passwordEncoder;
+        this.emailService = emailService;
     }
 
-    public String registrarUltimoAcesso(String login) {
-        return repository.findByCpfOrEmailOrTelefone(login, login, login)
-                .map(usuario -> {
-                    usuario.setUltimoAcesso(LocalDateTime.now());
-                    repository.save(usuario);
-                    return "Último acesso registrado";
-                }).orElse("Usuário não encontrado");
+    public Usuario buscarPorLogin(String login) {
+        return repository.findByCpfOrEmailOrTelefone(login, login, login).orElse(null);
+    }
+
+    public void registrarUltimoAcesso(Usuario usuario) {
+        usuario.setUltimoAcesso(LocalDateTime.now());
+        repository.save(usuario);
     }
 
     public String criarUsuarioMaster(UsuarioDTO dto) {
@@ -41,9 +45,34 @@ public class UsuarioService {
 
         Usuario usuario = mapper.map(dto, Usuario.class);
         usuario.setPerfil(Perfil.MASTER);
-        usuario.setSenha(passwordEncoder.encode(dto.getSenha()));
+        String senha = SenhaUtil.gerarSenhaNumerica(6);
+        usuario.setSenha(passwordEncoder.encode(senha));
         repository.save(usuario);
+        emailService.enviarSenha(usuario.getEmail(), senha);
         return "Usuário master criado com sucesso";
+    }
+
+    public String reenviarSenha(String login) {
+        return repository.findByCpfOrEmailOrTelefone(login, login, login)
+                .map(usuario -> {
+                    String novaSenha = SenhaUtil.gerarSenhaNumerica(6);
+                    usuario.setSenha(passwordEncoder.encode(novaSenha));
+                    repository.save(usuario);
+                    emailService.enviarSenha(usuario.getEmail(), novaSenha);
+                    return "Senha reenviada com sucesso";
+                }).orElse("Usuário não encontrado");
+    }
+
+    public String alterarSenha(String login, String senhaAtual, String novaSenha) {
+        return repository.findByCpfOrEmailOrTelefone(login, login, login)
+                .map(usuario -> {
+                    if (!passwordEncoder.matches(senhaAtual, usuario.getSenha())) {
+                        return "Senha atual incorreta";
+                    }
+                    usuario.setSenha(passwordEncoder.encode(novaSenha));
+                    repository.save(usuario);
+                    return "Senha alterada com sucesso";
+                }).orElse("Usuário não encontrado");
     }
 
     public ApiResponse<UsuarioDTO> buscarUsuarioLogado() {
