@@ -69,7 +69,6 @@ public class AlunoService {
         entity.setTelefone(dto.getTelefone());
         entity.setTelefoneSecundario(dto.getTelefoneSecundario());
         entity.setEmail(dto.getEmail());
-        entity.setEnderecoCompleto(dto.getEnderecoCompleto());
         entity.setDataMatricula(dto.getDataMatricula());
         entity.setStatus(dto.getStatus());
         if (dto.getProfessorId() != null) {
