@@ -3,19 +3,20 @@ package com.example.demo.dto;
 import com.example.demo.entity.ObservacaoTipo;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 public class AlunoObservacaoDTO {
-    private Long id;
+    private UUID uuid;
     private String descricao;
     private ObservacaoTipo tipo;
     private LocalDateTime dataRegistro;
 
-    public Long getId() {
-        return id;
+    public UUID getUuid() {
+        return uuid;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setUuid(UUID uuid) {
+        this.uuid = uuid;
     }
 
     public String getDescricao() {

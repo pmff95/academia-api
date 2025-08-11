@@ -2,19 +2,20 @@ package com.example.demo.dto;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 public class AlunoMedidaDTO {
-    private Long id;
+    private UUID uuid;
     private BigDecimal peso;
     private BigDecimal altura;
     private LocalDateTime dataRegistro;
 
-    public Long getId() {
-        return id;
+    public UUID getUuid() {
+        return uuid;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setUuid(UUID uuid) {
+        this.uuid = uuid;
     }
 
     public BigDecimal getPeso() {

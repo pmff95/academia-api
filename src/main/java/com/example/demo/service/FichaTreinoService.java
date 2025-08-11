@@ -46,7 +46,7 @@ public class FichaTreinoService {
                     .orElseThrow(() -> new ApiException("Professor não encontrado"));
             ficha.setProfessor(professor);
         }
-        List<Exercicio> exercicios = exercicioRepository.findAllById(dto.getExerciciosIds());
+        List<Exercicio> exercicios = exercicioRepository.findAllById(dto.getExerciciosUuids());
         ficha.setExercicios(exercicios);
         repository.save(ficha);
         return "Ficha de treino criada com sucesso";
