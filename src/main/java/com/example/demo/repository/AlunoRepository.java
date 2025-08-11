@@ -1,6 +1,9 @@
 package com.example.demo.repository;
 
 import com.example.demo.entity.Aluno;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface AlunoRepository extends BaseRepository<Aluno, Long> {
+import java.util.UUID;
+
+public interface AlunoRepository extends JpaRepository<Aluno, UUID> {
 }

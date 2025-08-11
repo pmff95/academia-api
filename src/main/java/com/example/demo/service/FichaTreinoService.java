@@ -16,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class FichaTreinoService {
@@ -37,11 +38,11 @@ public class FichaTreinoService {
 
     public String create(FichaTreinoDTO dto) {
         FichaTreino ficha = new FichaTreino();
-        Aluno aluno = alunoRepository.findById(dto.getAlunoId())
+        Aluno aluno = alunoRepository.findById(dto.getAlunoUuid())
                 .orElseThrow(() -> new ApiException("Aluno não encontrado"));
         ficha.setAluno(aluno);
-        if (dto.getProfessorId() != null) {
-            Professor professor = professorRepository.findById(dto.getProfessorId())
+        if (dto.getProfessorUuid() != null) {
+            Professor professor = professorRepository.findById(dto.getProfessorUuid())
                     .orElseThrow(() -> new ApiException("Professor não encontrado"));
             ficha.setProfessor(professor);
         }

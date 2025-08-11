@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
+import java.util.UUID;
 
 @Tag(name = "Alunos")
 @Slf4j
@@ -42,47 +43,47 @@ public class AlunoController {
         return ResponseEntity.ok(new ApiResponse<>(true, "Lista de alunos", page, null));
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse<AlunoDTO>> buscar(@PathVariable Long id) {
-        AlunoDTO dto = service.findById(id);
+    @GetMapping("/{uuid}")
+    public ResponseEntity<ApiResponse<AlunoDTO>> buscar(@PathVariable UUID uuid) {
+        AlunoDTO dto = service.findByUuid(uuid);
         return ResponseEntity.ok(new ApiResponse<>(true, "Aluno encontrado", dto, null));
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse<String>> atualizar(@PathVariable Long id, @Validated @RequestBody AlunoDTO dto) {
-        String msg = service.update(id, dto);
+    @PutMapping("/{uuid}")
+    public ResponseEntity<ApiResponse<String>> atualizar(@PathVariable UUID uuid, @Validated @RequestBody AlunoDTO dto) {
+        String msg = service.update(uuid, dto);
         return ResponseEntity.ok(new ApiResponse<>(true, msg, null, null));
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<ApiResponse<Void>> remover(@PathVariable Long id) {
-        service.delete(id);
+    @DeleteMapping("/{uuid}")
+    public ResponseEntity<ApiResponse<Void>> remover(@PathVariable UUID uuid) {
+        service.delete(uuid);
         return ResponseEntity.ok(new ApiResponse<>(true, "Aluno removido", null, null));
     }
 
-    @PostMapping("/{id}/medidas")
-    public ResponseEntity<ApiResponse<String>> adicionarMedida(@PathVariable Long id,
+    @PostMapping("/{uuid}/medidas")
+    public ResponseEntity<ApiResponse<String>> adicionarMedida(@PathVariable UUID uuid,
                                                                @Validated @RequestBody AlunoMedidaDTO dto) {
-        String msg = medidaService.adicionarMedida(id, dto);
+        String msg = medidaService.adicionarMedida(uuid, dto);
         return ResponseEntity.ok(new ApiResponse<>(true, msg, null, null));
     }
 
-    @GetMapping("/{id}/medidas")
-    public ResponseEntity<ApiResponse<List<AlunoMedidaDTO>>> listarMedidas(@PathVariable Long id) {
-        List<AlunoMedidaDTO> lista = medidaService.listarMedidas(id);
+    @GetMapping("/{uuid}/medidas")
+    public ResponseEntity<ApiResponse<List<AlunoMedidaDTO>>> listarMedidas(@PathVariable UUID uuid) {
+        List<AlunoMedidaDTO> lista = medidaService.listarMedidas(uuid);
         return ResponseEntity.ok(new ApiResponse<>(true, "Lista de medidas", lista, null));
     }
 
-    @PostMapping("/{id}/observacoes")
-    public ResponseEntity<ApiResponse<String>> adicionarObservacao(@PathVariable Long id,
+    @PostMapping("/{uuid}/observacoes")
+    public ResponseEntity<ApiResponse<String>> adicionarObservacao(@PathVariable UUID uuid,
                                                                    @Validated @RequestBody AlunoObservacaoDTO dto) {
-        String msg = observacaoService.adicionarObservacao(id, dto);
+        String msg = observacaoService.adicionarObservacao(uuid, dto);
         return ResponseEntity.ok(new ApiResponse<>(true, msg, null, null));
     }
 
-    @GetMapping("/{id}/observacoes")
-    public ResponseEntity<ApiResponse<List<AlunoObservacaoDTO>>> listarObservacoes(@PathVariable Long id) {
-        List<AlunoObservacaoDTO> lista = observacaoService.listarObservacoes(id);
+    @GetMapping("/{uuid}/observacoes")
+    public ResponseEntity<ApiResponse<List<AlunoObservacaoDTO>>> listarObservacoes(@PathVariable UUID uuid) {
+        List<AlunoObservacaoDTO> lista = observacaoService.listarObservacoes(uuid);
         return ResponseEntity.ok(new ApiResponse<>(true, "Lista de observações", lista, null));
     }
 }

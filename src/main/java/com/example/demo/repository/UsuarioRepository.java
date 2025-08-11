@@ -7,12 +7,12 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 import java.util.UUID;
 
-public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
+public interface UsuarioRepository extends JpaRepository<Usuario, UUID> {
     Optional<Usuario> findByEmail(String email);
 
     Optional<Usuario> findByCpfOrEmailOrTelefone(String cpf, String email, String telefone);
 
-        Optional<Usuario> findByUuid(UUID uuid);
+    Optional<Usuario> findByUuid(UUID uuid);
 //    @Query(value = "select * from public.usuario where uuid = :uuid", nativeQuery = true)
 //    Optional<Usuario> findNativeByUuid(@Param("uuid") UUID uuid);
 
