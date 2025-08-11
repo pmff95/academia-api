@@ -20,6 +20,7 @@ import com.example.demo.domain.enums.Perfil;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import jakarta.transaction.Transactional;
 
 import java.util.List;
 import java.util.UUID;
@@ -44,6 +45,7 @@ public class FichaTreinoService {
         this.exercicioRepository = exercicioRepository;
     }
 
+    @Transactional
     public String create(FichaTreinoDTO dto) {
         FichaTreino ficha = new FichaTreino();
         Aluno aluno = alunoRepository.findById(dto.getAlunoUuid())

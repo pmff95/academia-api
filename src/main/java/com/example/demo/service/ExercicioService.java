@@ -13,6 +13,7 @@ import com.example.demo.domain.enums.Perfil;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import jakarta.transaction.Transactional;
 
 @Service
 public class ExercicioService {
@@ -27,6 +28,7 @@ public class ExercicioService {
         this.usuarioRepository = usuarioRepository;
     }
 
+    @Transactional
     public String create(ExercicioDTO dto) {
         Exercicio entity = mapper.toEntity(dto);
         UsuarioLogado usuario = SecurityUtils.getUsuarioLogado();

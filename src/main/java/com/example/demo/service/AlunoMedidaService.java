@@ -8,6 +8,7 @@ import com.example.demo.mapper.AlunoMedidaMapper;
 import com.example.demo.repository.AlunoMedidaRepository;
 import com.example.demo.repository.AlunoRepository;
 import org.springframework.stereotype.Service;
+import jakarta.transaction.Transactional;
 
 import java.util.List;
 import java.util.UUID;
@@ -28,6 +29,7 @@ public class AlunoMedidaService {
         this.mapper = mapper;
     }
 
+    @Transactional
     public String adicionarMedida(UUID alunoUuid, AlunoMedidaDTO dto) {
         Aluno aluno = alunoRepository.findById(alunoUuid)
                 .orElseThrow(() -> new ApiException("Aluno não encontrado"));

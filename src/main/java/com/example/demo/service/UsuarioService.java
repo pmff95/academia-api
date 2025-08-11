@@ -11,6 +11,7 @@ import com.example.demo.common.util.SenhaUtil;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import jakarta.transaction.Transactional;
 
 import java.time.LocalDateTime;
 
@@ -33,11 +34,14 @@ public class UsuarioService {
         return repository.findByCpfOrEmailOrTelefone(login, login, login).orElse(null);
     }
 
-    public void registrarUltimoAcesso(Usuario usuario) {
+    @Transactional
+    public String registrarUltimoAcesso(Usuario usuario) {
         usuario.setUltimoAcesso(LocalDateTime.now());
         repository.save(usuario);
+        return "Acesso registrado";
     }
 
+    @Transactional
     public String criarUsuarioMaster(UsuarioDTO dto) {
         if (repository.existsByPerfil(Perfil.MASTER)) {
             return "Usuário master já existe";
@@ -57,6 +61,7 @@ public class UsuarioService {
         return "Usuário master criado com sucesso";
     }
 
+    @Transactional
     public String reenviarSenha(String login) {
         return repository.findByCpfOrEmailOrTelefone(login, login, login)
                 .map(usuario -> {
@@ -68,6 +73,7 @@ public class UsuarioService {
                 }).orElse("Usuário não encontrado");
     }
 
+    @Transactional
     public String alterarSenha(String login, String senhaAtual, String novaSenha) {
         return repository.findByCpfOrEmailOrTelefone(login, login, login)
                 .map(usuario -> {

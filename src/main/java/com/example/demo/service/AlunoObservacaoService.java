@@ -8,6 +8,7 @@ import com.example.demo.mapper.AlunoObservacaoMapper;
 import com.example.demo.repository.AlunoObservacaoRepository;
 import com.example.demo.repository.AlunoRepository;
 import org.springframework.stereotype.Service;
+import jakarta.transaction.Transactional;
 
 import java.util.List;
 import java.util.UUID;
@@ -28,6 +29,7 @@ public class AlunoObservacaoService {
         this.mapper = mapper;
     }
 
+    @Transactional
     public String adicionarObservacao(UUID alunoUuid, AlunoObservacaoDTO dto) {
         Aluno aluno = alunoRepository.findById(alunoUuid)
                 .orElseThrow(() -> new ApiException("Aluno não encontrado"));

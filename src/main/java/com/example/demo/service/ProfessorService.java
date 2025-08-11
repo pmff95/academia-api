@@ -16,6 +16,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import jakarta.transaction.Transactional;
 
 import java.util.UUID;
 
@@ -36,6 +37,7 @@ public class ProfessorService {
         this.emailService = emailService;
     }
 
+    @Transactional
     public String create(ProfessorDTO dto) {
         Professor entity = mapper.toEntity(dto);
         entity.setNumero(dto.getNumero());
@@ -83,6 +85,7 @@ public class ProfessorService {
         return mapper.toDto(entity);
     }
 
+    @Transactional
     public String update(UUID uuid, ProfessorDTO dto) {
         Professor entity = repository.findById(uuid)
                 .orElseThrow(() -> new ApiException("Professor não encontrado"));
@@ -114,6 +117,7 @@ public class ProfessorService {
         return "Professor atualizado";
     }
 
+    @Transactional
     public void delete(UUID uuid) {
         repository.deleteById(uuid);
     }
