@@ -21,6 +21,6 @@ public class Academia {
     private String telefone;
 
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "admin_id", nullable = false)
+    @JoinColumn(name = "admin_uuid", referencedColumnName = "uuid", nullable = false)
     private Usuario admin;
 }
