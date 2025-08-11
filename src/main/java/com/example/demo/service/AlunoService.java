@@ -18,6 +18,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import jakarta.transaction.Transactional;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -41,6 +42,7 @@ public class AlunoService {
         this.emailService = emailService;
     }
 
+    @Transactional
     public String create(AlunoDTO dto) {
         Aluno entity = mapper.toEntity(dto);
         entity.setNumero(dto.getNumero());
@@ -98,6 +100,7 @@ public class AlunoService {
         return mapper.toDto(entity);
     }
 
+    @Transactional
     public String update(UUID uuid, AlunoDTO dto) {
         Optional<Aluno> opt = repository.findById(uuid);
         if (opt.isEmpty()) {
@@ -141,6 +144,7 @@ public class AlunoService {
         return "Aluno atualizado";
     }
 
+    @Transactional
     public void delete(UUID uuid) {
         repository.deleteById(uuid);
     }
