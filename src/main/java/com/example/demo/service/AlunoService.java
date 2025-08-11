@@ -1,5 +1,7 @@
 package com.example.demo.service;
 
+import com.example.demo.common.security.SecurityUtils;
+import com.example.demo.common.security.UsuarioLogado;
 import com.example.demo.dto.AlunoDTO;
 import com.example.demo.entity.Aluno;
 import com.example.demo.entity.Professor;
@@ -56,6 +58,11 @@ public class AlunoService {
 
     public Page<AlunoDTO> findAll(Pageable pageable) {
         return repository.findAll(pageable).map(mapper::toDto);
+    }
+
+    public Page<AlunoDTO> findAllByEscola(Pageable pageable) {
+//        return repository.findAllByescol(pageable).map(mapper::toDto);
+        return null;
     }
 
     public AlunoDTO findByUuid(UUID uuid) {
