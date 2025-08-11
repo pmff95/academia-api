@@ -20,6 +20,9 @@ public class FichaTreino {
     @ManyToOne
     private Professor professor;
 
+    @Column(nullable = false)
+    private String categoria;
+
     @ManyToMany
     @JoinTable(name = "ficha_exercicio",
             joinColumns = @JoinColumn(name = "ficha_uuid", referencedColumnName = "uuid"),

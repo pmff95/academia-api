@@ -46,6 +46,10 @@ public class FichaTreinoService {
                     .orElseThrow(() -> new ApiException("Professor não encontrado"));
             ficha.setProfessor(professor);
         }
+        if (dto.getCategoria() == null || dto.getCategoria().isBlank()) {
+            throw new ApiException("Categoria é obrigatória");
+        }
+        ficha.setCategoria(dto.getCategoria());
         List<Exercicio> exercicios = exercicioRepository.findAllById(dto.getExerciciosUuids());
         ficha.setExercicios(exercicios);
         repository.save(ficha);
@@ -54,5 +58,11 @@ public class FichaTreinoService {
 
     public Page<FichaTreinoDTO> findAll(Pageable pageable) {
         return repository.findAll(pageable).map(mapper::toDto);
+    }
+
+    public List<FichaTreinoDTO> findByAluno(UUID alunoUuid) {
+        return repository.findByAluno_Uuid(alunoUuid).stream()
+                .map(mapper::toDto)
+                .toList();
     }
 }

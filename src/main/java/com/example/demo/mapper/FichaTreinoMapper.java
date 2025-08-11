@@ -23,6 +23,7 @@ public class FichaTreinoMapper {
         if (ficha.getProfessor() != null) {
             dto.setProfessorUuid(ficha.getProfessor().getUuid());
         }
+        dto.setCategoria(ficha.getCategoria());
         dto.setExerciciosUuids(ficha.getExercicios().stream().map(Exercicio::getUuid).collect(Collectors.toList()));
         return dto;
     }
