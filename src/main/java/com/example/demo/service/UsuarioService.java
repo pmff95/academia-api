@@ -50,7 +50,7 @@ public class UsuarioService {
         usuario.setLogradouro(dto.getLogradouro());
         usuario.setUf(dto.getUf());
         usuario.setCidade(dto.getCidade());
-        String senha = SenhaUtil.gerarSenhaNumerica(6);
+        String senha = "123456";
         usuario.setSenha(passwordEncoder.encode(senha));
         repository.save(usuario);
         emailService.enviarSenha(usuario.getEmail(), senha);

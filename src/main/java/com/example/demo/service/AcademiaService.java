@@ -7,6 +7,7 @@ import com.example.demo.mapper.AcademiaMapper;
 import com.example.demo.repository.AcademiaRepository;
 import com.example.demo.domain.enums.Perfil;
 import com.example.demo.common.util.SenhaUtil;
+import jakarta.transaction.Transactional;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -27,6 +28,7 @@ public class AcademiaService {
         this.emailService = emailService;
     }
 
+    @Transactional
     public String create(AcademiaDTO dto) {
         Academia entity = mapper.toEntity(dto);
         Usuario admin = entity.getAdmin();

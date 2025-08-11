@@ -6,6 +6,7 @@ public class AcademiaDTO {
     private UUID uuid;
     private String nome;
     private String uf;
+    private String cep;
     private String cidade;
     private String numero;
     private String logradouro;
@@ -35,6 +36,14 @@ public class AcademiaDTO {
 
     public void setUf(String uf) {
         this.uf = uf;
+    }
+
+    public String getCep() {
+        return cep;
+    }
+
+    public void setCep(String cep) {
+        this.cep = cep;
     }
 
     public String getCidade() {

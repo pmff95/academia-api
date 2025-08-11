@@ -17,6 +17,7 @@ public class Academia {
 
     private String uf;
     private String cidade;
+    private String cep;
     private String numero;
     private String logradouro;
     private String bairro;
