@@ -10,6 +10,9 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
+import java.util.List;
+import java.util.UUID;
+
 @Tag(name = "Fichas de Treino")
 @RestController
 @RequestMapping("/fichas")
@@ -30,5 +33,11 @@ public class FichaTreinoController {
     public ResponseEntity<ApiResponse<Page<FichaTreinoDTO>>> listar(Pageable pageable) {
         Page<FichaTreinoDTO> page = service.findAll(pageable);
         return ResponseEntity.ok(new ApiResponse<>(true, "Lista de fichas de treino", page, null));
+    }
+
+    @GetMapping("/aluno/{alunoUuid}")
+    public ResponseEntity<ApiResponse<List<FichaTreinoDTO>>> listarPorAluno(@PathVariable UUID alunoUuid) {
+        List<FichaTreinoDTO> fichas = service.findByAluno(alunoUuid);
+        return ResponseEntity.ok(new ApiResponse<>(true, "Lista de fichas do aluno", fichas, null));
     }
 }

@@ -7,6 +7,7 @@ public class FichaTreinoDTO {
     private UUID uuid;
     private UUID alunoUuid;
     private UUID professorUuid;
+    private String categoria;
     private List<UUID> exerciciosUuids;
 
     public UUID getUuid() {
@@ -31,6 +32,14 @@ public class FichaTreinoDTO {
 
     public void setProfessorUuid(UUID professorUuid) {
         this.professorUuid = professorUuid;
+    }
+
+    public String getCategoria() {
+        return categoria;
+    }
+
+    public void setCategoria(String categoria) {
+        this.categoria = categoria;
     }
 
     public List<UUID> getExerciciosUuids() {
