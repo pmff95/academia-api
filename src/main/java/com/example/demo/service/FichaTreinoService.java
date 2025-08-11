@@ -1,16 +1,22 @@
 package com.example.demo.service;
 
+import com.example.demo.common.security.SecurityUtils;
+import com.example.demo.common.security.UsuarioLogado;
 import com.example.demo.dto.FichaTreinoDTO;
+import com.example.demo.entity.Academia;
 import com.example.demo.entity.Aluno;
 import com.example.demo.entity.Exercicio;
 import com.example.demo.entity.FichaTreino;
 import com.example.demo.entity.Professor;
+import com.example.demo.entity.Usuario;
 import com.example.demo.exception.ApiException;
 import com.example.demo.mapper.FichaTreinoMapper;
 import com.example.demo.repository.AlunoRepository;
 import com.example.demo.repository.ExercicioRepository;
 import com.example.demo.repository.FichaTreinoRepository;
 import com.example.demo.repository.ProfessorRepository;
+import com.example.demo.repository.UsuarioRepository;
+import com.example.demo.domain.enums.Perfil;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -24,15 +30,17 @@ public class FichaTreinoService {
     private final FichaTreinoMapper mapper;
     private final AlunoRepository alunoRepository;
     private final ProfessorRepository professorRepository;
+    private final UsuarioRepository usuarioRepository;
     private final ExercicioRepository exercicioRepository;
 
     public FichaTreinoService(FichaTreinoRepository repository, FichaTreinoMapper mapper,
                               AlunoRepository alunoRepository, ProfessorRepository professorRepository,
-                              ExercicioRepository exercicioRepository) {
+                              UsuarioRepository usuarioRepository, ExercicioRepository exercicioRepository) {
         this.repository = repository;
         this.mapper = mapper;
         this.alunoRepository = alunoRepository;
         this.professorRepository = professorRepository;
+        this.usuarioRepository = usuarioRepository;
         this.exercicioRepository = exercicioRepository;
     }
 
@@ -40,10 +48,29 @@ public class FichaTreinoService {
         FichaTreino ficha = new FichaTreino();
         Aluno aluno = alunoRepository.findById(dto.getAlunoUuid())
                 .orElseThrow(() -> new ApiException("Aluno não encontrado"));
+
+        UsuarioLogado usuario = SecurityUtils.getUsuarioLogado();
+        Academia academia = null;
+        boolean isMaster = usuario != null && usuario.possuiPerfil(Perfil.MASTER);
+        if (usuario != null && !isMaster) {
+            Usuario usuarioEntity = usuarioRepository.findByUuid(usuario.getUuid())
+                    .orElseThrow(() -> new ApiException("Usuário precisa ter uma academia associada"));
+            academia = usuarioEntity.getAcademia();
+            if (academia == null) {
+                throw new ApiException("Usuário precisa ter uma academia associada");
+            }
+            if (aluno.getAcademia() == null || !aluno.getAcademia().getUuid().equals(academia.getUuid())) {
+                throw new ApiException("Aluno não pertence à sua academia");
+            }
+        }
         ficha.setAluno(aluno);
+
         if (dto.getProfessorUuid() != null) {
             Professor professor = professorRepository.findById(dto.getProfessorUuid())
                     .orElseThrow(() -> new ApiException("Professor não encontrado"));
+            if (academia != null && (professor.getAcademia() == null || !professor.getAcademia().getUuid().equals(academia.getUuid()))) {
+                throw new ApiException("Professor não pertence à sua academia");
+            }
             ficha.setProfessor(professor);
         }
         if (dto.getCategoria() == null || dto.getCategoria().isBlank()) {
