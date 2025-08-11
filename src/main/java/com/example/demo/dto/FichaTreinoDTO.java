@@ -1,11 +1,12 @@
 package com.example.demo.dto;
 
 import java.util.List;
+import java.util.UUID;
 
 public class FichaTreinoDTO {
     private Long id;
-    private Long alunoId;
-    private Long professorId;
+    private UUID alunoUuid;
+    private UUID professorUuid;
     private List<Long> exerciciosIds;
 
     public Long getId() {
@@ -16,20 +17,20 @@ public class FichaTreinoDTO {
         this.id = id;
     }
 
-    public Long getAlunoId() {
-        return alunoId;
+    public UUID getAlunoUuid() {
+        return alunoUuid;
     }
 
-    public void setAlunoId(Long alunoId) {
-        this.alunoId = alunoId;
+    public void setAlunoUuid(UUID alunoUuid) {
+        this.alunoUuid = alunoUuid;
     }
 
-    public Long getProfessorId() {
-        return professorId;
+    public UUID getProfessorUuid() {
+        return professorUuid;
     }
 
-    public void setProfessorId(Long professorId) {
-        this.professorId = professorId;
+    public void setProfessorUuid(UUID professorUuid) {
+        this.professorUuid = professorUuid;
     }
 
     public List<Long> getExerciciosIds() {

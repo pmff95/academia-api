@@ -5,7 +5,6 @@ import java.time.LocalDate;
 import java.util.UUID;
 
 public class UsuarioDTO {
-    private Long id;
     private UUID uuid;
     private String nome;
     private String cpf;
@@ -19,14 +18,6 @@ public class UsuarioDTO {
     private String uf;
     private String cidade;
     private Perfil perfil;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public UUID getUuid() {
         return uuid;

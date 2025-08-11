@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.UUID;
 
 @Tag(name = "Professores")
 @RestController
@@ -32,21 +33,21 @@ public class ProfessorController {
         return ResponseEntity.ok(new ApiResponse<>(true, "Lista de professores", page, null));
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse<ProfessorDTO>> buscar(@PathVariable Long id) {
-        ProfessorDTO dto = service.findById(id);
+    @GetMapping("/{uuid}")
+    public ResponseEntity<ApiResponse<ProfessorDTO>> buscar(@PathVariable UUID uuid) {
+        ProfessorDTO dto = service.findByUuid(uuid);
         return ResponseEntity.ok(new ApiResponse<>(true, "Professor encontrado", dto, null));
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse<String>> atualizar(@PathVariable Long id, @Validated @RequestBody ProfessorDTO dto) {
-        String msg = service.update(id, dto);
+    @PutMapping("/{uuid}")
+    public ResponseEntity<ApiResponse<String>> atualizar(@PathVariable UUID uuid, @Validated @RequestBody ProfessorDTO dto) {
+        String msg = service.update(uuid, dto);
         return ResponseEntity.ok(new ApiResponse<>(true, msg, null, null));
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<ApiResponse<Void>> remover(@PathVariable Long id) {
-        service.delete(id);
+    @DeleteMapping("/{uuid}")
+    public ResponseEntity<ApiResponse<Void>> remover(@PathVariable UUID uuid) {
+        service.delete(uuid);
         return ResponseEntity.ok(new ApiResponse<>(true, "Professor removido", null, null));
     }
 }
