@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import com.example.demo.entity.Academia;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -44,6 +45,10 @@ public class Usuario {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Perfil perfil;
+
+    @ManyToOne
+    @JoinColumn(name = "academia_uuid")
+    private Academia academia;
 
     private LocalDateTime ultimoAcesso;
 
