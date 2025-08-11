@@ -15,15 +15,21 @@ import java.util.UUID;
 public class UsuarioLogado implements UserDetails {
 
     private final UUID uuid;
+    private final UUID escolaUuid;
     private final Perfil perfil;
 
-    public UsuarioLogado(UUID uuid, Perfil perfil) {
+    public UsuarioLogado(UUID uuid, UUID escolaUuid, Perfil perfil) {
         this.uuid = uuid;
+        this.escolaUuid = escolaUuid;
         this.perfil = perfil;
     }
 
     public UUID getUuid() {
         return uuid;
+    }
+
+    public String getEscolaUuid() {
+        return escolaUuid != null ? escolaUuid.toString() : null;
     }
 
     /**

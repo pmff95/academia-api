@@ -63,7 +63,7 @@ public class AlunoMedidaService {
     }
 
     private void validarMesmaAcademia(Aluno aluno) {
-        UsuarioLogado usuarioLogado = SecurityUtils.getUsuarioLogado();
+        UsuarioLogado usuarioLogado = SecurityUtils.getUsuarioLogadoDetalhes();
         boolean isMaster = usuarioLogado != null && usuarioLogado.possuiPerfil(Perfil.MASTER);
 
         if (usuarioLogado != null && !isMaster) {

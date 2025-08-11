@@ -57,7 +57,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             if (jwtService.isTokenValid(jwt, userDetails)) {
                 var usuario = usuarioRepository.findByEmail(username).orElse(null);
                 if (usuario != null) {
-                    var principal = new UsuarioLogado(usuario.getUuid(), usuario.getPerfil());
+                    var academiaUuid = usuario.getAcademia() != null ? usuario.getAcademia().getUuid() : null;
+                    var principal = new UsuarioLogado(usuario.getUuid(), academiaUuid, usuario.getPerfil());
                     var authToken = new UsernamePasswordAuthenticationToken(
                             principal, null, userDetails.getAuthorities());
                     authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));

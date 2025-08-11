@@ -31,7 +31,7 @@ public class ExercicioService {
     @Transactional
     public String create(ExercicioDTO dto) {
         Exercicio entity = mapper.toEntity(dto);
-        UsuarioLogado usuario = SecurityUtils.getUsuarioLogado();
+        UsuarioLogado usuario = SecurityUtils.getUsuarioLogadoDetalhes();
         boolean isMaster = usuario != null && usuario.possuiPerfil(Perfil.MASTER);
 
         if (usuario != null && !isMaster) {
@@ -49,7 +49,7 @@ public class ExercicioService {
     }
 
     public Page<ExercicioDTO> findAll(Pageable pageable) {
-        UsuarioLogado usuario = SecurityUtils.getUsuarioLogado();
+        UsuarioLogado usuario = SecurityUtils.getUsuarioLogadoDetalhes();
         Page<Exercicio> page;
 
         boolean isMaster = usuario != null && usuario.possuiPerfil(Perfil.MASTER);

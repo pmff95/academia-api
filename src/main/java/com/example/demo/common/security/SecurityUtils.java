@@ -8,7 +8,18 @@ public final class SecurityUtils {
     private SecurityUtils() {
     }
 
-    public static UsuarioLogado getUsuarioLogado() {
+    /**
+     * Retorna o UUID da academia do usuário logado.
+     */
+    public static String getUsuarioLogado() {
+        UsuarioLogado usuario = getUsuarioLogadoDetalhes();
+        return usuario != null ? usuario.getEscolaUuid() : null;
+    }
+
+    /**
+     * Retorna os detalhes do usuário autenticado.
+     */
+    public static UsuarioLogado getUsuarioLogadoDetalhes() {
         Authentication authentication = SecurityContextHolder
                 .getContext()
                 .getAuthentication();
