@@ -6,6 +6,7 @@ import com.example.demo.service.FichaTreinoService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -16,6 +17,7 @@ import java.util.UUID;
 @Tag(name = "Fichas de Treino")
 @RestController
 @RequestMapping("/fichas")
+@PreAuthorize("hasAnyRole('MASTER','ADMIN','PROFESSOR')")
 public class FichaTreinoController {
     private final FichaTreinoService service;
 

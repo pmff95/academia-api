@@ -21,7 +21,7 @@ public class UserAuthenticationConfig {
         return username -> repository.findByEmail(username)
                 .map(usuario -> User.withUsername(usuario.getEmail())
                         .password(usuario.getSenha())
-                        .roles("USER")
+                        .roles(usuario.getPerfil().name())
                         .build())
                 .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado"));
     }

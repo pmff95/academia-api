@@ -6,6 +6,7 @@ import com.example.demo.service.AcademiaService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -13,6 +14,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @Tag(name = "Academias")
 @RestController
 @RequestMapping("/academias")
+@PreAuthorize("hasAnyRole('MASTER','ADMIN')")
 public class AcademiaController {
     private final AcademiaService service;
 

@@ -6,6 +6,7 @@ import com.example.demo.service.ExercicioService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -13,6 +14,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @Tag(name = "Exercícios")
 @RestController
 @RequestMapping("/exercicios")
+@PreAuthorize("hasAnyRole('MASTER','ADMIN','PROFESSOR')")
 public class ExercicioController {
     private final ExercicioService service;
 
