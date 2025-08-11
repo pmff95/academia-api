@@ -51,7 +51,7 @@ public class FichaTreinoService {
         Aluno aluno = alunoRepository.findById(dto.getAlunoUuid())
                 .orElseThrow(() -> new ApiException("Aluno não encontrado"));
 
-        UsuarioLogado usuario = SecurityUtils.getUsuarioLogado();
+        UsuarioLogado usuario = SecurityUtils.getUsuarioLogadoDetalhes();
         Academia academia = null;
         boolean isMaster = usuario != null && usuario.possuiPerfil(Perfil.MASTER);
         if (usuario != null && !isMaster) {

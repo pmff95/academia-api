@@ -37,7 +37,7 @@ public class SolicitacaoService {
     }
 
     public String solicitar(UUID alunoUuid) {
-        UsuarioLogado usuario = SecurityUtils.getUsuarioLogado();
+        UsuarioLogado usuario = SecurityUtils.getUsuarioLogadoDetalhes();
         if (usuario == null) {
             throw new ApiException("Usuário não autenticado");
         }

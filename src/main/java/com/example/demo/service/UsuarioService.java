@@ -87,7 +87,7 @@ public class UsuarioService {
     }
 
     public ApiResponse<UsuarioDTO> buscarUsuarioLogado() {
-        UsuarioLogado usuarioLogado = SecurityUtils.getUsuarioLogado();
+        UsuarioLogado usuarioLogado = SecurityUtils.getUsuarioLogadoDetalhes();
 
         if (usuarioLogado == null) {
             return new ApiResponse<>(false, "Usuário não autenticado", null, null);

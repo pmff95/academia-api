@@ -87,7 +87,7 @@ public class AlunoController {
     @GetMapping("/me/medidas")
     @PreAuthorize("hasRole('ALUNO')")
     public ResponseEntity<ApiResponse<List<AlunoMedidaDTO>>> listarMedidasAlunoLogado() {
-        UsuarioLogado usuario = SecurityUtils.getUsuarioLogado();
+        UsuarioLogado usuario = SecurityUtils.getUsuarioLogadoDetalhes();
         List<AlunoMedidaDTO> lista = medidaService.listarMedidas(usuario.getUuid());
         return ResponseEntity.ok(new ApiResponse<>(true, "Lista de medidas", lista, null));
     }

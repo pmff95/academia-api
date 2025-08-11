@@ -59,7 +59,7 @@ public class AlunoService {
             entity.setProfessor(professor);
         }
 
-        UsuarioLogado usuario = SecurityUtils.getUsuarioLogado();
+        UsuarioLogado usuario = SecurityUtils.getUsuarioLogadoDetalhes();
         boolean isMaster = usuario != null && usuario.possuiPerfil(Perfil.MASTER);
         if (usuario != null && !isMaster) {
             Usuario usuarioEntity = usuarioRepository.findByUuid(usuario.getUuid())
@@ -76,7 +76,7 @@ public class AlunoService {
     }
 
     public Page<AlunoDTO> findAll(Pageable pageable) {
-        UsuarioLogado usuario = SecurityUtils.getUsuarioLogado();
+        UsuarioLogado usuario = SecurityUtils.getUsuarioLogadoDetalhes();
         boolean isMaster = usuario != null && usuario.possuiPerfil(Perfil.MASTER);
         if (usuario != null && !isMaster) {
             Usuario usuarioEntity = usuarioRepository.findByUuid(usuario.getUuid())
@@ -128,7 +128,7 @@ public class AlunoService {
             entity.setProfessor(null);
         }
 
-        UsuarioLogado usuario = SecurityUtils.getUsuarioLogado();
+        UsuarioLogado usuario = SecurityUtils.getUsuarioLogadoDetalhes();
         boolean isMaster = usuario != null && usuario.possuiPerfil(Perfil.MASTER);
         if (usuario != null && !isMaster) {
             Usuario usuarioEntity = usuarioRepository.findByUuid(usuario.getUuid())

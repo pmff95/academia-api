@@ -31,7 +31,7 @@ public class CheckAccessAspect {
     @Around("@annotation(com.example.demo.common.security.accesscontrol.annotation.CheckAccess)")
     public Object enforceAccess(ProceedingJoinPoint joinPoint) throws Throwable {
 
-        UsuarioLogado usuarioLogado = SecurityUtils.getUsuarioLogado();
+        UsuarioLogado usuarioLogado = SecurityUtils.getUsuarioLogadoDetalhes();
 
         // Se é usuário MASTER tem acesso irrestrito.
         boolean isMaster = usuarioLogado != null && usuarioLogado.possuiPerfil(Perfil.MASTER);
