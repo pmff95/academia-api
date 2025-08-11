@@ -9,6 +9,7 @@ import com.example.demo.entity.Professor;
 import com.example.demo.entity.Usuario;
 import com.example.demo.exception.ApiException;
 import com.example.demo.mapper.AlunoMapper;
+import com.example.demo.repository.AcademiaRepository;
 import com.example.demo.repository.AlunoRepository;
 import com.example.demo.repository.ProfessorRepository;
 import com.example.demo.repository.UsuarioRepository;
@@ -31,11 +32,18 @@ public class AlunoService {
     private final UsuarioRepository usuarioRepository;
     private final PasswordEncoder passwordEncoder;
     private final EmailService emailService;
+    private final AcademiaRepository academiaRepository;
 
-    public AlunoService(AlunoRepository repository, AlunoMapper mapper, ProfessorRepository professorRepository,
-                        UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder, EmailService emailService) {
+    public AlunoService(AlunoRepository repository,
+                        AlunoMapper mapper,
+                        ProfessorRepository professorRepository,
+                        UsuarioRepository usuarioRepository,
+                        PasswordEncoder passwordEncoder,
+                        EmailService emailService,
+                        AcademiaRepository academiaRepository) {
         this.repository = repository;
         this.mapper = mapper;
+        this.academiaRepository = academiaRepository;
         this.professorRepository = professorRepository;
         this.usuarioRepository = usuarioRepository;
         this.passwordEncoder = passwordEncoder;
@@ -62,12 +70,12 @@ public class AlunoService {
         UsuarioLogado usuario = SecurityUtils.getUsuarioLogadoDetalhes();
         boolean isMaster = usuario != null && usuario.possuiPerfil(Perfil.MASTER);
         if (usuario != null && !isMaster) {
-            Usuario usuarioEntity = usuarioRepository.findByUuid(usuario.getUuid())
-                    .orElseThrow(() -> new ApiException("Usuário precisa ter uma academia associada"));
-            Academia academia = usuarioEntity.getAcademia();
+
+            Academia academia = academiaRepository.findByUuid(usuario.getAcademiaUuid());
             if (academia == null) {
                 throw new ApiException("Usuário precisa ter uma academia associada");
             }
+
             entity.setAcademia(academia);
         }
         repository.save(entity);

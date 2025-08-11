@@ -15,12 +15,12 @@ import java.util.UUID;
 public class UsuarioLogado implements UserDetails {
 
     private final UUID uuid;
-    private final UUID escolaUuid;
+    private final UUID academiaUuid;
     private final Perfil perfil;
 
-    public UsuarioLogado(UUID uuid, UUID escolaUuid, Perfil perfil) {
+    public UsuarioLogado(UUID uuid, UUID academiaUuid, Perfil perfil) {
         this.uuid = uuid;
-        this.escolaUuid = escolaUuid;
+        this.academiaUuid = academiaUuid;
         this.perfil = perfil;
     }
 
@@ -28,8 +28,8 @@ public class UsuarioLogado implements UserDetails {
         return uuid;
     }
 
-    public String getEscolaUuid() {
-        return escolaUuid != null ? escolaUuid.toString() : null;
+    public UUID getAcademiaUuid() {
+        return academiaUuid != null ? academiaUuid : null;
     }
 
     /**

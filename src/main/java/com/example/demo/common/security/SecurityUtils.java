@@ -9,14 +9,6 @@ public final class SecurityUtils {
     }
 
     /**
-     * Retorna o UUID da academia do usuário logado.
-     */
-    public static String getUsuarioLogado() {
-        UsuarioLogado usuario = getUsuarioLogadoDetalhes();
-        return usuario != null ? usuario.getEscolaUuid() : null;
-    }
-
-    /**
      * Retorna os detalhes do usuário autenticado.
      */
     public static UsuarioLogado getUsuarioLogadoDetalhes() {

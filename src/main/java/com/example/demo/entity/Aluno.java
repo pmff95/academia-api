@@ -10,7 +10,7 @@ import java.time.LocalDate;
 @DiscriminatorValue("ALUNO")
 public class Aluno extends Usuario {
     @ManyToOne
-    @JoinColumn(name = "professor_id")
+    @JoinColumn(name = "professor_uuid")
     private Professor professor;
 
     private LocalDate dataMatricula;
