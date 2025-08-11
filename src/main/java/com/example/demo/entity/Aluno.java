@@ -9,8 +9,8 @@ import java.time.LocalDate;
 @Entity
 @DiscriminatorValue("ALUNO")
 public class Aluno extends Usuario {
-    @ManyToOne
-    @JoinColumn(name = "professor_id")
+    @ManyToOne(optional = true)
+    @JoinColumn(name = "professor_id", nullable = true)
     private Professor professor;
 
     private LocalDate dataMatricula;
