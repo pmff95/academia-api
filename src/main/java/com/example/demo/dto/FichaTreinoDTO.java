@@ -4,17 +4,17 @@ import java.util.List;
 import java.util.UUID;
 
 public class FichaTreinoDTO {
-    private Long id;
+    private UUID uuid;
     private UUID alunoUuid;
     private UUID professorUuid;
-    private List<Long> exerciciosIds;
+    private List<UUID> exerciciosUuids;
 
-    public Long getId() {
-        return id;
+    public UUID getUuid() {
+        return uuid;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setUuid(UUID uuid) {
+        this.uuid = uuid;
     }
 
     public UUID getAlunoUuid() {
@@ -33,11 +33,11 @@ public class FichaTreinoDTO {
         this.professorUuid = professorUuid;
     }
 
-    public List<Long> getExerciciosIds() {
-        return exerciciosIds;
+    public List<UUID> getExerciciosUuids() {
+        return exerciciosUuids;
     }
 
-    public void setExerciciosIds(List<Long> exerciciosIds) {
-        this.exerciciosIds = exerciciosIds;
+    public void setExerciciosUuids(List<UUID> exerciciosUuids) {
+        this.exerciciosUuids = exerciciosUuids;
     }
 }

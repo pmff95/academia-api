@@ -1,7 +1,9 @@
 package com.example.demo.dto;
 
+import java.util.UUID;
+
 public class AcademiaDTO {
-    private Long id;
+    private UUID uuid;
     private String nome;
     private String uf;
     private String cidade;
@@ -11,12 +13,12 @@ public class AcademiaDTO {
     private String telefone;
     private UsuarioDTO admin;
 
-    public Long getId() {
-        return id;
+    public UUID getUuid() {
+        return uuid;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setUuid(UUID uuid) {
+        this.uuid = uuid;
     }
 
     public String getNome() {
