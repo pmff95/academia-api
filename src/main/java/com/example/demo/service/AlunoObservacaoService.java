@@ -10,6 +10,7 @@ import com.example.demo.repository.AlunoRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -27,8 +28,8 @@ public class AlunoObservacaoService {
         this.mapper = mapper;
     }
 
-    public String adicionarObservacao(Long alunoId, AlunoObservacaoDTO dto) {
-        Aluno aluno = alunoRepository.findById(alunoId)
+    public String adicionarObservacao(UUID alunoUuid, AlunoObservacaoDTO dto) {
+        Aluno aluno = alunoRepository.findById(alunoUuid)
                 .orElseThrow(() -> new ApiException("Aluno não encontrado"));
         AlunoObservacao obs = mapper.toEntity(dto);
         obs.setAluno(aluno);
@@ -36,8 +37,8 @@ public class AlunoObservacaoService {
         return "Observação registrada com sucesso";
     }
 
-    public List<AlunoObservacaoDTO> listarObservacoes(Long alunoId) {
-        return repository.findByAlunoId(alunoId)
+    public List<AlunoObservacaoDTO> listarObservacoes(UUID alunoUuid) {
+        return repository.findByAlunoUuid(alunoUuid)
                 .stream()
                 .map(mapper::toDto)
                 .collect(Collectors.toList());

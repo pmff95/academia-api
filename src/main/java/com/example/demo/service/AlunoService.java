@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class AlunoService {
@@ -43,8 +44,8 @@ public class AlunoService {
         String senha = SenhaUtil.gerarSenhaNumerica(6);
         entity.setSenha(passwordEncoder.encode(senha));
         entity.setPerfil(Perfil.ALUNO);
-        if (dto.getProfessorId() != null) {
-            Professor professor = professorRepository.findById(dto.getProfessorId())
+        if (dto.getProfessorUuid() != null) {
+            Professor professor = professorRepository.findById(dto.getProfessorUuid())
                     .orElseThrow(() -> new ApiException("Professor não encontrado"));
             entity.setProfessor(professor);
         }
@@ -57,13 +58,13 @@ public class AlunoService {
         return repository.findAll(pageable).map(mapper::toDto);
     }
 
-    public AlunoDTO findById(Long id) {
-        Aluno entity = repository.findById(id).orElseThrow(() -> new ApiException("Aluno não encontrado"));
+    public AlunoDTO findByUuid(UUID uuid) {
+        Aluno entity = repository.findById(uuid).orElseThrow(() -> new ApiException("Aluno não encontrado"));
         return mapper.toDto(entity);
     }
 
-    public String update(Long id, AlunoDTO dto) {
-        Optional<Aluno> opt = repository.findById(id);
+    public String update(UUID uuid, AlunoDTO dto) {
+        Optional<Aluno> opt = repository.findById(uuid);
         if (opt.isEmpty()) {
             throw new ApiException("Aluno não encontrado");
         }
@@ -81,8 +82,8 @@ public class AlunoService {
         entity.setCidade(dto.getCidade());
         entity.setDataMatricula(dto.getDataMatricula());
         entity.setStatus(dto.getStatus());
-        if (dto.getProfessorId() != null) {
-            Professor professor = professorRepository.findById(dto.getProfessorId())
+        if (dto.getProfessorUuid() != null) {
+            Professor professor = professorRepository.findById(dto.getProfessorUuid())
                     .orElseThrow(() -> new ApiException("Professor não encontrado"));
             entity.setProfessor(professor);
         } else {
@@ -92,7 +93,7 @@ public class AlunoService {
         return "Aluno atualizado";
     }
 
-    public void delete(Long id) {
-        repository.deleteById(id);
+    public void delete(UUID uuid) {
+        repository.deleteById(uuid);
     }
 }

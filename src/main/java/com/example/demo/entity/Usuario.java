@@ -16,11 +16,8 @@ import java.util.UUID;
 @DiscriminatorColumn(name = "tipo")
 public class Usuario {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
     @Column(nullable = false, unique = true, updatable = false)
-    private UUID uuid = UUID.randomUUID();
+    private UUID uuid;
 
     @Column(nullable = false)
     private String nome;
@@ -56,4 +53,11 @@ public class Usuario {
 
     @UpdateTimestamp
     private LocalDateTime updatedAt;
+
+    @PrePersist
+    private void gerarUuid() {
+        if (uuid == null) {
+            uuid = UUID.randomUUID();
+        }
+    }
 }

@@ -3,11 +3,12 @@ package com.example.demo.dto;
 import com.example.demo.entity.StatusAluno;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 public class AlunoDTO extends UsuarioDTO {
     private LocalDate dataMatricula;
     private StatusAluno status;
-    private Long professorId;
+    private UUID professorUuid;
 
     public LocalDate getDataMatricula() {
         return dataMatricula;
@@ -25,11 +26,11 @@ public class AlunoDTO extends UsuarioDTO {
         this.status = status;
     }
 
-    public Long getProfessorId() {
-        return professorId;
+    public UUID getProfessorUuid() {
+        return professorUuid;
     }
 
-    public void setProfessorId(Long professorId) {
-        this.professorId = professorId;
+    public void setProfessorUuid(UUID professorUuid) {
+        this.professorUuid = professorUuid;
     }
 }

@@ -16,7 +16,7 @@ public class AlunoMapper {
     public AlunoDTO toDto(Aluno aluno) {
         AlunoDTO dto = mapper.map(aluno, AlunoDTO.class);
         if (aluno.getProfessor() != null) {
-            dto.setProfessorId(aluno.getProfessor().getId());
+            dto.setProfessorUuid(aluno.getProfessor().getUuid());
         }
         return dto;
     }

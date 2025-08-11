@@ -12,6 +12,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.util.UUID;
+
 @Service
 public class ProfessorService {
     private final ProfessorRepository repository;
@@ -46,13 +48,13 @@ public class ProfessorService {
         return repository.findAll(pageable).map(mapper::toDto);
     }
 
-    public ProfessorDTO findById(Long id) {
-        Professor entity = repository.findById(id).orElseThrow(() -> new ApiException("Professor não encontrado"));
+    public ProfessorDTO findByUuid(UUID uuid) {
+        Professor entity = repository.findById(uuid).orElseThrow(() -> new ApiException("Professor não encontrado"));
         return mapper.toDto(entity);
     }
 
-    public String update(Long id, ProfessorDTO dto) {
-        Professor entity = repository.findById(id)
+    public String update(UUID uuid, ProfessorDTO dto) {
+        Professor entity = repository.findById(uuid)
                 .orElseThrow(() -> new ApiException("Professor não encontrado"));
         entity.setNome(dto.getNome());
         entity.setCpf(dto.getCpf());
@@ -69,7 +71,7 @@ public class ProfessorService {
         return "Professor atualizado";
     }
 
-    public void delete(Long id) {
-        repository.deleteById(id);
+    public void delete(UUID uuid) {
+        repository.deleteById(uuid);
     }
 }

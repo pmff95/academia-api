@@ -10,6 +10,7 @@ import com.example.demo.repository.AlunoRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -27,8 +28,8 @@ public class AlunoMedidaService {
         this.mapper = mapper;
     }
 
-    public String adicionarMedida(Long alunoId, AlunoMedidaDTO dto) {
-        Aluno aluno = alunoRepository.findById(alunoId)
+    public String adicionarMedida(UUID alunoUuid, AlunoMedidaDTO dto) {
+        Aluno aluno = alunoRepository.findById(alunoUuid)
                 .orElseThrow(() -> new ApiException("Aluno não encontrado"));
         AlunoMedida medida = mapper.toEntity(dto);
         medida.setAluno(aluno);
@@ -36,8 +37,8 @@ public class AlunoMedidaService {
         return "Medida registrada com sucesso";
     }
 
-    public List<AlunoMedidaDTO> listarMedidas(Long alunoId) {
-        return repository.findByAlunoId(alunoId)
+    public List<AlunoMedidaDTO> listarMedidas(UUID alunoUuid) {
+        return repository.findByAlunoUuid(alunoUuid)
                 .stream()
                 .map(mapper::toDto)
                 .collect(Collectors.toList());
