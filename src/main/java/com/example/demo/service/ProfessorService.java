@@ -1,10 +1,15 @@
 package com.example.demo.service;
 
+import com.example.demo.common.security.SecurityUtils;
+import com.example.demo.common.security.UsuarioLogado;
 import com.example.demo.dto.ProfessorDTO;
+import com.example.demo.entity.Academia;
 import com.example.demo.entity.Professor;
+import com.example.demo.entity.Usuario;
 import com.example.demo.exception.ApiException;
 import com.example.demo.mapper.ProfessorMapper;
 import com.example.demo.repository.ProfessorRepository;
+import com.example.demo.repository.UsuarioRepository;
 import com.example.demo.domain.enums.Perfil;
 import com.example.demo.common.util.SenhaUtil;
 import org.springframework.data.domain.Page;
@@ -18,13 +23,15 @@ import java.util.UUID;
 public class ProfessorService {
     private final ProfessorRepository repository;
     private final ProfessorMapper mapper;
+    private final UsuarioRepository usuarioRepository;
     private final PasswordEncoder passwordEncoder;
     private final EmailService emailService;
 
-    public ProfessorService(ProfessorRepository repository, ProfessorMapper mapper, PasswordEncoder passwordEncoder,
-                            EmailService emailService) {
+    public ProfessorService(ProfessorRepository repository, ProfessorMapper mapper, UsuarioRepository usuarioRepository,
+                            PasswordEncoder passwordEncoder, EmailService emailService) {
         this.repository = repository;
         this.mapper = mapper;
+        this.usuarioRepository = usuarioRepository;
         this.passwordEncoder = passwordEncoder;
         this.emailService = emailService;
     }
@@ -39,12 +46,35 @@ public class ProfessorService {
         String senha = SenhaUtil.gerarSenhaNumerica(6);
         entity.setSenha(passwordEncoder.encode(senha));
         entity.setPerfil(Perfil.PROFESSOR);
+        UsuarioLogado usuario = SecurityUtils.getUsuarioLogado();
+        boolean isMaster = usuario != null && usuario.possuiPerfil(Perfil.MASTER);
+        if (usuario != null && !isMaster) {
+            Usuario usuarioEntity = usuarioRepository.findByUuid(usuario.getUuid())
+                    .orElseThrow(() -> new ApiException("Usuário precisa ter uma academia associada"));
+            Academia academia = usuarioEntity.getAcademia();
+            if (academia == null) {
+                throw new ApiException("Usuário precisa ter uma academia associada");
+            }
+            entity.setAcademia(academia);
+        }
+
         repository.save(entity);
         emailService.enviarSenha(entity.getEmail(), senha);
         return "Professor criado com sucesso";
     }
 
     public Page<ProfessorDTO> findAll(Pageable pageable) {
+        UsuarioLogado usuario = SecurityUtils.getUsuarioLogado();
+        boolean isMaster = usuario != null && usuario.possuiPerfil(Perfil.MASTER);
+        if (usuario != null && !isMaster) {
+            Usuario usuarioEntity = usuarioRepository.findByUuid(usuario.getUuid())
+                    .orElseThrow(() -> new ApiException("Usuário precisa ter uma academia associada"));
+            Academia academia = usuarioEntity.getAcademia();
+            if (academia == null) {
+                throw new ApiException("Usuário precisa ter uma academia associada");
+            }
+            return repository.findByAcademiaUuid(academia.getUuid(), pageable).map(mapper::toDto);
+        }
         return repository.findAll(pageable).map(mapper::toDto);
     }
 
@@ -67,6 +97,19 @@ public class ProfessorService {
         entity.setLogradouro(dto.getLogradouro());
         entity.setUf(dto.getUf());
         entity.setCidade(dto.getCidade());
+
+        UsuarioLogado usuario = SecurityUtils.getUsuarioLogado();
+        boolean isMaster = usuario != null && usuario.possuiPerfil(Perfil.MASTER);
+        if (usuario != null && !isMaster) {
+            Usuario usuarioEntity = usuarioRepository.findByUuid(usuario.getUuid())
+                    .orElseThrow(() -> new ApiException("Usuário precisa ter uma academia associada"));
+            Academia academia = usuarioEntity.getAcademia();
+            if (academia == null) {
+                throw new ApiException("Usuário precisa ter uma academia associada");
+            }
+            entity.setAcademia(academia);
+        }
+
         repository.save(entity);
         return "Professor atualizado";
     }
