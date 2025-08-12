@@ -35,8 +35,9 @@ public class AcademiaService {
         String senha = SenhaUtil.gerarSenhaNumerica(6);
         admin.setSenha(passwordEncoder.encode(senha));
         admin.setPerfil(Perfil.ADMIN);
+        admin.setAcademia(entity);
         repository.save(entity);
-        emailService.enviarSenha(admin.getEmail(), senha);
+        emailService.enviarSenha(admin.getEmail(), senha, entity.getUuid().toString());
         return "Academia criada com sucesso";
     }
 
