@@ -135,7 +135,6 @@ public class AlunoService {
         entity.setUf(dto.getUf());
         entity.setCidade(dto.getCidade());
         entity.setDataMatricula(dto.getDataMatricula());
-        entity.setStatus(dto.getStatus());
         if (dto.getProfessorUuid() != null) {
             Professor professor = professorRepository.findById(dto.getProfessorUuid())
                     .orElseThrow(() -> new ApiException("Professor não encontrado"));

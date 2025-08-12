@@ -36,18 +36,23 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<ApiResponse<AuthResponse>> login(@RequestBody AuthRequest request) {
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
-        if (authentication.isAuthenticated()) {
-            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-            Usuario usuario = usuarioService.buscarPorLogin(request.getUsername());
-            boolean primeiroAcesso = usuario != null && usuario.getUltimoAcesso() == null;
-            if (usuario != null) {
-                usuarioService.registrarUltimoAcesso(usuario);
+        try {
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
+            if (authentication.isAuthenticated()) {
+                UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+                Usuario usuario = usuarioService.buscarPorLogin(request.getUsername());
+                boolean primeiroAcesso = usuario != null && usuario.getUltimoAcesso() == null;
+                if (usuario != null) {
+                    usuarioService.registrarUltimoAcesso(usuario);
+                }
+                String token = jwtService.generateToken(userDetails);
+                AuthResponse resp = new AuthResponse(token, primeiroAcesso);
+                return ResponseEntity.ok(new ApiResponse<>(true, "Autenticado", resp, null));
             }
-            String token = jwtService.generateToken(userDetails);
-            AuthResponse resp = new AuthResponse(token, primeiroAcesso);
-            return ResponseEntity.ok(new ApiResponse<>(true, "Autenticado", resp, null));
+        } catch (Exception e) {
+            return ResponseEntity.status(401)
+                    .body(new ApiResponse<>(false, "Credenciais inválidas ou usuário inativo", null, null));
         }
         return ResponseEntity.status(401)
                 .body(new ApiResponse<>(false, "Credenciais inválidas", null, null));

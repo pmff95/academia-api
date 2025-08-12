@@ -14,7 +14,4 @@ public class Aluno extends Usuario {
     private Professor professor;
 
     private LocalDate dataMatricula;
-
-    @Enumerated(EnumType.STRING)
-    private StatusAluno status = StatusAluno.ATIVO;
 }
