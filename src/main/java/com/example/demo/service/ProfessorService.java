@@ -65,7 +65,7 @@ public class ProfessorService {
         return "Professor criado com sucesso";
     }
 
-    public Page<ProfessorDTO> findAll(Pageable pageable) {
+    public Page<ProfessorDTO> findAll(String nome, Pageable pageable) {
         UsuarioLogado usuario = SecurityUtils.getUsuarioLogadoDetalhes();
         boolean isMaster = usuario != null && usuario.possuiPerfil(Perfil.MASTER);
         if (usuario != null && !isMaster) {
@@ -75,7 +75,15 @@ public class ProfessorService {
             if (academia == null) {
                 throw new ApiException("Usuário precisa ter uma academia associada");
             }
+            if (nome != null && !nome.isBlank()) {
+                return repository
+                        .findByAcademiaUuidAndNomeContainingIgnoreCase(academia.getUuid(), nome, pageable)
+                        .map(mapper::toDto);
+            }
             return repository.findByAcademiaUuid(academia.getUuid(), pageable).map(mapper::toDto);
+        }
+        if (nome != null && !nome.isBlank()) {
+            return repository.findByNomeContainingIgnoreCase(nome, pageable).map(mapper::toDto);
         }
         return repository.findAll(pageable).map(mapper::toDto);
     }

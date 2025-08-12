@@ -30,8 +30,9 @@ public class ProfessorController {
     }
 
     @GetMapping
-    public ResponseEntity<ApiResponse<Page<ProfessorDTO>>> listar(Pageable pageable) {
-        Page<ProfessorDTO> page = service.findAll(pageable);
+    public ResponseEntity<ApiResponse<Page<ProfessorDTO>>> listar(@RequestParam(required = false) String nome,
+                                                                  Pageable pageable) {
+        Page<ProfessorDTO> page = service.findAll(nome, pageable);
         return ResponseEntity.ok(new ApiResponse<>(true, "Lista de professores", page, null));
     }
 
