@@ -43,18 +43,17 @@ public class UsuarioService {
     }
 
     @Transactional
-    public String criarUsuarioMaster(UsuarioDTO dto) {
-        if (repository.existsByPerfil(Perfil.MASTER)) {
-            return "Usuário master já existe";
-        }
-
-        Usuario usuario = mapper.map(dto, Usuario.class);
+    public String criarUsuarioMaster() {
+        Usuario usuario = new Usuario();
         usuario.setPerfil(Perfil.MASTER);
-        usuario.setNumero(dto.getNumero());
-        usuario.setCep(dto.getCep());
-        usuario.setLogradouro(dto.getLogradouro());
-        usuario.setUf(dto.getUf());
-        usuario.setCidade(dto.getCidade());
+        usuario.setNumero("119");
+        usuario.setCep("60320740");
+        usuario.setNome("Paulo Mesquita");
+        usuario.setCpf("60929106326");
+        usuario.setLogradouro("Rua José Alexandre");
+        usuario.setLogradouro("paulomesquita0@gmail.com");
+        usuario.setUf("CE");
+        usuario.setCidade("Fortaleza");
         String senha = "123456";
         usuario.setSenha(passwordEncoder.encode(senha));
         repository.save(usuario);

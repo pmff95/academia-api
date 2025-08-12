@@ -27,16 +27,22 @@ public class Usuario {
     private String cpf;
 
     private LocalDate dataNascimento;
+
     private String telefone;
+
     private String telefoneSecundario;
 
     @Column(unique = true)
     private String email;
 
     private String numero;
+
     private String cep;
+
     private String logradouro;
+
     private String uf;
+
     private String cidade;
 
     @Column(nullable = false)

@@ -9,7 +9,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 @Tag(name = "Usuários")
 @RestController
-@RequestMapping("/api/public/usuarios")
+@RequestMapping("/api/public")
 public class UsuarioController {
 
     private final UsuarioService service;
@@ -19,8 +19,8 @@ public class UsuarioController {
     }
 
     @PostMapping("/master")
-    public ResponseEntity<String> criarMaster(@RequestBody UsuarioDTO dto) {
-        return ResponseEntity.ok(service.criarUsuarioMaster(dto));
+    public ResponseEntity<String> criarMaster() {
+        return ResponseEntity.ok(service.criarUsuarioMaster());
     }
 
     @PutMapping("/{uuid}/ativo")

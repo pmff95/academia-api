@@ -28,9 +28,6 @@ public class EmailService {
         message.setTo(destinatario);
         message.setSubject("Senha de acesso");
         StringBuilder texto = new StringBuilder("Sua senha temporária é: ").append(senha);
-        if (academiaUuid != null) {
-            texto.append("\nUUID da academia: ").append(academiaUuid);
-        }
         message.setText(texto.toString());
         mailSender.send(message);
     }
