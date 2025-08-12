@@ -19,11 +19,16 @@ public class UserAuthenticationConfig {
     @Bean
     public UserDetailsService userDetailsService(UsuarioRepository repository) {
         return username -> repository.findByEmail(username)
+                .filter(usuario -> {
+                    boolean usuarioAtivo = usuario.isAtivo();
+                    boolean academiaAtiva = usuario.getAcademia() == null || usuario.getAcademia().isAtivo();
+                    return usuarioAtivo && academiaAtiva;
+                })
                 .map(usuario -> User.withUsername(usuario.getEmail())
                         .password(usuario.getSenha())
                         .roles(usuario.getPerfil().name())
                         .build())
-                .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado"));
+                .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado ou inativo"));
     }
 
     @Bean

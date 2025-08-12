@@ -23,6 +23,9 @@ public class Academia {
     private String bairro;
     private String telefone;
 
+    @Column(nullable = false)
+    private boolean ativo = true;
+
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "admin_uuid", referencedColumnName = "uuid", nullable = false)
     private Usuario admin;

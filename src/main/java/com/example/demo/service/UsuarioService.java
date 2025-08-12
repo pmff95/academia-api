@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import jakarta.transaction.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Service
 public class UsuarioService {
@@ -83,6 +84,16 @@ public class UsuarioService {
                     usuario.setSenha(passwordEncoder.encode(novaSenha));
                     repository.save(usuario);
                     return "Senha alterada com sucesso";
+                }).orElse("Usuário não encontrado");
+    }
+
+    @Transactional
+    public String alterarAtivo(UUID uuid, boolean ativo) {
+        return repository.findByUuid(uuid)
+                .map(usuario -> {
+                    usuario.setAtivo(ativo);
+                    repository.save(usuario);
+                    return ativo ? "Usuário ativado" : "Usuário desativado";
                 }).orElse("Usuário não encontrado");
     }
 
