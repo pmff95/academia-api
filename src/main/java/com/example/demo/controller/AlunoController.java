@@ -43,8 +43,9 @@ public class AlunoController {
 
     @GetMapping
     @PreAuthorize("hasAnyRole('MASTER','ADMIN','PROFESSOR')")
-    public ResponseEntity<ApiResponse<Page<AlunoDTO>>> listar(Pageable pageable) {
-        Page<AlunoDTO> page = service.findAll(pageable);
+    public ResponseEntity<ApiResponse<Page<AlunoDTO>>> listar(@RequestParam(required = false) String nome,
+                                                             Pageable pageable) {
+        Page<AlunoDTO> page = service.findAll(nome, pageable);
         return ResponseEntity.ok(new ApiResponse<>(true, "Lista de alunos", page, null));
     }
 

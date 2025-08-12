@@ -29,8 +29,9 @@ public class AcademiaController {
     }
 
     @GetMapping
-    public ResponseEntity<ApiResponse<Page<AcademiaDTO>>> listar(Pageable pageable) {
-        Page<AcademiaDTO> page = service.findAll(pageable);
+    public ResponseEntity<ApiResponse<Page<AcademiaDTO>>> listar(@RequestParam(required = false) String nome,
+                                                                 Pageable pageable) {
+        Page<AcademiaDTO> page = service.findAll(nome, pageable);
         return ResponseEntity.ok(new ApiResponse<>(true, "Lista de academias", page, null));
     }
 }

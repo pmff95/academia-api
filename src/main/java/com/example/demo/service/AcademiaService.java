@@ -75,7 +75,10 @@ public class AcademiaService {
         }
     }
 
-    public Page<AcademiaDTO> findAll(Pageable pageable) {
+    public Page<AcademiaDTO> findAll(String nome, Pageable pageable) {
+        if (nome != null && !nome.isBlank()) {
+            return repository.findByNomeContainingIgnoreCase(nome, pageable).map(mapper::toDto);
+        }
         return repository.findAll(pageable).map(mapper::toDto);
     }
 }
