@@ -16,6 +16,10 @@ public class EmailService {
     }
 
     public void enviarSenha(String destinatario, String senha) {
+        enviarSenha(destinatario, senha, null);
+    }
+
+    public void enviarSenha(String destinatario, String senha, String academiaUuid) {
         if (destinatario == null || destinatario.isBlank()) {
             return;
         }
@@ -23,7 +27,11 @@ public class EmailService {
         message.setFrom(mailProperties.getFrom());
         message.setTo(destinatario);
         message.setSubject("Senha de acesso");
-        message.setText("Sua senha temporária é: " + senha);
+        StringBuilder texto = new StringBuilder("Sua senha temporária é: ").append(senha);
+        if (academiaUuid != null) {
+            texto.append("\nUUID da academia: ").append(academiaUuid);
+        }
+        message.setText(texto.toString());
         mailSender.send(message);
     }
 }
