@@ -30,7 +30,6 @@ public class ExercicioController {
 
     @GetMapping
     public ResponseEntity<ApiReturn<Page<ExercicioDTO>>> listar(Pageable pageable) {
-        Page<ExercicioDTO> page = service.findAll(pageable);
-        return ResponseEntity.ok(ApiReturn.of(page));
+        return ResponseEntity.ok(ApiReturn.of(service.findAll(pageable)));
     }
 }

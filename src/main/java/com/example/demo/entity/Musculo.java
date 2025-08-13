@@ -3,9 +3,19 @@ package com.example.demo.entity;
 public enum Musculo {
     PEITO,
     TRICEPS,
-    ABDOMEN,
-    QUADRICEPS,
+    BICEPS,
     OMBRO,
+    ANTEBRACO,
     COSTAS,
-    PANTURRILHA
+    TRAPEZIO,
+    LOMBAR,
+    ABDOMEN,
+    OBLIQUO,
+    CORE,
+    GLUTEOS,
+    QUADRICEPS,
+    POSTERIOR,
+    PANTURRILHA,
+    ADUTOR,
+    ABDUTOR
 }

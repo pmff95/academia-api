@@ -50,12 +50,12 @@ public class ExercicioService {
 
     public Page<ExercicioDTO> findAll(Pageable pageable) {
         UsuarioLogado usuario = SecurityUtils.getUsuarioLogadoDetalhes();
-        Page<Exercicio> page;
 
         boolean isMaster = usuario != null && usuario.possuiPerfil(Perfil.MASTER);
 
         if (isMaster) {
-            page = repository.findByAcademiaIsNull(pageable);
+            return repository.findAll(pageable)
+                    .map(mapper::toDto);
         } else {
             Usuario usuarioEntity = usuarioRepository.findByUuid(usuario.getUuid())
                     .orElseThrow(() -> new IllegalArgumentException("Usuário precisa ter uma academia associada"));
@@ -65,9 +65,8 @@ public class ExercicioService {
                 throw new IllegalArgumentException("Usuário precisa ter uma academia associada");
             }
 
-            page = repository.findByAcademiaUuid(academia.getUuid(), pageable);
+            return repository.findByAcademiaIsNullOrAcademiaUuid(academia.getUuid(), pageable)
+                    .map(mapper::toDto);
         }
-
-        return page.map(mapper::toDto);
     }
 }
