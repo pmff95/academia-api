@@ -1,6 +1,6 @@
 package com.example.demo.controller;
 
-import com.example.demo.dto.ApiResponse;
+import com.example.demo.common.response.ApiReturn;
 import com.example.demo.dto.FichaTreinoDTO;
 import com.example.demo.service.FichaTreinoService;
 import org.springframework.data.domain.Page;
@@ -26,20 +26,20 @@ public class FichaTreinoController {
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponse<String>> criar(@Validated @RequestBody FichaTreinoDTO dto) {
+    public ResponseEntity<ApiReturn<String>> criar(@Validated @RequestBody FichaTreinoDTO dto) {
         String msg = service.create(dto);
-        return ResponseEntity.ok(new ApiResponse<>(true, msg, null, null));
+        return ResponseEntity.ok(ApiReturn.of(msg));
     }
 
     @GetMapping
-    public ResponseEntity<ApiResponse<Page<FichaTreinoDTO>>> listar(Pageable pageable) {
+    public ResponseEntity<ApiReturn<Page<FichaTreinoDTO>>> listar(Pageable pageable) {
         Page<FichaTreinoDTO> page = service.findAll(pageable);
-        return ResponseEntity.ok(new ApiResponse<>(true, "Lista de fichas de treino", page, null));
+        return ResponseEntity.ok(ApiReturn.of(page));
     }
 
     @GetMapping("/aluno/{alunoUuid}")
-    public ResponseEntity<ApiResponse<List<FichaTreinoDTO>>> listarPorAluno(@PathVariable UUID alunoUuid) {
+    public ResponseEntity<ApiReturn<List<FichaTreinoDTO>>> listarPorAluno(@PathVariable UUID alunoUuid) {
         List<FichaTreinoDTO> fichas = service.findByAluno(alunoUuid);
-        return ResponseEntity.ok(new ApiResponse<>(true, "Lista de fichas do aluno", fichas, null));
+        return ResponseEntity.ok(ApiReturn.of(fichas));
     }
 }

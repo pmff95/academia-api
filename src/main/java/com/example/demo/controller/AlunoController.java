@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 
 import com.example.demo.dto.*;
+import com.example.demo.common.response.ApiReturn;
 import com.example.demo.service.AlunoMedidaService;
 import com.example.demo.service.AlunoObservacaoService;
 import com.example.demo.service.AlunoService;
@@ -36,75 +37,75 @@ public class AlunoController {
 
     @PostMapping
     @PreAuthorize("hasAnyRole('MASTER','ADMIN','PROFESSOR')")
-    public ResponseEntity<ApiResponse<String>> criar(@Validated @RequestBody AlunoDTO dto) {
+    public ResponseEntity<ApiReturn<String>> criar(@Validated @RequestBody AlunoDTO dto) {
         String msg = service.create(dto);
-        return ResponseEntity.ok(new ApiResponse<>(true, msg, null, null));
+        return ResponseEntity.ok(ApiReturn.of(msg));
     }
 
     @GetMapping
     @PreAuthorize("hasAnyRole('MASTER','ADMIN','PROFESSOR')")
-    public ResponseEntity<ApiResponse<Page<AlunoDTO>>> listar(@RequestParam(required = false) String nome,
-                                                             Pageable pageable) {
+    public ResponseEntity<ApiReturn<Page<AlunoDTO>>> listar(@RequestParam(required = false) String nome,
+                                                           Pageable pageable) {
         Page<AlunoDTO> page = service.findAll(nome, pageable);
-        return ResponseEntity.ok(new ApiResponse<>(true, "Lista de alunos", page, null));
+        return ResponseEntity.ok(ApiReturn.of(page));
     }
 
     @GetMapping("/{uuid}")
     @PreAuthorize("hasAnyRole('MASTER','ADMIN','PROFESSOR')")
-    public ResponseEntity<ApiResponse<AlunoDTO>> buscar(@PathVariable UUID uuid) {
+    public ResponseEntity<ApiReturn<AlunoDTO>> buscar(@PathVariable UUID uuid) {
         AlunoDTO dto = service.findByUuid(uuid);
-        return ResponseEntity.ok(new ApiResponse<>(true, "Aluno encontrado", dto, null));
+        return ResponseEntity.ok(ApiReturn.of(dto));
     }
 
     @PutMapping("/{uuid}")
     @PreAuthorize("hasAnyRole('MASTER','ADMIN','PROFESSOR')")
-    public ResponseEntity<ApiResponse<String>> atualizar(@PathVariable UUID uuid, @Validated @RequestBody AlunoDTO dto) {
+    public ResponseEntity<ApiReturn<String>> atualizar(@PathVariable UUID uuid, @Validated @RequestBody AlunoDTO dto) {
         String msg = service.update(uuid, dto);
-        return ResponseEntity.ok(new ApiResponse<>(true, msg, null, null));
+        return ResponseEntity.ok(ApiReturn.of(msg));
     }
 
     @DeleteMapping("/{uuid}")
     @PreAuthorize("hasAnyRole('MASTER','ADMIN','PROFESSOR')")
-    public ResponseEntity<ApiResponse<Void>> remover(@PathVariable UUID uuid) {
+    public ResponseEntity<ApiReturn<String>> remover(@PathVariable UUID uuid) {
         service.delete(uuid);
-        return ResponseEntity.ok(new ApiResponse<>(true, "Aluno removido", null, null));
+        return ResponseEntity.ok(ApiReturn.of("Aluno removido"));
     }
 
     @PostMapping("/{uuid}/medidas")
     @PreAuthorize("hasAnyRole('MASTER','ADMIN','PROFESSOR')")
-    public ResponseEntity<ApiResponse<String>> adicionarMedida(@PathVariable UUID uuid,
-                                                               @Validated @RequestBody AlunoMedidaDTO dto) {
+    public ResponseEntity<ApiReturn<String>> adicionarMedida(@PathVariable UUID uuid,
+                                                             @Validated @RequestBody AlunoMedidaDTO dto) {
         String msg = medidaService.adicionarMedida(uuid, dto);
-        return ResponseEntity.ok(new ApiResponse<>(true, msg, null, null));
+        return ResponseEntity.ok(ApiReturn.of(msg));
     }
 
     @GetMapping("/{uuid}/medidas")
     @PreAuthorize("hasAnyRole('MASTER','ADMIN','PROFESSOR')")
-    public ResponseEntity<ApiResponse<List<AlunoMedidaDTO>>> listarMedidas(@PathVariable UUID uuid) {
+    public ResponseEntity<ApiReturn<List<AlunoMedidaDTO>>> listarMedidas(@PathVariable UUID uuid) {
         List<AlunoMedidaDTO> lista = medidaService.listarMedidas(uuid);
-        return ResponseEntity.ok(new ApiResponse<>(true, "Lista de medidas", lista, null));
+        return ResponseEntity.ok(ApiReturn.of(lista));
     }
 
     @GetMapping("/me/medidas")
     @PreAuthorize("hasRole('ALUNO')")
-    public ResponseEntity<ApiResponse<List<AlunoMedidaDTO>>> listarMedidasAlunoLogado() {
+    public ResponseEntity<ApiReturn<List<AlunoMedidaDTO>>> listarMedidasAlunoLogado() {
         UsuarioLogado usuario = SecurityUtils.getUsuarioLogadoDetalhes();
         List<AlunoMedidaDTO> lista = medidaService.listarMedidas(usuario.getUuid());
-        return ResponseEntity.ok(new ApiResponse<>(true, "Lista de medidas", lista, null));
+        return ResponseEntity.ok(ApiReturn.of(lista));
     }
 
     @PostMapping("/{uuid}/observacoes")
     @PreAuthorize("hasAnyRole('MASTER','ADMIN','PROFESSOR')")
-    public ResponseEntity<ApiResponse<String>> adicionarObservacao(@PathVariable UUID uuid,
-                                                                   @Validated @RequestBody AlunoObservacaoDTO dto) {
+    public ResponseEntity<ApiReturn<String>> adicionarObservacao(@PathVariable UUID uuid,
+                                                                 @Validated @RequestBody AlunoObservacaoDTO dto) {
         String msg = observacaoService.adicionarObservacao(uuid, dto);
-        return ResponseEntity.ok(new ApiResponse<>(true, msg, null, null));
+        return ResponseEntity.ok(ApiReturn.of(msg));
     }
 
     @GetMapping("/{uuid}/observacoes")
     @PreAuthorize("hasAnyRole('MASTER','ADMIN','PROFESSOR')")
-    public ResponseEntity<ApiResponse<List<AlunoObservacaoDTO>>> listarObservacoes(@PathVariable UUID uuid) {
+    public ResponseEntity<ApiReturn<List<AlunoObservacaoDTO>>> listarObservacoes(@PathVariable UUID uuid) {
         List<AlunoObservacaoDTO> lista = observacaoService.listarObservacoes(uuid);
-        return ResponseEntity.ok(new ApiResponse<>(true, "Lista de observações", lista, null));
+        return ResponseEntity.ok(ApiReturn.of(lista));
     }
 }

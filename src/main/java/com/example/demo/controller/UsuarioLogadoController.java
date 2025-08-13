@@ -1,6 +1,6 @@
 package com.example.demo.controller;
 
-import com.example.demo.dto.ApiResponse;
+import com.example.demo.common.response.ApiReturn;
 import com.example.demo.dto.UsuarioDTO;
 import com.example.demo.service.UsuarioService;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +23,7 @@ public class UsuarioLogadoController {
     }
 
     @GetMapping("/current")
-    public ResponseEntity<ApiResponse<UsuarioDTO>> obterUsuarioLogado() {
+    public ResponseEntity<ApiReturn<UsuarioDTO>> obterUsuarioLogado() {
         return ResponseEntity.ok(service.buscarUsuarioLogado());
     }
 }

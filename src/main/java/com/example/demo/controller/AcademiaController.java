@@ -1,7 +1,7 @@
 package com.example.demo.controller;
 
 import com.example.demo.dto.AcademiaDTO;
-import com.example.demo.dto.ApiResponse;
+import com.example.demo.common.response.ApiReturn;
 import com.example.demo.service.AcademiaService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,15 +23,15 @@ public class AcademiaController {
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponse<String>> criar(@Validated @RequestBody AcademiaDTO dto) {
+    public ResponseEntity<ApiReturn<String>> criar(@Validated @RequestBody AcademiaDTO dto) {
         String msg = service.create(dto);
-        return ResponseEntity.ok(new ApiResponse<>(true, msg, null, null));
+        return ResponseEntity.ok(ApiReturn.of(msg));
     }
 
     @GetMapping
-    public ResponseEntity<ApiResponse<Page<AcademiaDTO>>> listar(@RequestParam(required = false) String nome,
-                                                                 Pageable pageable) {
+    public ResponseEntity<ApiReturn<Page<AcademiaDTO>>> listar(@RequestParam(required = false) String nome,
+                                                               Pageable pageable) {
         Page<AcademiaDTO> page = service.findAll(nome, pageable);
-        return ResponseEntity.ok(new ApiResponse<>(true, "Lista de academias", page, null));
+        return ResponseEntity.ok(ApiReturn.of(page));
     }
 }
