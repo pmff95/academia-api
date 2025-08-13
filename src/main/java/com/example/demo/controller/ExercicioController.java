@@ -2,6 +2,7 @@ package com.example.demo.controller;
 
 import com.example.demo.common.response.ApiReturn;
 import com.example.demo.dto.ExercicioDTO;
+import com.example.demo.entity.Musculo;
 import com.example.demo.service.ExercicioService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -29,7 +30,9 @@ public class ExercicioController {
     }
 
     @GetMapping
-    public ResponseEntity<ApiReturn<Page<ExercicioDTO>>> listar(Pageable pageable) {
-        return ResponseEntity.ok(ApiReturn.of(service.findAll(pageable)));
+    public ResponseEntity<ApiReturn<Page<ExercicioDTO>>> listar(@RequestParam(required = false) String nome,
+                                                                @RequestParam(required = false) Musculo musculo,
+                                                                Pageable pageable) {
+        return ResponseEntity.ok(ApiReturn.of(service.find(nome, musculo, pageable)));
     }
 }
