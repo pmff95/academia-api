@@ -27,7 +27,12 @@ public class JwtService {
     private long refreshExpiration;
 
     public String generateToken(UserDetails userDetails) {
+        return generateToken(Map.of(), userDetails);
+    }
+
+    public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
         return Jwts.builder()
+                .setClaims(extraClaims)
                 .setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + expiration))

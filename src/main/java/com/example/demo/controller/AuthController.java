@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.Map;
 
 @Tag(name = "Autenticação")
 @RestController
@@ -46,8 +47,18 @@ public class AuthController {
                 if (usuario != null) {
                     usuarioService.registrarUltimoAcesso(usuario);
                 }
-                String token = jwtService.generateToken(userDetails);
-                AuthResponse resp = new AuthResponse(token, primeiroAcesso);
+                Map<String, Object> claims = Map.of(
+                        "nome", usuario.getNome(),
+                        "email", usuario.getEmail(),
+                        "perfil", usuario.getPerfil().name()
+                );
+                String token = jwtService.generateToken(claims, userDetails);
+                AuthResponse resp = new AuthResponse(
+                        token,
+                        primeiroAcesso,
+                        usuario.getNome(),
+                        usuario.getEmail(),
+                        usuario.getPerfil().name());
                 return ResponseEntity.ok(new ApiResponse<>(true, "Autenticado", resp, null));
             }
         } catch (Exception e) {
