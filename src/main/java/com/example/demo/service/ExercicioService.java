@@ -2,6 +2,7 @@ package com.example.demo.service;
 
 import com.example.demo.dto.ExercicioDTO;
 import com.example.demo.entity.Exercicio;
+import com.example.demo.entity.Musculo;
 import com.example.demo.mapper.ExercicioMapper;
 import com.example.demo.repository.ExercicioRepository;
 import com.example.demo.repository.UsuarioRepository;
@@ -48,13 +49,13 @@ public class ExercicioService {
         return "Exercício criado com sucesso";
     }
 
-    public Page<ExercicioDTO> findAll(Pageable pageable) {
+    public Page<ExercicioDTO> find(String nome, Musculo musculo, Pageable pageable) {
         UsuarioLogado usuario = SecurityUtils.getUsuarioLogadoDetalhes();
 
         boolean isMaster = usuario != null && usuario.possuiPerfil(Perfil.MASTER);
 
         if (isMaster) {
-            return repository.findAll(pageable)
+            return repository.findAllByNomeContainingIgnoreCaseAndMusculo(nome, musculo, pageable)
                     .map(mapper::toDto);
         } else {
             Usuario usuarioEntity = usuarioRepository.findByUuid(usuario.getUuid())
@@ -65,7 +66,7 @@ public class ExercicioService {
                 throw new IllegalArgumentException("Usuário precisa ter uma academia associada");
             }
 
-            return repository.findByAcademiaIsNullOrAcademiaUuid(academia.getUuid(), pageable)
+            return repository.findByAcademiaAndFilters(academia.getUuid(), nome, musculo, pageable)
                     .map(mapper::toDto);
         }
     }
