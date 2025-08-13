@@ -15,6 +15,13 @@ public class Exercicio {
     @Column(nullable = false, unique = true)
     private String nome;
 
+    @Column(nullable = false)
+    private String descricao;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Musculo musculo;
+
     @ManyToOne
     @JoinColumn(name = "academia_uuid", referencedColumnName = "uuid")
     private Academia academia;
