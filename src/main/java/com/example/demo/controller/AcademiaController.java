@@ -10,6 +10,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.UUID;
 
 @Tag(name = "Academias")
 @RestController
@@ -33,5 +34,18 @@ public class AcademiaController {
                                                                Pageable pageable) {
         Page<AcademiaDTO> page = service.findAll(nome, pageable);
         return ResponseEntity.ok(ApiReturn.of(page));
+    }
+
+    @GetMapping("/{uuid}")
+    public ResponseEntity<ApiResponse<AcademiaDTO>> buscar(@PathVariable UUID uuid) {
+        AcademiaDTO dto = service.findByUuid(uuid);
+        return ResponseEntity.ok(new ApiResponse<>(true, "Academia encontrada", dto, null));
+    }
+
+    @PutMapping("/{uuid}")
+    public ResponseEntity<ApiResponse<String>> atualizar(@PathVariable UUID uuid,
+                                                         @Validated @RequestBody AcademiaDTO dto) {
+        String msg = service.update(uuid, dto);
+        return ResponseEntity.ok(new ApiResponse<>(true, msg, null, null));
     }
 }
