@@ -10,6 +10,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.v3.oas.annotations.tags.Tag;
+
 import java.util.UUID;
 
 @Tag(name = "Academias")
@@ -25,8 +26,7 @@ public class AcademiaController {
 
     @PostMapping
     public ResponseEntity<ApiReturn<String>> criar(@Validated @RequestBody AcademiaDTO dto) {
-        String msg = service.create(dto);
-        return ResponseEntity.ok(ApiReturn.of(msg));
+        return ResponseEntity.ok(ApiReturn.of(service.create(dto)));
     }
 
     @GetMapping
@@ -37,15 +37,13 @@ public class AcademiaController {
     }
 
     @GetMapping("/{uuid}")
-    public ResponseEntity<ApiResponse<AcademiaDTO>> buscar(@PathVariable UUID uuid) {
-        AcademiaDTO dto = service.findByUuid(uuid);
-        return ResponseEntity.ok(new ApiResponse<>(true, "Academia encontrada", dto, null));
+    public ResponseEntity<ApiReturn<AcademiaDTO>> buscar(@PathVariable UUID uuid) {
+        return ResponseEntity.ok(ApiReturn.of(service.findByUuid(uuid)));
     }
 
     @PutMapping("/{uuid}")
-    public ResponseEntity<ApiResponse<String>> atualizar(@PathVariable UUID uuid,
-                                                         @Validated @RequestBody AcademiaDTO dto) {
-        String msg = service.update(uuid, dto);
-        return ResponseEntity.ok(new ApiResponse<>(true, msg, null, null));
+    public ResponseEntity<ApiReturn<String>> atualizar(@PathVariable UUID uuid,
+                                                       @Validated @RequestBody AcademiaDTO dto) {
+        return ResponseEntity.ok(ApiReturn.of(service.update(uuid, dto)));
     }
 }

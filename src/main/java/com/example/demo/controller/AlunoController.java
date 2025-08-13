@@ -38,16 +38,14 @@ public class AlunoController {
     @PostMapping
     @PreAuthorize("hasAnyRole('MASTER','ADMIN','PROFESSOR')")
     public ResponseEntity<ApiReturn<String>> criar(@Validated @RequestBody AlunoDTO dto) {
-        String msg = service.create(dto);
-        return ResponseEntity.ok(ApiReturn.of(msg));
+        return ResponseEntity.ok(ApiReturn.of(service.create(dto)));
     }
 
     @GetMapping
     @PreAuthorize("hasAnyRole('MASTER','ADMIN','PROFESSOR')")
     public ResponseEntity<ApiReturn<Page<AlunoDTO>>> listar(@RequestParam(required = false) String nome,
                                                            Pageable pageable) {
-        Page<AlunoDTO> page = service.findAll(nome, pageable);
-        return ResponseEntity.ok(ApiReturn.of(page));
+        return ResponseEntity.ok(ApiReturn.of(service.findAll(nome, pageable)));
     }
 
     @GetMapping("/{uuid}")
@@ -60,8 +58,7 @@ public class AlunoController {
     @PutMapping("/{uuid}")
     @PreAuthorize("hasAnyRole('MASTER','ADMIN','PROFESSOR')")
     public ResponseEntity<ApiReturn<String>> atualizar(@PathVariable UUID uuid, @Validated @RequestBody AlunoDTO dto) {
-        String msg = service.update(uuid, dto);
-        return ResponseEntity.ok(ApiReturn.of(msg));
+        return ResponseEntity.ok(ApiReturn.of(service.update(uuid, dto)));
     }
 
     @DeleteMapping("/{uuid}")
