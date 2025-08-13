@@ -17,6 +17,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
+import java.util.UUID;
 
 @Service
 @Slf4j
@@ -80,5 +81,40 @@ public class AcademiaService {
             return repository.findByNomeContainingIgnoreCase(nome, pageable).map(mapper::toDto);
         }
         return repository.findAll(pageable).map(mapper::toDto);
+    }
+
+    public AcademiaDTO findByUuid(UUID uuid) {
+        Academia entity = repository.findById(uuid).orElseThrow(() -> new ApiException("Academia não encontrada"));
+        return mapper.toDto(entity);
+    }
+
+    @Transactional
+    public String update(UUID uuid, AcademiaDTO dto) {
+        Academia entity = repository.findById(uuid).orElseThrow(() -> new ApiException("Academia não encontrada"));
+        entity.setNome(dto.getNome());
+        entity.setUf(dto.getUf());
+        entity.setCidade(dto.getCidade());
+        entity.setCep(dto.getCep());
+        entity.setNumero(dto.getNumero());
+        entity.setLogradouro(dto.getLogradouro());
+        entity.setBairro(dto.getBairro());
+        entity.setTelefone(dto.getTelefone());
+
+        if (dto.getAdmin() != null && entity.getAdmin() != null) {
+            entity.getAdmin().setNome(dto.getAdmin().getNome());
+            entity.getAdmin().setCpf(dto.getAdmin().getCpf());
+            entity.getAdmin().setDataNascimento(dto.getAdmin().getDataNascimento());
+            entity.getAdmin().setTelefone(dto.getAdmin().getTelefone());
+            entity.getAdmin().setTelefoneSecundario(dto.getAdmin().getTelefoneSecundario());
+            entity.getAdmin().setEmail(dto.getAdmin().getEmail());
+            entity.getAdmin().setNumero(dto.getAdmin().getNumero());
+            entity.getAdmin().setCep(dto.getAdmin().getCep());
+            entity.getAdmin().setLogradouro(dto.getAdmin().getLogradouro());
+            entity.getAdmin().setUf(dto.getAdmin().getUf());
+            entity.getAdmin().setCidade(dto.getAdmin().getCidade());
+        }
+
+        repository.save(entity);
+        return "Academia atualizada";
     }
 }
