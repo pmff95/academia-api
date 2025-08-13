@@ -1,7 +1,8 @@
 package com.example.demo.service;
 
 import com.example.demo.domain.enums.Perfil;
-import com.example.demo.dto.ApiResponse;
+import com.example.demo.common.response.ApiReturn;
+import com.example.demo.common.response.exception.EurekaException;
 import com.example.demo.dto.UsuarioDTO;
 import com.example.demo.entity.Usuario;
 import com.example.demo.repository.UsuarioRepository;
@@ -96,15 +97,15 @@ public class UsuarioService {
                 }).orElse("Usuário não encontrado");
     }
 
-    public ApiResponse<UsuarioDTO> buscarUsuarioLogado() {
+    public ApiReturn<UsuarioDTO> buscarUsuarioLogado() {
         UsuarioLogado usuarioLogado = SecurityUtils.getUsuarioLogadoDetalhes();
 
         if (usuarioLogado == null) {
-            return new ApiResponse<>(false, "Usuário não autenticado", null, null);
+            throw EurekaException.ofUnauthorized("Usuário não autenticado");
         }
 
         return repository.findByUuid(usuarioLogado.getUuid())
-                .map(u -> new ApiResponse<>(true, null, mapper.map(u, UsuarioDTO.class), null))
-                .orElse(new ApiResponse<>(false, "Usuário não encontrado", null, null));
+                .map(u -> ApiReturn.of(mapper.map(u, UsuarioDTO.class)))
+                .orElseThrow(() -> EurekaException.ofNotFound("Usuário não encontrado"));
     }
 }

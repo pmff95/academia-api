@@ -1,6 +1,6 @@
 package com.example.demo.controller;
 
-import com.example.demo.dto.ApiResponse;
+import com.example.demo.common.response.ApiReturn;
 import com.example.demo.dto.ExercicioDTO;
 import com.example.demo.service.ExercicioService;
 import org.springframework.data.domain.Page;
@@ -23,14 +23,14 @@ public class ExercicioController {
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponse<String>> criar(@Validated @RequestBody ExercicioDTO dto) {
+    public ResponseEntity<ApiReturn<String>> criar(@Validated @RequestBody ExercicioDTO dto) {
         String msg = service.create(dto);
-        return ResponseEntity.ok(new ApiResponse<>(true, msg, null, null));
+        return ResponseEntity.ok(ApiReturn.of(msg));
     }
 
     @GetMapping
-    public ResponseEntity<ApiResponse<Page<ExercicioDTO>>> listar(Pageable pageable) {
+    public ResponseEntity<ApiReturn<Page<ExercicioDTO>>> listar(Pageable pageable) {
         Page<ExercicioDTO> page = service.findAll(pageable);
-        return ResponseEntity.ok(new ApiResponse<>(true, "Lista de exercícios", page, null));
+        return ResponseEntity.ok(ApiReturn.of(page));
     }
 }

@@ -1,6 +1,6 @@
 package com.example.demo.controller;
 
-import com.example.demo.dto.ApiResponse;
+import com.example.demo.common.response.ApiReturn;
 import com.example.demo.dto.SolicitacaoDTO;
 import com.example.demo.service.SolicitacaoService;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -24,23 +24,23 @@ public class SolicitacaoController {
 
     @PostMapping("/alunos/{alunoUuid}")
     @PreAuthorize("hasRole('PROFESSOR')")
-    public ResponseEntity<ApiResponse<String>> solicitar(@PathVariable UUID alunoUuid) {
+    public ResponseEntity<ApiReturn<String>> solicitar(@PathVariable UUID alunoUuid) {
         String msg = service.solicitar(alunoUuid);
-        return ResponseEntity.ok(new ApiResponse<>(true, msg, null, null));
+        return ResponseEntity.ok(ApiReturn.of(msg));
     }
 
     @PostMapping("/{uuid}/responder")
     @PreAuthorize("hasRole('ALUNO')")
-    public ResponseEntity<ApiResponse<String>> responder(@PathVariable UUID uuid,
-                                                         @RequestParam boolean aceita) {
+    public ResponseEntity<ApiReturn<String>> responder(@PathVariable UUID uuid,
+                                                       @RequestParam boolean aceita) {
         String msg = service.responder(uuid, aceita);
-        return ResponseEntity.ok(new ApiResponse<>(true, msg, null, null));
+        return ResponseEntity.ok(ApiReturn.of(msg));
     }
 
     @GetMapping("/alunos/{alunoUuid}")
     @PreAuthorize("hasRole('ALUNO')")
-    public ResponseEntity<ApiResponse<List<SolicitacaoDTO>>> listarPendentes(@PathVariable UUID alunoUuid) {
+    public ResponseEntity<ApiReturn<List<SolicitacaoDTO>>> listarPendentes(@PathVariable UUID alunoUuid) {
         List<SolicitacaoDTO> lista = service.listarPendentes(alunoUuid);
-        return ResponseEntity.ok(new ApiResponse<>(true, "Solicitações pendentes", lista, null));
+        return ResponseEntity.ok(ApiReturn.of(lista));
     }
 }

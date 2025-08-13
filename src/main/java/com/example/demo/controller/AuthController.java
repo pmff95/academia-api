@@ -2,7 +2,8 @@ package com.example.demo.controller;
 
 import com.example.demo.common.security.JwtService;
 import com.example.demo.service.UsuarioService;
-import com.example.demo.dto.ApiResponse;
+import com.example.demo.common.response.ApiReturn;
+import com.example.demo.common.response.ErrorType;
 import com.example.demo.dto.AuthRequest;
 import com.example.demo.dto.AuthResponse;
 import com.example.demo.dto.ReenviarSenhaDTO;
@@ -36,7 +37,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<ApiResponse<AuthResponse>> login(@RequestBody AuthRequest request) {
+    public ResponseEntity<ApiReturn<?>> login(@RequestBody AuthRequest request) {
         try {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
@@ -59,25 +60,25 @@ public class AuthController {
                         usuario.getNome(),
                         usuario.getEmail(),
                         usuario.getPerfil().name());
-                return ResponseEntity.ok(new ApiResponse<>(true, "Autenticado", resp, null));
+                return ResponseEntity.ok(ApiReturn.of(resp));
             }
         } catch (Exception e) {
             return ResponseEntity.status(401)
-                    .body(new ApiResponse<>(false, "Credenciais inválidas ou usuário inativo", null, null));
+                    .body(ApiReturn.of(ErrorType.UNAUTHORIZED, ErrorType.UNAUTHORIZED.getCode(), "Credenciais inválidas ou usuário inativo", e));
         }
         return ResponseEntity.status(401)
-                .body(new ApiResponse<>(false, "Credenciais inválidas", null, null));
+                .body(ApiReturn.of(ErrorType.UNAUTHORIZED, ErrorType.UNAUTHORIZED.getCode(), "Credenciais inválidas", null));
     }
 
     @PostMapping("/reenviar-senha")
-    public ResponseEntity<ApiResponse<String>> reenviarSenha(@RequestBody ReenviarSenhaDTO dto) {
+    public ResponseEntity<ApiReturn<String>> reenviarSenha(@RequestBody ReenviarSenhaDTO dto) {
         String msg = usuarioService.reenviarSenha(dto.getLogin());
-        return ResponseEntity.ok(new ApiResponse<>(true, msg, null, null));
+        return ResponseEntity.ok(ApiReturn.of(msg));
     }
 
     @PostMapping("/alterar-senha")
-    public ResponseEntity<ApiResponse<String>> alterarSenha(@RequestBody AlterarSenhaDTO dto) {
+    public ResponseEntity<ApiReturn<String>> alterarSenha(@RequestBody AlterarSenhaDTO dto) {
         String msg = usuarioService.alterarSenha(dto.getLogin(), dto.getSenhaAtual(), dto.getNovaSenha());
-        return ResponseEntity.ok(new ApiResponse<>(true, msg, null, null));
+        return ResponseEntity.ok(ApiReturn.of(msg));
     }
 }

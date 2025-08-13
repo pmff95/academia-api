@@ -1,7 +1,7 @@
 package com.example.demo.controller;
 
-import com.example.demo.dto.UsuarioDTO;
 import com.example.demo.service.UsuarioService;
+import com.example.demo.common.response.ApiReturn;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.UUID;
@@ -19,12 +19,12 @@ public class UsuarioController {
     }
 
     @PostMapping("/master")
-    public ResponseEntity<String> criarMaster() {
-        return ResponseEntity.ok(service.criarUsuarioMaster());
+    public ResponseEntity<ApiReturn<String>> criarMaster() {
+        return ResponseEntity.ok(ApiReturn.of(service.criarUsuarioMaster()));
     }
 
     @PutMapping("/{uuid}/ativo")
-    public ResponseEntity<String> alterarAtivo(@PathVariable UUID uuid, @RequestParam boolean ativo) {
-        return ResponseEntity.ok(service.alterarAtivo(uuid, ativo));
+    public ResponseEntity<ApiReturn<String>> alterarAtivo(@PathVariable UUID uuid, @RequestParam boolean ativo) {
+        return ResponseEntity.ok(ApiReturn.of(service.alterarAtivo(uuid, ativo)));
     }
 }

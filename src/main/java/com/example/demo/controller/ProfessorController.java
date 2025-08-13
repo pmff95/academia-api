@@ -1,6 +1,6 @@
 package com.example.demo.controller;
 
-import com.example.demo.dto.ApiResponse;
+import com.example.demo.common.response.ApiReturn;
 import com.example.demo.dto.ProfessorDTO;
 import com.example.demo.service.ProfessorService;
 import org.springframework.data.domain.Page;
@@ -24,33 +24,33 @@ public class ProfessorController {
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponse<String>> criar(@Validated @RequestBody ProfessorDTO dto) {
+    public ResponseEntity<ApiReturn<String>> criar(@Validated @RequestBody ProfessorDTO dto) {
         String msg = service.create(dto);
-        return ResponseEntity.ok(new ApiResponse<>(true, msg, null, null));
+        return ResponseEntity.ok(ApiReturn.of(msg));
     }
 
     @GetMapping
-    public ResponseEntity<ApiResponse<Page<ProfessorDTO>>> listar(@RequestParam(required = false) String nome,
-                                                                  Pageable pageable) {
+    public ResponseEntity<ApiReturn<Page<ProfessorDTO>>> listar(@RequestParam(required = false) String nome,
+                                                                Pageable pageable) {
         Page<ProfessorDTO> page = service.findAll(nome, pageable);
-        return ResponseEntity.ok(new ApiResponse<>(true, "Lista de professores", page, null));
+        return ResponseEntity.ok(ApiReturn.of(page));
     }
 
     @GetMapping("/{uuid}")
-    public ResponseEntity<ApiResponse<ProfessorDTO>> buscar(@PathVariable UUID uuid) {
+    public ResponseEntity<ApiReturn<ProfessorDTO>> buscar(@PathVariable UUID uuid) {
         ProfessorDTO dto = service.findByUuid(uuid);
-        return ResponseEntity.ok(new ApiResponse<>(true, "Professor encontrado", dto, null));
+        return ResponseEntity.ok(ApiReturn.of(dto));
     }
 
     @PutMapping("/{uuid}")
-    public ResponseEntity<ApiResponse<String>> atualizar(@PathVariable UUID uuid, @Validated @RequestBody ProfessorDTO dto) {
+    public ResponseEntity<ApiReturn<String>> atualizar(@PathVariable UUID uuid, @Validated @RequestBody ProfessorDTO dto) {
         String msg = service.update(uuid, dto);
-        return ResponseEntity.ok(new ApiResponse<>(true, msg, null, null));
+        return ResponseEntity.ok(ApiReturn.of(msg));
     }
 
     @DeleteMapping("/{uuid}")
-    public ResponseEntity<ApiResponse<Void>> remover(@PathVariable UUID uuid) {
+    public ResponseEntity<ApiReturn<String>> remover(@PathVariable UUID uuid) {
         service.delete(uuid);
-        return ResponseEntity.ok(new ApiResponse<>(true, "Professor removido", null, null));
+        return ResponseEntity.ok(ApiReturn.of("Professor removido"));
     }
 }
