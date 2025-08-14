@@ -12,6 +12,8 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
+import java.util.List;
+
 @Tag(name = "Exercícios")
 @RestController
 @RequestMapping("/exercicios")
@@ -37,7 +39,7 @@ public class ExercicioController {
     }
 
     @GetMapping("/todos")
-    public ResponseEntity<ApiReturn<Page<ExercicioDTO>>> listarTodos(@RequestParam(required = false) String nome,
+    public ResponseEntity<ApiReturn<List<ExercicioDTO>>> listarTodos(@RequestParam(required = false) String nome,
                                                                      @RequestParam(required = false) Musculo musculo) {
         return ResponseEntity.ok(ApiReturn.of(service.buscarTodos(nome, musculo)));
     }

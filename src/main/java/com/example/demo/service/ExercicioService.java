@@ -16,6 +16,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import jakarta.transaction.Transactional;
 
+import java.util.List;
+
 @Service
 public class ExercicioService {
     private final ExercicioRepository repository;
@@ -69,14 +71,17 @@ public class ExercicioService {
             return repository.findByAcademiaAndFiltersPageable(academia.getUuid(), nome, musculo, pageable)
                     .map(mapper::toDto);
         }
-    }public Page<ExercicioDTO> buscarTodos(String nome, Musculo musculo) {
-        UsuarioLogado usuario = SecurityUtils.getUsuarioLogadoDetalhes();
+    }
 
+    public List<ExercicioDTO> buscarTodos(String nome, Musculo musculo) {
+        UsuarioLogado usuario = SecurityUtils.getUsuarioLogadoDetalhes();
         boolean isMaster = usuario != null && usuario.possuiPerfil(Perfil.MASTER);
 
         if (isMaster) {
             return repository.findAllByNomeContainingIgnoreCaseAndMusculo(nome, musculo)
-                    .map(mapper::toDto);
+                    .stream()
+                    .map(mapper::toDto)
+                    .toList();
         } else {
             Usuario usuarioEntity = usuarioRepository.findByUuid(usuario.getUuid())
                     .orElseThrow(() -> new IllegalArgumentException("Usuário precisa ter uma academia associada"));
@@ -87,7 +92,10 @@ public class ExercicioService {
             }
 
             return repository.findByAcademiaAndFilters(academia.getUuid(), nome, musculo)
-                    .map(mapper::toDto);
+                    .stream()
+                    .map(mapper::toDto)
+                    .toList();
         }
     }
+
 }
