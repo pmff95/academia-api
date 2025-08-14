@@ -48,24 +48,39 @@ public class FichaTreinoService {
     @Transactional
     public String create(FichaTreinoDTO dto) {
         FichaTreino ficha = new FichaTreino();
-        Aluno aluno = alunoRepository.findById(dto.getAlunoUuid())
-                .orElseThrow(() -> new ApiException("Aluno não encontrado"));
+        Aluno aluno = null;
 
         UsuarioLogado usuario = SecurityUtils.getUsuarioLogadoDetalhes();
         Academia academia = null;
         boolean isMaster = usuario != null && usuario.possuiPerfil(Perfil.MASTER);
-        if (usuario != null && !isMaster) {
-            Usuario usuarioEntity = usuarioRepository.findByUuid(usuario.getUuid())
-                    .orElseThrow(() -> new ApiException("Usuário precisa ter uma academia associada"));
-            academia = usuarioEntity.getAcademia();
-            if (academia == null) {
-                throw new ApiException("Usuário precisa ter uma academia associada");
+        if (!dto.isPreset()) {
+            if (dto.getAlunoUuid() == null) {
+                throw new ApiException("Aluno é obrigatório");
             }
-            if (aluno.getAcademia() == null || !aluno.getAcademia().getUuid().equals(academia.getUuid())) {
-                throw new ApiException("Aluno não pertence à sua academia");
+            aluno = alunoRepository.findById(dto.getAlunoUuid())
+                    .orElseThrow(() -> new ApiException("Aluno não encontrado"));
+            if (usuario != null && !isMaster) {
+                Usuario usuarioEntity = usuarioRepository.findByUuid(usuario.getUuid())
+                        .orElseThrow(() -> new ApiException("Usuário precisa ter uma academia associada"));
+                academia = usuarioEntity.getAcademia();
+                if (academia == null) {
+                    throw new ApiException("Usuário precisa ter uma academia associada");
+                }
+                if (aluno.getAcademia() == null || !aluno.getAcademia().getUuid().equals(academia.getUuid())) {
+                    throw new ApiException("Aluno não pertence à sua academia");
+                }
+            }
+            ficha.setAluno(aluno);
+        } else {
+            if (usuario != null && !isMaster) {
+                Usuario usuarioEntity = usuarioRepository.findByUuid(usuario.getUuid())
+                        .orElseThrow(() -> new ApiException("Usuário precisa ter uma academia associada"));
+                academia = usuarioEntity.getAcademia();
+                if (academia == null) {
+                    throw new ApiException("Usuário precisa ter uma academia associada");
+                }
             }
         }
-        ficha.setAluno(aluno);
 
         if (dto.getProfessorUuid() != null) {
             Professor professor = professorRepository.findById(dto.getProfessorUuid())
@@ -79,10 +94,29 @@ public class FichaTreinoService {
             throw new ApiException("Categoria é obrigatória");
         }
         ficha.setCategoria(dto.getCategoria());
+        ficha.setPreset(dto.isPreset());
         List<Exercicio> exercicios = exercicioRepository.findAllById(dto.getExerciciosUuids());
         ficha.setExercicios(exercicios);
         repository.save(ficha);
         return "Ficha de treino criada com sucesso";
+    }
+
+    @Transactional
+    public String assignPreset(UUID presetUuid, UUID alunoUuid) {
+        FichaTreino preset = repository.findById(presetUuid)
+                .orElseThrow(() -> new ApiException("Ficha de treino não encontrada"));
+        if (!preset.isPreset()) {
+            throw new ApiException("Ficha não é um pré-set");
+        }
+        Aluno aluno = alunoRepository.findById(alunoUuid)
+                .orElseThrow(() -> new ApiException("Aluno não encontrado"));
+        FichaTreino ficha = new FichaTreino();
+        ficha.setAluno(aluno);
+        ficha.setProfessor(preset.getProfessor());
+        ficha.setCategoria(preset.getCategoria());
+        ficha.setExercicios(new java.util.ArrayList<>(preset.getExercicios()));
+        repository.save(ficha);
+        return "Ficha atribuída ao aluno";
     }
 
     public Page<FichaTreinoDTO> findAll(Pageable pageable) {

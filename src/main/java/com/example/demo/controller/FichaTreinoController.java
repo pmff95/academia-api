@@ -42,4 +42,10 @@ public class FichaTreinoController {
         List<FichaTreinoDTO> fichas = service.findByAluno(alunoUuid);
         return ResponseEntity.ok(ApiReturn.of(fichas));
     }
+
+    @PostMapping("/preset/{presetUuid}/aluno/{alunoUuid}")
+    public ResponseEntity<ApiReturn<String>> atribuirPreset(@PathVariable UUID presetUuid, @PathVariable UUID alunoUuid) {
+        String msg = service.assignPreset(presetUuid, alunoUuid);
+        return ResponseEntity.ok(ApiReturn.of(msg));
+    }
 }

@@ -19,11 +19,14 @@ public class FichaTreinoMapper {
     public FichaTreinoDTO toDto(FichaTreino ficha) {
         FichaTreinoDTO dto = new FichaTreinoDTO();
         dto.setUuid(ficha.getUuid());
-        dto.setAlunoUuid(ficha.getAluno().getUuid());
+        if (ficha.getAluno() != null) {
+            dto.setAlunoUuid(ficha.getAluno().getUuid());
+        }
         if (ficha.getProfessor() != null) {
             dto.setProfessorUuid(ficha.getProfessor().getUuid());
         }
         dto.setCategoria(ficha.getCategoria());
+        dto.setPreset(ficha.isPreset());
         dto.setExerciciosUuids(ficha.getExercicios().stream().map(Exercicio::getUuid).collect(Collectors.toList()));
         return dto;
     }
