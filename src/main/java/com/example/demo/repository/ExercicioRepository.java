@@ -24,26 +24,48 @@ public interface ExercicioRepository extends JpaRepository<Exercicio, UUID> {
     Page<Exercicio> findByAcademiaUuid(UUID academiaUuid, Pageable pageable);
 
     @Query("""
-            SELECT e
-            FROM Exercicio e
-            WHERE (:nome IS NULL OR LOWER(CAST(e.nome AS string))
-                    LIKE LOWER(CONCAT('%', CAST(:nome AS string), '%')))
-              AND (:musculo IS NULL OR e.musculo = :musculo)
-        """)
-    Page<Exercicio> findAllByNomeContainingIgnoreCaseAndMusculo(@Param("nome") String nome,
-                                                                @Param("musculo") Musculo musculo,
-                                                                Pageable pageable);
+                SELECT e
+                FROM Exercicio e
+                WHERE (:nome IS NULL OR LOWER(CAST(e.nome AS string))
+                        LIKE LOWER(CONCAT('%', CAST(:nome AS string), '%')))
+                  AND (:musculo IS NULL OR e.musculo = :musculo)
+            """)
+    Page<Exercicio> findAllPageableByNomeContainingIgnoreCaseAndMusculo(@Param("nome") String nome,
+                                                                        @Param("musculo") Musculo musculo,
+                                                                        Pageable pageable);
 
     @Query("""
-            SELECT e
-            FROM Exercicio e
-            WHERE (e.academia IS NULL OR e.academia.uuid = :academiaUuid)
-              AND (:nome IS NULL OR LOWER(CAST(e.nome AS string))
-                    LIKE LOWER(CONCAT('%', CAST(:nome AS string), '%')))
-              AND (:musculo IS NULL OR e.musculo = :musculo)
-        """)
+                SELECT e
+                FROM Exercicio e
+                WHERE (e.academia IS NULL OR e.academia.uuid = :academiaUuid)
+                  AND (:nome IS NULL OR LOWER(CAST(e.nome AS string))
+                        LIKE LOWER(CONCAT('%', CAST(:nome AS string), '%')))
+                  AND (:musculo IS NULL OR e.musculo = :musculo)
+            """)
+    Page<Exercicio> findByAcademiaAndFiltersPageable(@Param("academiaUuid") UUID academiaUuid,
+                                                     @Param("nome") String nome,
+                                                     @Param("musculo") Musculo musculo,
+                                                     Pageable pageable);
+
+    @Query("""
+                SELECT e
+                FROM Exercicio e
+                WHERE (:nome IS NULL OR LOWER(CAST(e.nome AS string))
+                        LIKE LOWER(CONCAT('%', CAST(:nome AS string), '%')))
+                  AND (:musculo IS NULL OR e.musculo = :musculo)
+            """)
+    Page<Exercicio> findAllByNomeContainingIgnoreCaseAndMusculo(@Param("nome") String nome,
+                                                                @Param("musculo") Musculo musculo);
+
+    @Query("""
+                SELECT e
+                FROM Exercicio e
+                WHERE (e.academia IS NULL OR e.academia.uuid = :academiaUuid)
+                  AND (:nome IS NULL OR LOWER(CAST(e.nome AS string))
+                        LIKE LOWER(CONCAT('%', CAST(:nome AS string), '%')))
+                  AND (:musculo IS NULL OR e.musculo = :musculo)
+            """)
     Page<Exercicio> findByAcademiaAndFilters(@Param("academiaUuid") UUID academiaUuid,
                                              @Param("nome") String nome,
-                                             @Param("musculo") Musculo musculo,
-                                             Pageable pageable);
+                                             @Param("musculo") Musculo musculo);
 }

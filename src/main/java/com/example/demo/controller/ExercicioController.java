@@ -35,4 +35,10 @@ public class ExercicioController {
                                                                 Pageable pageable) {
         return ResponseEntity.ok(ApiReturn.of(service.find(nome, musculo, pageable)));
     }
+
+    @GetMapping("/todos")
+    public ResponseEntity<ApiReturn<Page<ExercicioDTO>>> listarTodos(@RequestParam(required = false) String nome,
+                                                                     @RequestParam(required = false) Musculo musculo) {
+        return ResponseEntity.ok(ApiReturn.of(service.buscarTodos(nome, musculo)));
+    }
 }

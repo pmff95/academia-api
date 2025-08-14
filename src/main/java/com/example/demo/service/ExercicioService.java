@@ -55,7 +55,7 @@ public class ExercicioService {
         boolean isMaster = usuario != null && usuario.possuiPerfil(Perfil.MASTER);
 
         if (isMaster) {
-            return repository.findAllByNomeContainingIgnoreCaseAndMusculo(nome, musculo, pageable)
+            return repository.findAllPageableByNomeContainingIgnoreCaseAndMusculo(nome, musculo, pageable)
                     .map(mapper::toDto);
         } else {
             Usuario usuarioEntity = usuarioRepository.findByUuid(usuario.getUuid())
@@ -66,7 +66,27 @@ public class ExercicioService {
                 throw new IllegalArgumentException("Usuário precisa ter uma academia associada");
             }
 
-            return repository.findByAcademiaAndFilters(academia.getUuid(), nome, musculo, pageable)
+            return repository.findByAcademiaAndFiltersPageable(academia.getUuid(), nome, musculo, pageable)
+                    .map(mapper::toDto);
+        }
+    }public Page<ExercicioDTO> buscarTodos(String nome, Musculo musculo) {
+        UsuarioLogado usuario = SecurityUtils.getUsuarioLogadoDetalhes();
+
+        boolean isMaster = usuario != null && usuario.possuiPerfil(Perfil.MASTER);
+
+        if (isMaster) {
+            return repository.findAllByNomeContainingIgnoreCaseAndMusculo(nome, musculo)
+                    .map(mapper::toDto);
+        } else {
+            Usuario usuarioEntity = usuarioRepository.findByUuid(usuario.getUuid())
+                    .orElseThrow(() -> new IllegalArgumentException("Usuário precisa ter uma academia associada"));
+            Academia academia = usuarioEntity.getAcademia();
+
+            if (academia == null) {
+                throw new IllegalArgumentException("Usuário precisa ter uma academia associada");
+            }
+
+            return repository.findByAcademiaAndFilters(academia.getUuid(), nome, musculo)
                     .map(mapper::toDto);
         }
     }
