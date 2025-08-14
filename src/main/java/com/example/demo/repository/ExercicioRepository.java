@@ -26,7 +26,8 @@ public interface ExercicioRepository extends JpaRepository<Exercicio, UUID> {
     @Query("""
             SELECT e
             FROM Exercicio e
-            WHERE (:nome IS NULL OR LOWER(e.nome) LIKE LOWER(CONCAT('%', :nome, '%')))
+            WHERE (:nome IS NULL OR LOWER(CAST(e.nome AS string))
+                    LIKE LOWER(CONCAT('%', CAST(:nome AS string), '%')))
               AND (:musculo IS NULL OR e.musculo = :musculo)
         """)
     Page<Exercicio> findAllByNomeContainingIgnoreCaseAndMusculo(@Param("nome") String nome,
@@ -37,7 +38,8 @@ public interface ExercicioRepository extends JpaRepository<Exercicio, UUID> {
             SELECT e
             FROM Exercicio e
             WHERE (e.academia IS NULL OR e.academia.uuid = :academiaUuid)
-              AND (:nome IS NULL OR LOWER(e.nome) LIKE LOWER(CONCAT('%', :nome, '%')))
+              AND (:nome IS NULL OR LOWER(CAST(e.nome AS string))
+                    LIKE LOWER(CONCAT('%', CAST(:nome AS string), '%')))
               AND (:musculo IS NULL OR e.musculo = :musculo)
         """)
     Page<Exercicio> findByAcademiaAndFilters(@Param("academiaUuid") UUID academiaUuid,
