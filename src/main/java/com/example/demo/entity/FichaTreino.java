@@ -14,7 +14,7 @@ public class FichaTreino {
     @Column(nullable = false, unique = true, updatable = false)
     private UUID uuid;
 
-    @ManyToOne(optional = false)
+    @ManyToOne
     private Aluno aluno;
 
     @ManyToOne
@@ -22,6 +22,9 @@ public class FichaTreino {
 
     @Column(nullable = false)
     private String categoria;
+
+    @Column(nullable = false)
+    private boolean preset;
 
     @ManyToMany
     @JoinTable(name = "ficha_exercicio",

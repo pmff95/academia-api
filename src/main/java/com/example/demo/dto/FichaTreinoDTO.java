@@ -8,6 +8,7 @@ public class FichaTreinoDTO {
     private UUID alunoUuid;
     private UUID professorUuid;
     private String categoria;
+    private boolean preset;
     private List<UUID> exerciciosUuids;
 
     public UUID getUuid() {
@@ -40,6 +41,14 @@ public class FichaTreinoDTO {
 
     public void setCategoria(String categoria) {
         this.categoria = categoria;
+    }
+
+    public boolean isPreset() {
+        return preset;
+    }
+
+    public void setPreset(boolean preset) {
+        this.preset = preset;
     }
 
     public List<UUID> getExerciciosUuids() {
