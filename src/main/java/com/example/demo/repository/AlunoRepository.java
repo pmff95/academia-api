@@ -13,4 +13,5 @@ public interface AlunoRepository extends JpaRepository<Aluno, UUID> {
     Page<Aluno> findByNomeContainingIgnoreCase(String nome, Pageable pageable);
 
     Page<Aluno> findByAcademiaUuidAndNomeContainingIgnoreCase(UUID uuid, String nome, Pageable pageable);
+    Page<Aluno> findByProfessorUuidAndAcademiaUuid(UUID professorUuid, String escolaUuid, Pageable pageable);
 }
