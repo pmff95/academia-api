@@ -3,31 +3,29 @@ package com.example.demo.entity;
 import jakarta.persistence.*;
 import lombok.Data;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 @Data
 @Entity
-public class FichaTreino {
+@Table(name = "ficha_exercicio")
+public class FichaTreinoExercicio {
     @Id
     @Column(nullable = false, unique = true, updatable = false)
     private UUID uuid;
 
-    @ManyToOne
-    private Aluno aluno;
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "ficha_uuid", referencedColumnName = "uuid")
+    private FichaTreino ficha;
 
-    @ManyToOne
-    private Professor professor;
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "exercicio_uuid", referencedColumnName = "uuid")
+    private Exercicio exercicio;
 
     @Column(nullable = false)
-    private String categoria;
+    private Integer repeticoes;
 
     @Column(nullable = false)
-    private boolean preset;
-
-    @OneToMany(mappedBy = "ficha", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<FichaTreinoExercicio> exercicios = new ArrayList<>();
+    private Double carga;
 
     @PrePersist
     private void gerarUuid() {
