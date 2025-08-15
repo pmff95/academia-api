@@ -43,6 +43,12 @@ public class FichaTreinoController {
         return ResponseEntity.ok(ApiReturn.of(fichas));
     }
 
+    @GetMapping("/historico/{alunoUuid}")
+    public ResponseEntity<ApiReturn<List<FichaTreinoDTO>>> historicoPorAluno(@PathVariable UUID alunoUuid) {
+        List<FichaTreinoDTO> fichas = service.findHistoricoByAluno(alunoUuid);
+        return ResponseEntity.ok(ApiReturn.of(fichas));
+    }
+
     @PostMapping("/preset/{presetUuid}/aluno/{alunoUuid}")
     public ResponseEntity<ApiReturn<String>> atribuirPreset(@PathVariable UUID presetUuid, @PathVariable UUID alunoUuid) {
         String msg = service.assignPreset(presetUuid, alunoUuid);

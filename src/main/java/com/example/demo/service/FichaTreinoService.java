@@ -3,16 +3,12 @@ package com.example.demo.service;
 import com.example.demo.common.security.SecurityUtils;
 import com.example.demo.common.security.UsuarioLogado;
 import com.example.demo.dto.FichaTreinoDTO;
-import com.example.demo.entity.Academia;
-import com.example.demo.entity.Aluno;
-import com.example.demo.entity.Exercicio;
-import com.example.demo.entity.FichaTreino;
-import com.example.demo.entity.Professor;
-import com.example.demo.entity.Usuario;
+import com.example.demo.entity.*;
 import com.example.demo.exception.ApiException;
 import com.example.demo.mapper.FichaTreinoMapper;
 import com.example.demo.repository.AlunoRepository;
 import com.example.demo.repository.ExercicioRepository;
+import com.example.demo.repository.FichaTreinoHistoricoRepository;
 import com.example.demo.repository.FichaTreinoRepository;
 import com.example.demo.repository.ProfessorRepository;
 import com.example.demo.repository.UsuarioRepository;
@@ -33,16 +29,19 @@ public class FichaTreinoService {
     private final ProfessorRepository professorRepository;
     private final UsuarioRepository usuarioRepository;
     private final ExercicioRepository exercicioRepository;
+    private final FichaTreinoHistoricoRepository historicoRepository;
 
     public FichaTreinoService(FichaTreinoRepository repository, FichaTreinoMapper mapper,
                               AlunoRepository alunoRepository, ProfessorRepository professorRepository,
-                              UsuarioRepository usuarioRepository, ExercicioRepository exercicioRepository) {
+                              UsuarioRepository usuarioRepository, ExercicioRepository exercicioRepository,
+                              FichaTreinoHistoricoRepository historicoRepository) {
         this.repository = repository;
         this.mapper = mapper;
         this.alunoRepository = alunoRepository;
         this.professorRepository = professorRepository;
         this.usuarioRepository = usuarioRepository;
         this.exercicioRepository = exercicioRepository;
+        this.historicoRepository = historicoRepository;
     }
 
     @Transactional
@@ -95,9 +94,24 @@ public class FichaTreinoService {
         }
         ficha.setCategoria(dto.getCategoria());
         ficha.setPreset(dto.isPreset());
-        List<Exercicio> exercicios = exercicioRepository.findAllById(dto.getExerciciosUuids());
+        List<FichaTreinoExercicio> exercicios = dto.getExercicios().stream().map(eDto -> {
+            Exercicio exercicio = exercicioRepository.findById(eDto.getExercicioUuid())
+                    .orElseThrow(() -> new ApiException("Exercício não encontrado"));
+            FichaTreinoExercicio fe = new FichaTreinoExercicio();
+            fe.setExercicio(exercicio);
+            fe.setRepeticoes(eDto.getRepeticoes());
+            fe.setCarga(eDto.getCarga());
+            fe.setFicha(ficha);
+            return fe;
+        }).toList();
         ficha.setExercicios(exercicios);
         repository.save(ficha);
+        if (!ficha.isPreset() && ficha.getAluno() != null) {
+            FichaTreinoHistorico historico = new FichaTreinoHistorico();
+            historico.setAluno(ficha.getAluno());
+            historico.setFicha(ficha);
+            historicoRepository.save(historico);
+        }
         return "Ficha de treino criada com sucesso";
     }
 
@@ -114,8 +128,21 @@ public class FichaTreinoService {
         ficha.setAluno(aluno);
         ficha.setProfessor(preset.getProfessor());
         ficha.setCategoria(preset.getCategoria());
-        ficha.setExercicios(new java.util.ArrayList<>(preset.getExercicios()));
+        ficha.setPreset(false);
+        ficha.setExercicios(new java.util.ArrayList<>());
+        for (FichaTreinoExercicio exercicio : preset.getExercicios()) {
+            FichaTreinoExercicio novo = new FichaTreinoExercicio();
+            novo.setExercicio(exercicio.getExercicio());
+            novo.setRepeticoes(exercicio.getRepeticoes());
+            novo.setCarga(exercicio.getCarga());
+            novo.setFicha(ficha);
+            ficha.getExercicios().add(novo);
+        }
         repository.save(ficha);
+        FichaTreinoHistorico historico = new FichaTreinoHistorico();
+        historico.setAluno(aluno);
+        historico.setFicha(ficha);
+        historicoRepository.save(historico);
         return "Ficha atribuída ao aluno";
     }
 
@@ -126,6 +153,12 @@ public class FichaTreinoService {
     public List<FichaTreinoDTO> findByAluno(UUID alunoUuid) {
         return repository.findByAluno_Uuid(alunoUuid).stream()
                 .map(mapper::toDto)
+                .toList();
+    }
+
+    public List<FichaTreinoDTO> findHistoricoByAluno(UUID alunoUuid) {
+        return historicoRepository.findByAluno_UuidOrderByDataCadastroDesc(alunoUuid).stream()
+                .map(h -> mapper.toDto(h.getFicha()))
                 .toList();
     }
 }

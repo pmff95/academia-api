@@ -9,7 +9,7 @@ public class FichaTreinoDTO {
     private UUID professorUuid;
     private String categoria;
     private boolean preset;
-    private List<UUID> exerciciosUuids;
+    private List<FichaTreinoExercicioDTO> exercicios;
 
     public UUID getUuid() {
         return uuid;
@@ -51,11 +51,11 @@ public class FichaTreinoDTO {
         this.preset = preset;
     }
 
-    public List<UUID> getExerciciosUuids() {
-        return exerciciosUuids;
+    public List<FichaTreinoExercicioDTO> getExercicios() {
+        return exercicios;
     }
 
-    public void setExerciciosUuids(List<UUID> exerciciosUuids) {
-        this.exerciciosUuids = exerciciosUuids;
+    public void setExercicios(List<FichaTreinoExercicioDTO> exercicios) {
+        this.exercicios = exercicios;
     }
 }
