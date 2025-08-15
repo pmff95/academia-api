@@ -73,12 +73,14 @@ public class ExercicioService {
         }
     }
 
-    public List<ExercicioDTO> buscarTodos(String nome, Musculo musculo) {
+    public List<ExercicioDTO> buscarTodos(String nome, List<Musculo> musculos) {
         UsuarioLogado usuario = SecurityUtils.getUsuarioLogadoDetalhes();
         boolean isMaster = usuario != null && usuario.possuiPerfil(Perfil.MASTER);
 
+        List<Musculo> filtro = (musculos == null || musculos.isEmpty()) ? null : musculos;
+
         if (isMaster) {
-            return repository.findAllByNomeContainingIgnoreCaseAndMusculo(nome, musculo)
+            return repository.findAllByNomeContainingIgnoreCaseAndMusculoIn(nome, filtro)
                     .stream()
                     .map(mapper::toDto)
                     .toList();
@@ -91,7 +93,7 @@ public class ExercicioService {
                 throw new IllegalArgumentException("Usuário precisa ter uma academia associada");
             }
 
-            return repository.findByAcademiaAndFilters(academia.getUuid(), nome, musculo)
+            return repository.findByAcademiaAndFilters(academia.getUuid(), nome, filtro)
                     .stream()
                     .map(mapper::toDto)
                     .toList();
