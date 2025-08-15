@@ -37,8 +37,7 @@ public class FichaTreinoController {
 
     @GetMapping("/aluno/{alunoUuid}")
     public ResponseEntity<ApiReturn<List<FichaTreinoDTO>>> listarPorAluno(@PathVariable UUID alunoUuid) {
-        List<FichaTreinoDTO> fichas = service.findByAluno(alunoUuid);
-        return ResponseEntity.ok(ApiReturn.of(fichas));
+        return ResponseEntity.ok(ApiReturn.of(service.findByAluno(alunoUuid)));
     }
 
     @GetMapping("/historico/{alunoUuid}")
@@ -48,7 +47,6 @@ public class FichaTreinoController {
 
     @PostMapping("/preset/{presetUuid}/aluno/{alunoUuid}")
     public ResponseEntity<ApiReturn<String>> atribuirPreset(@PathVariable UUID presetUuid, @PathVariable UUID alunoUuid) {
-        String msg = service.assignPreset(presetUuid, alunoUuid);
-        return ResponseEntity.ok(ApiReturn.of(msg));
+        return ResponseEntity.ok(ApiReturn.of(service.assignPreset(presetUuid, alunoUuid)));
     }
 }

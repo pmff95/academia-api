@@ -25,22 +25,19 @@ public class SolicitacaoController {
     @PostMapping("/alunos/{alunoUuid}")
     @PreAuthorize("hasRole('PROFESSOR')")
     public ResponseEntity<ApiReturn<String>> solicitar(@PathVariable UUID alunoUuid) {
-        String msg = service.solicitar(alunoUuid);
-        return ResponseEntity.ok(ApiReturn.of(msg));
+        return ResponseEntity.ok(ApiReturn.of(service.solicitar(alunoUuid)));
     }
 
     @PostMapping("/{uuid}/responder")
     @PreAuthorize("hasRole('ALUNO')")
     public ResponseEntity<ApiReturn<String>> responder(@PathVariable UUID uuid,
                                                        @RequestParam boolean aceita) {
-        String msg = service.responder(uuid, aceita);
-        return ResponseEntity.ok(ApiReturn.of(msg));
+        return ResponseEntity.ok(ApiReturn.of(service.responder(uuid, aceita)));
     }
 
     @GetMapping("/alunos/{alunoUuid}")
     @PreAuthorize("hasRole('ALUNO')")
     public ResponseEntity<ApiReturn<List<SolicitacaoDTO>>> listarPendentes(@PathVariable UUID alunoUuid) {
-        List<SolicitacaoDTO> lista = service.listarPendentes(alunoUuid);
-        return ResponseEntity.ok(ApiReturn.of(lista));
+        return ResponseEntity.ok(ApiReturn.of(service.listarPendentes(alunoUuid)));
     }
 }
