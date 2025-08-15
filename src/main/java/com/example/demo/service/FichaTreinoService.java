@@ -81,14 +81,23 @@ public class FichaTreinoService {
             }
         }
 
-        if (dto.getProfessorUuid() != null) {
-            Professor professor = professorRepository.findById(dto.getProfessorUuid())
+        Professor professor = null;
+        if (usuario != null && usuario.possuiPerfil(Perfil.PROFESSOR)) {
+            professor = professorRepository.findById(usuario.getUuid())
                     .orElseThrow(() -> new ApiException("Professor não encontrado"));
-            if (academia != null && (professor.getAcademia() == null || !professor.getAcademia().getUuid().equals(academia.getUuid()))) {
-                throw new ApiException("Professor não pertence à sua academia");
+        } else {
+            if (dto.getProfessorUuid() == null) {
+                throw new ApiException("Professor é obrigatório");
             }
-            ficha.setProfessor(professor);
+            professor = professorRepository.findById(dto.getProfessorUuid())
+                    .orElseThrow(() -> new ApiException("Professor não encontrado"));
         }
+
+        if (academia != null && (professor.getAcademia() == null || !professor.getAcademia().getUuid().equals(academia.getUuid()))) {
+            throw new ApiException("Professor não pertence à sua academia");
+        }
+
+        ficha.setProfessor(professor);
         if (dto.getCategoria() == null || dto.getCategoria().isBlank()) {
             throw new ApiException("Categoria é obrigatória");
         }
