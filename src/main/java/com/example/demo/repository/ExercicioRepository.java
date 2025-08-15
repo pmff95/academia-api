@@ -53,10 +53,10 @@ public interface ExercicioRepository extends JpaRepository<Exercicio, UUID> {
                 FROM Exercicio e
                 WHERE (:nome IS NULL OR LOWER(CAST(e.nome AS string))
                         LIKE LOWER(CONCAT('%', CAST(:nome AS string), '%')))
-                  AND (:musculo IS NULL OR e.musculo = :musculo)
+                  AND (:musculos IS NULL OR e.musculo IN :musculos)
             """)
-    List<Exercicio> findAllByNomeContainingIgnoreCaseAndMusculo(@Param("nome") String nome,
-                                                                @Param("musculo") Musculo musculo);
+    List<Exercicio> findAllByNomeContainingIgnoreCaseAndMusculoIn(@Param("nome") String nome,
+                                                                  @Param("musculos") List<Musculo> musculos);
 
     @Query("""
                 SELECT e
@@ -64,9 +64,9 @@ public interface ExercicioRepository extends JpaRepository<Exercicio, UUID> {
                 WHERE (e.academia IS NULL OR e.academia.uuid = :academiaUuid)
                   AND (:nome IS NULL OR LOWER(CAST(e.nome AS string))
                         LIKE LOWER(CONCAT('%', CAST(:nome AS string), '%')))
-                  AND (:musculo IS NULL OR e.musculo = :musculo)
+                  AND (:musculos IS NULL OR e.musculo IN :musculos)
             """)
     List<Exercicio> findByAcademiaAndFilters(@Param("academiaUuid") UUID academiaUuid,
                                              @Param("nome") String nome,
-                                             @Param("musculo") Musculo musculo);
+                                             @Param("musculos") List<Musculo> musculos);
 }
