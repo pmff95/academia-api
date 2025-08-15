@@ -53,14 +53,12 @@ public class AuthController {
                         "email", usuario.getEmail(),
                         "perfil", usuario.getPerfil().name()
                 );
-                String token = jwtService.generateToken(claims, userDetails);
-                AuthResponse resp = new AuthResponse(
-                        token,
+                return ResponseEntity.ok(ApiReturn.of(new AuthResponse(
+                        jwtService.generateToken(claims, userDetails),
                         primeiroAcesso,
                         usuario.getNome(),
                         usuario.getEmail(),
-                        usuario.getPerfil().name());
-                return ResponseEntity.ok(ApiReturn.of(resp));
+                        usuario.getPerfil().name())));
             }
         } catch (Exception e) {
             return ResponseEntity.status(401)
@@ -72,13 +70,11 @@ public class AuthController {
 
     @PostMapping("/reenviar-senha")
     public ResponseEntity<ApiReturn<String>> reenviarSenha(@RequestBody ReenviarSenhaDTO dto) {
-        String msg = usuarioService.reenviarSenha(dto.getLogin());
-        return ResponseEntity.ok(ApiReturn.of(msg));
+        return ResponseEntity.ok(ApiReturn.of(usuarioService.reenviarSenha(dto.getLogin())));
     }
 
     @PostMapping("/alterar-senha")
     public ResponseEntity<ApiReturn<String>> alterarSenha(@RequestBody AlterarSenhaDTO dto) {
-        String msg = usuarioService.alterarSenha(dto.getLogin(), dto.getSenhaAtual(), dto.getNovaSenha());
-        return ResponseEntity.ok(ApiReturn.of(msg));
+        return ResponseEntity.ok(ApiReturn.of(usuarioService.alterarSenha(dto.getLogin(), dto.getSenhaAtual(), dto.getNovaSenha())));
     }
 }

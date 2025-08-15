@@ -25,27 +25,23 @@ public class ProfessorController {
 
     @PostMapping
     public ResponseEntity<ApiReturn<String>> criar(@Validated @RequestBody ProfessorDTO dto) {
-        String msg = service.create(dto);
-        return ResponseEntity.ok(ApiReturn.of(msg));
+        return ResponseEntity.ok(ApiReturn.of(service.create(dto)));
     }
 
     @GetMapping
     public ResponseEntity<ApiReturn<Page<ProfessorDTO>>> listar(@RequestParam(required = false) String nome,
                                                                 Pageable pageable) {
-        Page<ProfessorDTO> page = service.findAll(nome, pageable);
-        return ResponseEntity.ok(ApiReturn.of(page));
+        return ResponseEntity.ok(ApiReturn.of(service.findAll(nome, pageable)));
     }
 
     @GetMapping("/{uuid}")
     public ResponseEntity<ApiReturn<ProfessorDTO>> buscar(@PathVariable UUID uuid) {
-        ProfessorDTO dto = service.findByUuid(uuid);
-        return ResponseEntity.ok(ApiReturn.of(dto));
+        return ResponseEntity.ok(ApiReturn.of(service.findByUuid(uuid)));
     }
 
     @PutMapping("/{uuid}")
     public ResponseEntity<ApiReturn<String>> atualizar(@PathVariable UUID uuid, @Validated @RequestBody ProfessorDTO dto) {
-        String msg = service.update(uuid, dto);
-        return ResponseEntity.ok(ApiReturn.of(msg));
+        return ResponseEntity.ok(ApiReturn.of(service.update(uuid, dto)));
     }
 
     @DeleteMapping("/{uuid}")

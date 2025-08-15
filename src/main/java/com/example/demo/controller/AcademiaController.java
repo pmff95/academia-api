@@ -32,8 +32,7 @@ public class AcademiaController {
     @GetMapping
     public ResponseEntity<ApiReturn<Page<AcademiaDTO>>> listar(@RequestParam(required = false) String nome,
                                                                Pageable pageable) {
-        Page<AcademiaDTO> page = service.findAll(nome, pageable);
-        return ResponseEntity.ok(ApiReturn.of(page));
+        return ResponseEntity.ok(ApiReturn.of(service.findAll(nome, pageable)));
     }
 
     @GetMapping("/{uuid}")

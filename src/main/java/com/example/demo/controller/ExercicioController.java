@@ -27,8 +27,7 @@ public class ExercicioController {
 
     @PostMapping
     public ResponseEntity<ApiReturn<String>> criar(@Validated @RequestBody ExercicioDTO dto) {
-        String msg = service.create(dto);
-        return ResponseEntity.ok(ApiReturn.of(msg));
+        return ResponseEntity.ok(ApiReturn.of(service.create(dto)));
     }
 
     @GetMapping

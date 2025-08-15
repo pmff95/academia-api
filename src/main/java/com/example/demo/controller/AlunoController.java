@@ -6,7 +6,6 @@ import com.example.demo.service.AlunoMedidaService;
 import com.example.demo.service.AlunoObservacaoService;
 import com.example.demo.service.AlunoService;
 import com.example.demo.common.security.SecurityUtils;
-import com.example.demo.common.security.UsuarioLogado;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -51,8 +50,7 @@ public class AlunoController {
     @GetMapping("/{uuid}")
     @PreAuthorize("hasAnyRole('MASTER','ADMIN','PROFESSOR')")
     public ResponseEntity<ApiReturn<AlunoDTO>> buscar(@PathVariable UUID uuid) {
-        AlunoDTO dto = service.findByUuid(uuid);
-        return ResponseEntity.ok(ApiReturn.of(dto));
+        return ResponseEntity.ok(ApiReturn.of(service.findByUuid(uuid)));
     }
 
     @PutMapping("/{uuid}")
@@ -72,37 +70,31 @@ public class AlunoController {
     @PreAuthorize("hasAnyRole('MASTER','ADMIN','PROFESSOR')")
     public ResponseEntity<ApiReturn<String>> adicionarMedida(@PathVariable UUID uuid,
                                                              @Validated @RequestBody AlunoMedidaDTO dto) {
-        String msg = medidaService.adicionarMedida(uuid, dto);
-        return ResponseEntity.ok(ApiReturn.of(msg));
+        return ResponseEntity.ok(ApiReturn.of(medidaService.adicionarMedida(uuid, dto)));
     }
 
     @GetMapping("/{uuid}/medidas")
     @PreAuthorize("hasAnyRole('MASTER','ADMIN','PROFESSOR')")
     public ResponseEntity<ApiReturn<List<AlunoMedidaDTO>>> listarMedidas(@PathVariable UUID uuid) {
-        List<AlunoMedidaDTO> lista = medidaService.listarMedidas(uuid);
-        return ResponseEntity.ok(ApiReturn.of(lista));
+        return ResponseEntity.ok(ApiReturn.of(medidaService.listarMedidas(uuid)));
     }
 
     @GetMapping("/me/medidas")
     @PreAuthorize("hasRole('ALUNO')")
     public ResponseEntity<ApiReturn<List<AlunoMedidaDTO>>> listarMedidasAlunoLogado() {
-        UsuarioLogado usuario = SecurityUtils.getUsuarioLogadoDetalhes();
-        List<AlunoMedidaDTO> lista = medidaService.listarMedidas(usuario.getUuid());
-        return ResponseEntity.ok(ApiReturn.of(lista));
+        return ResponseEntity.ok(ApiReturn.of(medidaService.listarMedidas(SecurityUtils.getUsuarioLogadoDetalhes().getUuid())));
     }
 
     @PostMapping("/{uuid}/observacoes")
     @PreAuthorize("hasAnyRole('MASTER','ADMIN','PROFESSOR')")
     public ResponseEntity<ApiReturn<String>> adicionarObservacao(@PathVariable UUID uuid,
                                                                  @Validated @RequestBody AlunoObservacaoDTO dto) {
-        String msg = observacaoService.adicionarObservacao(uuid, dto);
-        return ResponseEntity.ok(ApiReturn.of(msg));
+        return ResponseEntity.ok(ApiReturn.of(observacaoService.adicionarObservacao(uuid, dto)));
     }
 
     @GetMapping("/{uuid}/observacoes")
     @PreAuthorize("hasAnyRole('MASTER','ADMIN','PROFESSOR')")
     public ResponseEntity<ApiReturn<List<AlunoObservacaoDTO>>> listarObservacoes(@PathVariable UUID uuid) {
-        List<AlunoObservacaoDTO> lista = observacaoService.listarObservacoes(uuid);
-        return ResponseEntity.ok(ApiReturn.of(lista));
+        return ResponseEntity.ok(ApiReturn.of(observacaoService.listarObservacoes(uuid)));
     }
 }
