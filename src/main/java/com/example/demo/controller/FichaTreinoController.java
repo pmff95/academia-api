@@ -27,14 +27,12 @@ public class FichaTreinoController {
 
     @PostMapping
     public ResponseEntity<ApiReturn<String>> criar(@Validated @RequestBody FichaTreinoDTO dto) {
-        String msg = service.create(dto);
-        return ResponseEntity.ok(ApiReturn.of(msg));
+        return ResponseEntity.ok(ApiReturn.of(service.create(dto)));
     }
 
     @GetMapping
     public ResponseEntity<ApiReturn<Page<FichaTreinoDTO>>> listar(Pageable pageable) {
-        Page<FichaTreinoDTO> page = service.findAll(pageable);
-        return ResponseEntity.ok(ApiReturn.of(page));
+        return ResponseEntity.ok(ApiReturn.of(service.findAll(pageable)));
     }
 
     @GetMapping("/aluno/{alunoUuid}")
@@ -45,8 +43,7 @@ public class FichaTreinoController {
 
     @GetMapping("/historico/{alunoUuid}")
     public ResponseEntity<ApiReturn<List<FichaTreinoDTO>>> historicoPorAluno(@PathVariable UUID alunoUuid) {
-        List<FichaTreinoDTO> fichas = service.findHistoricoByAluno(alunoUuid);
-        return ResponseEntity.ok(ApiReturn.of(fichas));
+        return ResponseEntity.ok(ApiReturn.of(service.findHistoricoByAluno(alunoUuid)));
     }
 
     @PostMapping("/preset/{presetUuid}/aluno/{alunoUuid}")
