@@ -22,6 +22,9 @@ public class FichaTreinoHistorico {
     @Column(nullable = false)
     private LocalDateTime dataCadastro;
 
+    @Column(nullable = false)
+    private boolean atual;
+
     @PrePersist
     private void prePersist() {
         if (uuid == null) {

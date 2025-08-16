@@ -63,4 +63,9 @@ public class FichaTreinoController {
         UUID alunoUuid = SecurityUtils.getUsuarioLogadoDetalhes().getUuid();
         return ResponseEntity.ok(ApiReturn.of(service.findCurrentByAluno(alunoUuid)));
     }
+
+    @PutMapping("/ficha-atual/{fichaUuid}")
+    public ResponseEntity<ApiReturn<String>> atualizarFichaAtual(@PathVariable UUID fichaUuid) {
+        return ResponseEntity.ok(ApiReturn.of(service.atualizarFichaAtual(fichaUuid)));
+    }
 }

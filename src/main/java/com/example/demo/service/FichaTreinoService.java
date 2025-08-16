@@ -142,9 +142,16 @@ public class FichaTreinoService {
 
     private void salvarHistoricoSeNecessario(FichaTreino ficha) {
         if (!ficha.isPreset() && ficha.getAluno() != null) {
+            historicoRepository.findByAluno_UuidAndAtualTrue(ficha.getAluno().getUuid())
+                    .ifPresent(h -> {
+                        h.setAtual(false);
+                        historicoRepository.save(h);
+                    });
+
             FichaTreinoHistorico historico = new FichaTreinoHistorico();
             historico.setAluno(ficha.getAluno());
             historico.setFicha(ficha);
+            historico.setAtual(true);
             historicoRepository.save(historico);
         }
     }
@@ -178,9 +185,16 @@ public class FichaTreinoService {
             ficha.getCategorias().add(novaCat);
         }
         repository.save(ficha);
+        historicoRepository.findByAluno_UuidAndAtualTrue(aluno.getUuid())
+                .ifPresent(h -> {
+                    h.setAtual(false);
+                    historicoRepository.save(h);
+                });
+
         FichaTreinoHistorico historico = new FichaTreinoHistorico();
         historico.setAluno(aluno);
         historico.setFicha(ficha);
+        historico.setAtual(true);
         historicoRepository.save(historico);
         return "Ficha atribuída ao aluno";
     }
@@ -202,12 +216,33 @@ public class FichaTreinoService {
     public List<FichaTreinoHistoricoDTO> findHistoricoByAluno(UUID alunoUuid) {
         return historicoRepository.findByAluno_UuidOrderByDataCadastroDesc(alunoUuid)
                 .stream()
-                .map(h -> mapper.toHistoricoDto(h.getFicha()))
+                .map(mapper::toHistoricoDto)
                 .toList();
     }
 
+    @Transactional
+    public String atualizarFichaAtual(UUID fichaUuid) {
+        FichaTreinoHistorico historico = historicoRepository.findByFicha_Uuid(fichaUuid)
+                .orElseThrow(() -> new ApiException("Ficha de treino não encontrada"));
+
+        UUID alunoUuid = historico.getAluno().getUuid();
+
+        historicoRepository.findByAluno_UuidAndAtualTrue(alunoUuid)
+                .ifPresent(h -> {
+                    if (!h.getFicha().getUuid().equals(fichaUuid)) {
+                        h.setAtual(false);
+                        historicoRepository.save(h);
+                    }
+                });
+
+        historico.setAtual(true);
+        historicoRepository.save(historico);
+
+        return "Ficha definida como atual";
+    }
+
     public FichaTreinoDTO findCurrentByAluno(UUID alunoUuid) {
-        return historicoRepository.findFirstByAluno_UuidOrderByDataCadastroDesc(alunoUuid)
+        return historicoRepository.findByAluno_UuidAndAtualTrue(alunoUuid)
                 .map(h -> mapper.toDto(h.getFicha()))
                 .orElseThrow(() -> new ApiException("Aluno não possui ficha de treino"));
     }
