@@ -22,6 +22,9 @@ public class FichaTreino {
     private Professor professor;
 
     @Column(nullable = false)
+    private String nome;
+
+    @Column(nullable = false)
     private boolean preset;
 
     @OneToMany(mappedBy = "ficha", cascade = CascadeType.ALL, orphanRemoval = true)

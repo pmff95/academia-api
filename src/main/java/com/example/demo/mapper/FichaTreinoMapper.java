@@ -2,6 +2,7 @@ package com.example.demo.mapper;
 
 import com.example.demo.dto.FichaTreinoCategoriaDTO;
 import com.example.demo.dto.FichaTreinoDTO;
+import com.example.demo.dto.FichaTreinoHistoricoDTO;
 import com.example.demo.dto.FichaTreinoExercicioDTO;
 import com.example.demo.entity.FichaTreino;
 import com.example.demo.entity.FichaTreinoCategoria;
@@ -28,6 +29,7 @@ public class FichaTreinoMapper {
         if (ficha.getProfessor() != null) {
             dto.setProfessorUuid(ficha.getProfessor().getUuid());
         }
+        dto.setNome(ficha.getNome());
         dto.setPreset(ficha.isPreset());
         dto.setDataCadastro(ficha.getDataCadastro());
         dto.setDataAtualizacao(ficha.getDataAtualizacao());
@@ -52,6 +54,19 @@ public class FichaTreinoMapper {
         dto.setExercicioUuid(exercicio.getExercicio().getUuid());
         dto.setRepeticoes(exercicio.getRepeticoes());
         dto.setCarga(exercicio.getCarga());
+        return dto;
+    }
+
+    public FichaTreinoHistoricoDTO toHistoricoDto(FichaTreino ficha) {
+        FichaTreinoHistoricoDTO dto = new FichaTreinoHistoricoDTO();
+        dto.setUuid(ficha.getUuid());
+        dto.setNome(ficha.getNome());
+        dto.setDataCadastro(ficha.getDataCadastro());
+        dto.setDataAtualizacao(ficha.getDataAtualizacao());
+        if (ficha.getProfessor() != null) {
+            dto.setProfessorUuid(ficha.getProfessor().getUuid());
+            dto.setProfessorNome(ficha.getProfessor().getNome());
+        }
         return dto;
     }
 }

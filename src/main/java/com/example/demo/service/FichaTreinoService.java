@@ -4,6 +4,7 @@ import com.example.demo.common.security.SecurityUtils;
 import com.example.demo.common.security.UsuarioLogado;
 import com.example.demo.dto.FichaTreinoDTO;
 import com.example.demo.dto.FichaTreinoCategoriaDTO;
+import com.example.demo.dto.FichaTreinoHistoricoDTO;
 import com.example.demo.entity.*;
 import com.example.demo.exception.ApiException;
 import com.example.demo.mapper.FichaTreinoMapper;
@@ -108,6 +109,7 @@ public class FichaTreinoService {
 
     private FichaTreino montarFichaTreino(FichaTreinoDTO dto, Aluno aluno, Professor professor) {
         FichaTreino ficha = new FichaTreino();
+        ficha.setNome(dto.getNome());
         ficha.setPreset(dto.isPreset());
         ficha.setAluno(aluno);
         ficha.setProfessor(professor);
@@ -155,6 +157,7 @@ public class FichaTreinoService {
         }
         Aluno aluno = alunoRepository.findById(alunoUuid).orElseThrow(() -> new ApiException("Aluno não encontrado"));
         FichaTreino ficha = new FichaTreino();
+        ficha.setNome(preset.getNome());
         ficha.setAluno(aluno);
         ficha.setProfessor(preset.getProfessor());
         ficha.setPreset(false);
@@ -190,7 +193,10 @@ public class FichaTreinoService {
         return repository.findByAluno_Uuid(alunoUuid).stream().map(mapper::toDto).toList();
     }
 
-    public List<FichaTreinoDTO> findHistoricoByAluno(UUID alunoUuid) {
-        return historicoRepository.findByAluno_UuidOrderByDataCadastroDesc(alunoUuid).stream().map(h -> mapper.toDto(h.getFicha())).toList();
+    public List<FichaTreinoHistoricoDTO> findHistoricoByAluno(UUID alunoUuid) {
+        return historicoRepository.findByAluno_UuidOrderByDataCadastroDesc(alunoUuid)
+                .stream()
+                .map(h -> mapper.toHistoricoDto(h.getFicha()))
+                .toList();
     }
 }

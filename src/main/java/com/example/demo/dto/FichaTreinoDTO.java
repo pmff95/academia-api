@@ -8,6 +8,7 @@ public class FichaTreinoDTO {
     private UUID uuid;
     private UUID alunoUuid;
     private UUID professorUuid;
+    private String nome;
     private boolean preset;
     private List<FichaTreinoCategoriaDTO> categorias;
     private LocalDateTime dataCadastro;
@@ -37,6 +38,14 @@ public class FichaTreinoDTO {
         this.professorUuid = professorUuid;
     }
 
+    public String getNome() {
+        return nome;
+    }
+
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
+
     public boolean isPreset() {
         return preset;
     }
@@ -64,7 +73,7 @@ public class FichaTreinoDTO {
     public LocalDateTime getDataAtualizacao() {
         return dataAtualizacao;
     }
-
+ 
     public void setDataAtualizacao(LocalDateTime dataAtualizacao) {
         this.dataAtualizacao = dataAtualizacao;
     }
