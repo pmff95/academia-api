@@ -11,6 +11,6 @@ import java.util.UUID;
 public interface FichaTreinoRepository extends JpaRepository<FichaTreino, UUID> {
     List<FichaTreino> findByAluno_Uuid(UUID alunoUuid);
 
-    @EntityGraph(attributePaths = {"categorias", "categorias.exercicios"})
+    @EntityGraph(attributePaths = {"categorias"})
     Optional<FichaTreino> findByUuid(UUID uuid);
 }
