@@ -4,6 +4,7 @@ import com.example.demo.domain.enums.StatusSolicitacao;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Data
@@ -26,10 +27,16 @@ public class Solicitacao {
     @Column(nullable = false)
     private StatusSolicitacao status = StatusSolicitacao.PENDENTE;
 
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime dataCadastro;
+
     @PrePersist
-    private void gerarUuid() {
+    private void prePersist() {
         if (uuid == null) {
             uuid = UUID.randomUUID();
+        }
+        if (dataCadastro == null) {
+            dataCadastro = LocalDateTime.now();
         }
     }
 }

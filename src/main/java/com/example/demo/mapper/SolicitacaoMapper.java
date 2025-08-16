@@ -17,6 +17,7 @@ public class SolicitacaoMapper {
         SolicitacaoDTO dto = mapper.map(solicitacao, SolicitacaoDTO.class);
         dto.setProfessorUuid(solicitacao.getProfessor().getUuid());
         dto.setAlunoUuid(solicitacao.getAluno().getUuid());
+        dto.setAlunoNome(solicitacao.getAluno().getNome());
         return dto;
     }
 }
