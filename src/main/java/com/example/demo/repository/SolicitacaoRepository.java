@@ -9,4 +9,5 @@ import java.util.UUID;
 
 public interface SolicitacaoRepository extends JpaRepository<Solicitacao, UUID> {
     List<Solicitacao> findByAlunoUuidAndStatus(UUID alunoUuid, StatusSolicitacao status);
+    List<Solicitacao> findByProfessorUuidAndStatus(UUID professorUuid, StatusSolicitacao status);
 }
