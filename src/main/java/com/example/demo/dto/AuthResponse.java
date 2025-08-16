@@ -2,6 +2,7 @@ package com.example.demo.dto;
 
 public class AuthResponse {
     private String token;
+    private String refreshToken;
     private boolean primeiroAcesso;
     private String nome;
     private String email;
@@ -10,8 +11,9 @@ public class AuthResponse {
     public AuthResponse() {
     }
 
-    public AuthResponse(String token, boolean primeiroAcesso, String nome, String email, String perfil) {
+    public AuthResponse(String token, String refreshToken, boolean primeiroAcesso, String nome, String email, String perfil) {
         this.token = token;
+        this.refreshToken = refreshToken;
         this.primeiroAcesso = primeiroAcesso;
         this.nome = nome;
         this.email = email;
@@ -24,6 +26,14 @@ public class AuthResponse {
 
     public void setToken(String token) {
         this.token = token;
+    }
+
+    public String getRefreshToken() {
+        return refreshToken;
+    }
+
+    public void setRefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
     }
 
     public boolean isPrimeiroAcesso() {
