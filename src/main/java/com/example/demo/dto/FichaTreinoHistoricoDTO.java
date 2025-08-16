@@ -10,6 +10,7 @@ public class FichaTreinoHistoricoDTO {
     private LocalDateTime dataAtualizacao;
     private UUID professorUuid;
     private String professorNome;
+    private boolean atual;
 
     public UUID getUuid() {
         return uuid;
@@ -57,6 +58,14 @@ public class FichaTreinoHistoricoDTO {
 
     public void setProfessorNome(String professorNome) {
         this.professorNome = professorNome;
+    }
+
+    public boolean isAtual() {
+        return atual;
+    }
+
+    public void setAtual(boolean atual) {
+        this.atual = atual;
     }
 }
 

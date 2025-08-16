@@ -9,5 +9,6 @@ import java.util.UUID;
 
 public interface FichaTreinoHistoricoRepository extends JpaRepository<FichaTreinoHistorico, UUID> {
     List<FichaTreinoHistorico> findByAluno_UuidOrderByDataCadastroDesc(UUID alunoUuid);
-    Optional<FichaTreinoHistorico> findFirstByAluno_UuidOrderByDataCadastroDesc(UUID alunoUuid);
+    Optional<FichaTreinoHistorico> findByAluno_UuidAndAtualTrue(UUID alunoUuid);
+    Optional<FichaTreinoHistorico> findByFicha_Uuid(UUID fichaUuid);
 }

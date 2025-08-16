@@ -7,6 +7,7 @@ import com.example.demo.dto.FichaTreinoExercicioDTO;
 import com.example.demo.entity.FichaTreino;
 import com.example.demo.entity.FichaTreinoCategoria;
 import com.example.demo.entity.FichaTreinoExercicio;
+import com.example.demo.entity.FichaTreinoHistorico;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 
@@ -57,8 +58,9 @@ public class FichaTreinoMapper {
         return dto;
     }
 
-    public FichaTreinoHistoricoDTO toHistoricoDto(FichaTreino ficha) {
+    public FichaTreinoHistoricoDTO toHistoricoDto(FichaTreinoHistorico historico) {
         FichaTreinoHistoricoDTO dto = new FichaTreinoHistoricoDTO();
+        FichaTreino ficha = historico.getFicha();
         dto.setUuid(ficha.getUuid());
         dto.setNome(ficha.getNome());
         dto.setDataCadastro(ficha.getDataCadastro());
@@ -67,6 +69,7 @@ public class FichaTreinoMapper {
             dto.setProfessorUuid(ficha.getProfessor().getUuid());
             dto.setProfessorNome(ficha.getProfessor().getNome());
         }
+        dto.setAtual(historico.isAtual());
         return dto;
     }
 }
