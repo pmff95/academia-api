@@ -5,6 +5,7 @@ import com.example.demo.common.response.ApiReturn;
 import com.example.demo.service.AlunoMedidaService;
 import com.example.demo.service.AlunoObservacaoService;
 import com.example.demo.service.AlunoService;
+import com.example.demo.service.TreinoSessaoService;
 import com.example.demo.common.security.SecurityUtils;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
@@ -25,13 +26,16 @@ public class AlunoController {
     private final AlunoService service;
     private final AlunoMedidaService medidaService;
     private final AlunoObservacaoService observacaoService;
+    private final TreinoSessaoService treinoSessaoService;
 
     public AlunoController(AlunoService service,
                            AlunoMedidaService medidaService,
-                           AlunoObservacaoService observacaoService) {
+                           AlunoObservacaoService observacaoService,
+                           TreinoSessaoService treinoSessaoService) {
         this.service = service;
         this.medidaService = medidaService;
         this.observacaoService = observacaoService;
+        this.treinoSessaoService = treinoSessaoService;
     }
 
     @PostMapping
@@ -103,5 +107,18 @@ public class AlunoController {
     @PreAuthorize("hasAnyRole('MASTER','ADMIN','PROFESSOR')")
     public ResponseEntity<ApiReturn<List<AlunoObservacaoDTO>>> listarObservacoes(@PathVariable UUID uuid) {
         return ResponseEntity.ok(ApiReturn.of(observacaoService.listarObservacoes(uuid)));
+    }
+
+    @PostMapping("/{uuid}/treinos")
+    @PreAuthorize("hasAnyRole('MASTER','ADMIN','PROFESSOR')")
+    public ResponseEntity<ApiReturn<String>> registrarTreino(@PathVariable UUID uuid,
+                                                             @Validated @RequestBody TreinoSessaoDTO dto) {
+        return ResponseEntity.ok(ApiReturn.of(treinoSessaoService.registrarSessao(uuid, dto)));
+    }
+
+    @GetMapping("/{uuid}/treinos")
+    @PreAuthorize("hasAnyRole('MASTER','ADMIN','PROFESSOR')")
+    public ResponseEntity<ApiReturn<List<TreinoSessaoDTO>>> listarTreinos(@PathVariable UUID uuid) {
+        return ResponseEntity.ok(ApiReturn.of(treinoSessaoService.listarSessoes(uuid)));
     }
 }
