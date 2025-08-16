@@ -1,8 +1,10 @@
 package com.example.demo.mapper;
 
+import com.example.demo.dto.FichaTreinoCategoriaDTO;
 import com.example.demo.dto.FichaTreinoDTO;
 import com.example.demo.dto.FichaTreinoExercicioDTO;
 import com.example.demo.entity.FichaTreino;
+import com.example.demo.entity.FichaTreinoCategoria;
 import com.example.demo.entity.FichaTreinoExercicio;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
@@ -26,14 +28,23 @@ public class FichaTreinoMapper {
         if (ficha.getProfessor() != null) {
             dto.setProfessorUuid(ficha.getProfessor().getUuid());
         }
-        dto.setCategoria(ficha.getCategoria());
         dto.setPreset(ficha.isPreset());
-        dto.setExercicios(ficha.getExercicios().stream().map(this::toExercicioDto).collect(Collectors.toList()));
+        dto.setDataCadastro(ficha.getDataCadastro());
+        dto.setDataAtualizacao(ficha.getDataAtualizacao());
+        dto.setCategorias(ficha.getCategorias().stream().map(this::toCategoriaDto).collect(Collectors.toList()));
         return dto;
     }
 
     public FichaTreino toEntity(FichaTreinoDTO dto) {
         return mapper.map(dto, FichaTreino.class);
+    }
+
+    private FichaTreinoCategoriaDTO toCategoriaDto(FichaTreinoCategoria categoria) {
+        FichaTreinoCategoriaDTO dto = new FichaTreinoCategoriaDTO();
+        dto.setUuid(categoria.getUuid());
+        dto.setNome(categoria.getNome());
+        dto.setExercicios(categoria.getExercicios().stream().map(this::toExercicioDto).collect(Collectors.toList()));
+        return dto;
     }
 
     private FichaTreinoExercicioDTO toExercicioDto(FichaTreinoExercicio exercicio) {
