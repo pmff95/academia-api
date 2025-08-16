@@ -3,6 +3,7 @@ package com.example.demo.entity;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +27,9 @@ public class FichaTreino {
 
     @Column(nullable = false)
     private boolean preset;
+
+    @Column
+    private LocalDate dataValidade;
 
     @OneToMany(mappedBy = "ficha", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<FichaTreinoCategoria> categorias = new ArrayList<>();

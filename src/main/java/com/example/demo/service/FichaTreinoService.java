@@ -63,6 +63,7 @@ public class FichaTreinoService {
             ficha.setPreset(dto.isPreset());
             ficha.setAluno(aluno);
             ficha.setProfessor(professor);
+            ficha.setDataValidade(dto.getDataValidade());
             ficha.getCategorias().clear();
         }
 
@@ -133,6 +134,7 @@ public class FichaTreinoService {
         FichaTreino ficha = new FichaTreino();
         ficha.setNome(dto.getNome());
         ficha.setPreset(dto.isPreset());
+        ficha.setDataValidade(dto.getDataValidade());
         ficha.setAluno(aluno);
         ficha.setProfessor(professor);
         return ficha;
@@ -143,6 +145,7 @@ public class FichaTreinoService {
         return dto.getCategorias().stream().map(cDto -> {
             FichaTreinoCategoria categoria = new FichaTreinoCategoria();
             categoria.setNome(cDto.getNome());
+            categoria.setObservacao(cDto.getObservacao());
             categoria.setFicha(ficha);
             categoria.setExercicios(montarExercicios(cDto, categoria));
             return categoria;
@@ -157,6 +160,8 @@ public class FichaTreinoService {
             fe.setExercicio(exercicio);
             fe.setRepeticoes(eDto.getRepeticoes());
             fe.setCarga(eDto.getCarga());
+            fe.setSeries(eDto.getSeries());
+            fe.setTempoDescanso(eDto.getTempoDescanso());
             fe.setCategoria(categoria);
             return fe;
         }).toList();
@@ -190,10 +195,12 @@ public class FichaTreinoService {
         ficha.setAluno(aluno);
         ficha.setProfessor(preset.getProfessor());
         ficha.setPreset(false);
+        ficha.setDataValidade(preset.getDataValidade());
         ficha.setCategorias(new java.util.ArrayList<>());
         for (FichaTreinoCategoria categoria : preset.getCategorias()) {
             FichaTreinoCategoria novaCat = new FichaTreinoCategoria();
             novaCat.setNome(categoria.getNome());
+            novaCat.setObservacao(categoria.getObservacao());
             novaCat.setFicha(ficha);
             novaCat.setExercicios(new java.util.ArrayList<>());
             for (FichaTreinoExercicio exercicio : categoria.getExercicios()) {
@@ -201,6 +208,8 @@ public class FichaTreinoService {
                 novo.setExercicio(exercicio.getExercicio());
                 novo.setRepeticoes(exercicio.getRepeticoes());
                 novo.setCarga(exercicio.getCarga());
+                novo.setSeries(exercicio.getSeries());
+                novo.setTempoDescanso(exercicio.getTempoDescanso());
                 novo.setCategoria(novaCat);
                 novaCat.getExercicios().add(novo);
             }

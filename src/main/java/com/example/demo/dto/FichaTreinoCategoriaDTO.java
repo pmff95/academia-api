@@ -7,6 +7,7 @@ public class FichaTreinoCategoriaDTO {
     private UUID uuid;
     private String nome;
     private List<FichaTreinoExercicioDTO> exercicios;
+    private String observacao;
 
     public UUID getUuid() {
         return uuid;
@@ -30,5 +31,13 @@ public class FichaTreinoCategoriaDTO {
 
     public void setExercicios(List<FichaTreinoExercicioDTO> exercicios) {
         this.exercicios = exercicios;
+    }
+
+    public String getObservacao() {
+        return observacao;
+    }
+
+    public void setObservacao(String observacao) {
+        this.observacao = observacao;
     }
 }
