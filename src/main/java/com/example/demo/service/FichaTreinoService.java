@@ -44,22 +44,37 @@ public class FichaTreinoService {
     }
 
     @Transactional
-    public String create(FichaTreinoDTO dto) {
+    public String save(FichaTreinoDTO dto) {
         UsuarioLogado usuario = SecurityUtils.getUsuarioLogadoDetalhes();
         boolean isMaster = usuario != null && usuario.possuiPerfil(Perfil.MASTER);
 
+        boolean isNew = dto.getUuid() == null;
         Academia academia = obterAcademiaSeNecessario(usuario, isMaster);
         Aluno aluno = obterAlunoSeNecessario(dto, usuario, isMaster, academia);
         Professor professor = obterProfessorSeNecessario(dto, academia);
 
-        FichaTreino ficha = montarFichaTreino(dto, aluno, professor);
+        FichaTreino ficha;
+        if (isNew) {
+            ficha = montarFichaTreino(dto, aluno, professor);
+        } else {
+            ficha = repository.findByUuid(dto.getUuid())
+                    .orElseThrow(() -> new ApiException("Ficha de treino não encontrada"));
+            ficha.setNome(dto.getNome());
+            ficha.setPreset(dto.isPreset());
+            ficha.setAluno(aluno);
+            ficha.setProfessor(professor);
+            ficha.getCategorias().clear();
+        }
+
         ficha.setCategorias(montarCategorias(dto, ficha));
 
         repository.save(ficha);
 
-        salvarHistoricoSeNecessario(ficha);
-
-        return "Ficha de treino criada com sucesso";
+        if (isNew) {
+            salvarHistoricoSeNecessario(ficha);
+            return "Ficha de treino criada com sucesso";
+        }
+        return "Ficha de treino atualizada com sucesso";
     }
 
     private Academia obterAcademiaSeNecessario(UsuarioLogado usuario, boolean isMaster) {

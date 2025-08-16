@@ -27,9 +27,9 @@ public class FichaTreinoController {
         this.service = service;
     }
 
-    @PostMapping
-    public ResponseEntity<ApiReturn<String>> criar(@Validated @RequestBody FichaTreinoDTO dto) {
-        return ResponseEntity.ok(ApiReturn.of(service.create(dto)));
+    @PutMapping
+    public ResponseEntity<ApiReturn<String>> salvar(@Validated @RequestBody FichaTreinoDTO dto) {
+        return ResponseEntity.ok(ApiReturn.of(service.save(dto)));
     }
 
 //    @GetMapping
