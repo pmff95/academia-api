@@ -193,6 +193,12 @@ public class FichaTreinoService {
         return repository.findByAluno_Uuid(alunoUuid).stream().map(mapper::toDto).toList();
     }
 
+    public FichaTreinoDTO findByUuid(UUID fichaUuid) {
+        FichaTreino ficha = repository.findByUuid(fichaUuid)
+                .orElseThrow(() -> new ApiException("Ficha de treino não encontrada"));
+        return mapper.toDto(ficha);
+    }
+
     public List<FichaTreinoHistoricoDTO> findHistoricoByAluno(UUID alunoUuid) {
         return historicoRepository.findByAluno_UuidOrderByDataCadastroDesc(alunoUuid)
                 .stream()
