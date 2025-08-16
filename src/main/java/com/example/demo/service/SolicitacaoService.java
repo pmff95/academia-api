@@ -80,4 +80,16 @@ public class SolicitacaoService {
                 .map(mapper::toDto)
                 .collect(Collectors.toList());
     }
+
+    public List<SolicitacaoDTO> listarPendentesProfessor() {
+        UsuarioLogado usuario = SecurityUtils.getUsuarioLogadoDetalhes();
+        if (usuario == null) {
+            throw new ApiException("Usuário não autenticado");
+        }
+
+        return repository.findByProfessorUuidAndStatus(usuario.getUuid(), StatusSolicitacao.PENDENTE)
+                .stream()
+                .map(mapper::toDto)
+                .collect(Collectors.toList());
+    }
 }

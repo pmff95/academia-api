@@ -40,4 +40,10 @@ public class SolicitacaoController {
     public ResponseEntity<ApiReturn<List<SolicitacaoDTO>>> listarPendentes(@PathVariable UUID alunoUuid) {
         return ResponseEntity.ok(ApiReturn.of(service.listarPendentes(alunoUuid)));
     }
+
+    @GetMapping("/professores")
+    @PreAuthorize("hasRole('PROFESSOR')")
+    public ResponseEntity<ApiReturn<List<SolicitacaoDTO>>> listarPendentesProfessor() {
+        return ResponseEntity.ok(ApiReturn.of(service.listarPendentesProfessor()));
+    }
 }
