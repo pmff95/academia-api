@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 
 import com.example.demo.common.response.ApiReturn;
+import com.example.demo.common.security.SecurityUtils;
 import com.example.demo.dto.FichaTreinoDTO;
 import com.example.demo.dto.FichaTreinoHistoricoDTO;
 import com.example.demo.service.FichaTreinoService;
@@ -49,5 +50,12 @@ public class FichaTreinoController {
     @PostMapping("/preset/{presetUuid}/aluno/{alunoUuid}")
     public ResponseEntity<ApiReturn<String>> atribuirPreset(@PathVariable UUID presetUuid, @PathVariable UUID alunoUuid) {
         return ResponseEntity.ok(ApiReturn.of(service.assignPreset(presetUuid, alunoUuid)));
+    }
+
+    @GetMapping("/me")
+    @PreAuthorize("hasRole('ALUNO')")
+    public ResponseEntity<ApiReturn<FichaTreinoDTO>> fichaAlunoLogado() {
+        UUID alunoUuid = SecurityUtils.getUsuarioLogadoDetalhes().getUuid();
+        return ResponseEntity.ok(ApiReturn.of(service.findCurrentByAluno(alunoUuid)));
     }
 }
