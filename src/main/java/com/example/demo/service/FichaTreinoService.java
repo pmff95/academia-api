@@ -32,8 +32,16 @@ public class FichaTreinoService {
     private final UsuarioRepository usuarioRepository;
     private final ExercicioRepository exercicioRepository;
     private final FichaTreinoHistoricoRepository historicoRepository;
+    private final NotificacaoService notificacaoService;
 
-    public FichaTreinoService(FichaTreinoRepository repository, FichaTreinoMapper mapper, AlunoRepository alunoRepository, ProfessorRepository professorRepository, UsuarioRepository usuarioRepository, ExercicioRepository exercicioRepository, FichaTreinoHistoricoRepository historicoRepository) {
+    public FichaTreinoService(FichaTreinoRepository repository,
+                              FichaTreinoMapper mapper,
+                              AlunoRepository alunoRepository,
+                              ProfessorRepository professorRepository,
+                              UsuarioRepository usuarioRepository,
+                              ExercicioRepository exercicioRepository,
+                              FichaTreinoHistoricoRepository historicoRepository,
+                              NotificacaoService notificacaoService) {
         this.repository = repository;
         this.mapper = mapper;
         this.alunoRepository = alunoRepository;
@@ -41,6 +49,7 @@ public class FichaTreinoService {
         this.usuarioRepository = usuarioRepository;
         this.exercicioRepository = exercicioRepository;
         this.historicoRepository = historicoRepository;
+        this.notificacaoService = notificacaoService;
     }
 
     @Transactional
@@ -69,10 +78,15 @@ public class FichaTreinoService {
         ficha.setCategorias(montarCategorias(dto, ficha));
 
         repository.save(ficha);
-
         if (isNew) {
             salvarHistoricoSeNecessario(ficha);
+            if (aluno != null) {
+                notificacaoService.notificarNovaFichaTreino(aluno);
+            }
             return "Ficha de treino criada com sucesso";
+        }
+        if (aluno != null) {
+            notificacaoService.notificarNovaFichaTreino(aluno);
         }
         return "Ficha de treino atualizada com sucesso";
     }
@@ -218,6 +232,7 @@ public class FichaTreinoService {
         historico.setFicha(ficha);
         historico.setAtual(true);
         historicoRepository.save(historico);
+        notificacaoService.notificarNovaFichaTreino(aluno);
         return "Ficha atribuída ao aluno";
     }
 

@@ -31,4 +31,16 @@ public class EmailService {
         message.setText(texto.toString());
         mailSender.send(message);
     }
+
+    public void enviarNotificacao(String destinatario, String assunto, String texto) {
+        if (destinatario == null || destinatario.isBlank()) {
+            return;
+        }
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom(mailProperties.getFrom());
+        message.setTo(destinatario);
+        message.setSubject(assunto);
+        message.setText(texto);
+        mailSender.send(message);
+    }
 }
