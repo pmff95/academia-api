@@ -113,6 +113,10 @@ public class AlunoService {
 
     public AlunoDTO findByUuid(UUID uuid) {
         Aluno entity = repository.findById(uuid).orElseThrow(() -> new ApiException("Aluno não encontrado"));
+        Academia academia = obterAcademiaUsuario();
+        if (academia != null && (entity.getAcademia() == null || !academia.getUuid().equals(entity.getAcademia().getUuid()))) {
+            throw new ApiException("Acesso negado a aluno de outra academia");
+        }
         return mapper.toDto(entity);
     }
 
@@ -123,6 +127,15 @@ public class AlunoService {
             throw new ApiException("Aluno não encontrado");
         }
         Aluno entity = opt.get();
+
+        Academia academia = obterAcademiaUsuario();
+        if (academia != null) {
+            if (entity.getAcademia() == null || !academia.getUuid().equals(entity.getAcademia().getUuid())) {
+                throw new ApiException("Acesso negado a aluno de outra academia");
+            }
+            entity.setAcademia(academia);
+        }
+
         entity.setNome(dto.getNome());
         entity.setCpf(dto.getCpf());
         entity.setDataNascimento(dto.getDataNascimento());
@@ -143,7 +156,41 @@ public class AlunoService {
             entity.setProfessor(null);
         }
 
+        repository.save(entity);
+        return "Aluno atualizado";
+    }
+
+    @Transactional
+    public void delete(UUID uuid) {
+        Aluno entity = repository.findById(uuid).orElseThrow(() -> new ApiException("Aluno não encontrado"));
+        Academia academia = obterAcademiaUsuario();
+        if (academia != null && (entity.getAcademia() == null || !academia.getUuid().equals(entity.getAcademia().getUuid()))) {
+            throw new ApiException("Acesso negado a aluno de outra academia");
+        }
+        repository.delete(entity);
+    }
+
+    public Page<AlunoDTO> findAllNotFromLoggedProfessor(String nome, Pageable pageable) {
         UsuarioLogado usuario = SecurityUtils.getUsuarioLogadoDetalhes();
+        if (usuario == null || !usuario.possuiPerfil(Perfil.PROFESSOR)) {
+            throw new ApiException("Usuário precisa ter perfil de professor");
+        }
+        Academia academia = obterAcademiaUsuario(usuario);
+        if (nome != null && !nome.isBlank()) {
+            return repository
+                    .findByAcademiaUuidAndProfessorUuidNotOrProfessorIsNullAndNomeContainingIgnoreCase(academia.getUuid(), usuario.getUuid(), nome, pageable)
+                    .map(mapper::toDto);
+        }
+        return repository
+                .findByAcademiaUuidAndProfessorUuidNotOrProfessorIsNull(academia.getUuid(), usuario.getUuid(), pageable)
+                .map(mapper::toDto);
+    }
+
+    private Academia obterAcademiaUsuario() {
+        return obterAcademiaUsuario(SecurityUtils.getUsuarioLogadoDetalhes());
+    }
+
+    private Academia obterAcademiaUsuario(UsuarioLogado usuario) {
         boolean isMaster = usuario != null && usuario.possuiPerfil(Perfil.MASTER);
         if (usuario != null && !isMaster) {
             Usuario usuarioEntity = usuarioRepository.findByUuid(usuario.getUuid())
@@ -152,15 +199,8 @@ public class AlunoService {
             if (academia == null) {
                 throw new ApiException("Usuário precisa ter uma academia associada");
             }
-            entity.setAcademia(academia);
+            return academia;
         }
-
-        repository.save(entity);
-        return "Aluno atualizado";
-    }
-
-    @Transactional
-    public void delete(UUID uuid) {
-        repository.deleteById(uuid);
+        return null;
     }
 }

@@ -73,7 +73,7 @@ public class FichaTreinoDTO {
     public LocalDateTime getDataAtualizacao() {
         return dataAtualizacao;
     }
-
+ 
     public void setDataAtualizacao(LocalDateTime dataAtualizacao) {
         this.dataAtualizacao = dataAtualizacao;
     }
