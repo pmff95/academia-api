@@ -1,5 +1,6 @@
 package com.example.demo.dto;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -7,9 +8,11 @@ public class FichaTreinoDTO {
     private UUID uuid;
     private UUID alunoUuid;
     private UUID professorUuid;
-    private String categoria;
+    private String nome;
     private boolean preset;
-    private List<FichaTreinoExercicioDTO> exercicios;
+    private List<FichaTreinoCategoriaDTO> categorias;
+    private LocalDateTime dataCadastro;
+    private LocalDateTime dataAtualizacao;
 
     public UUID getUuid() {
         return uuid;
@@ -35,12 +38,12 @@ public class FichaTreinoDTO {
         this.professorUuid = professorUuid;
     }
 
-    public String getCategoria() {
-        return categoria;
+    public String getNome() {
+        return nome;
     }
 
-    public void setCategoria(String categoria) {
-        this.categoria = categoria;
+    public void setNome(String nome) {
+        this.nome = nome;
     }
 
     public boolean isPreset() {
@@ -51,11 +54,27 @@ public class FichaTreinoDTO {
         this.preset = preset;
     }
 
-    public List<FichaTreinoExercicioDTO> getExercicios() {
-        return exercicios;
+    public List<FichaTreinoCategoriaDTO> getCategorias() {
+        return categorias;
     }
 
-    public void setExercicios(List<FichaTreinoExercicioDTO> exercicios) {
-        this.exercicios = exercicios;
+    public void setCategorias(List<FichaTreinoCategoriaDTO> categorias) {
+        this.categorias = categorias;
+    }
+
+    public LocalDateTime getDataCadastro() {
+        return dataCadastro;
+    }
+
+    public void setDataCadastro(LocalDateTime dataCadastro) {
+        this.dataCadastro = dataCadastro;
+    }
+
+    public LocalDateTime getDataAtualizacao() {
+        return dataAtualizacao;
+    }
+
+    public void setDataAtualizacao(LocalDateTime dataAtualizacao) {
+        this.dataAtualizacao = dataAtualizacao;
     }
 }

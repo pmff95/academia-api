@@ -2,6 +2,7 @@ package com.example.demo.controller;
 
 import com.example.demo.common.response.ApiReturn;
 import com.example.demo.dto.FichaTreinoDTO;
+import com.example.demo.dto.FichaTreinoHistoricoDTO;
 import com.example.demo.service.FichaTreinoService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -41,7 +42,7 @@ public class FichaTreinoController {
     }
 
     @GetMapping("/historico/{alunoUuid}")
-    public ResponseEntity<ApiReturn<List<FichaTreinoDTO>>> historicoPorAluno(@PathVariable UUID alunoUuid) {
+    public ResponseEntity<ApiReturn<List<FichaTreinoHistoricoDTO>>> historicoPorAluno(@PathVariable UUID alunoUuid) {
         return ResponseEntity.ok(ApiReturn.of(service.findHistoricoByAluno(alunoUuid)));
     }
 
