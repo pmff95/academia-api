@@ -53,6 +53,7 @@ public class FichaTreinoMapper {
     private FichaTreinoExercicioDTO toExercicioDto(FichaTreinoExercicio exercicio) {
         FichaTreinoExercicioDTO dto = new FichaTreinoExercicioDTO();
         dto.setExercicioUuid(exercicio.getExercicio().getUuid());
+        dto.setExercicioNome(exercicio.getExercicio().getNome());
         dto.setRepeticoes(exercicio.getRepeticoes());
         dto.setCarga(exercicio.getCarga());
         return dto;
