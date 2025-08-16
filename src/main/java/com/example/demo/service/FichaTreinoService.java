@@ -199,13 +199,6 @@ public class FichaTreinoService {
         return "Ficha atribuída ao aluno";
     }
 
-    public Page<FichaTreinoDTO> findAll(Pageable pageable) {
-        return repository.findAll(pageable).map(mapper::toDto);
-    }
-
-    public List<FichaTreinoDTO> findByAluno(UUID alunoUuid) {
-        return repository.findByAluno_Uuid(alunoUuid).stream().map(mapper::toDto).toList();
-    }
 
     public FichaTreinoDTO findByUuid(UUID fichaUuid) {
         FichaTreino ficha = repository.findByUuid(fichaUuid)
