@@ -6,6 +6,7 @@ import com.example.demo.common.response.ApiReturn;
 import com.example.demo.common.response.ErrorType;
 import com.example.demo.dto.AuthRequest;
 import com.example.demo.dto.AuthResponse;
+import com.example.demo.dto.RefreshTokenRequest;
 import com.example.demo.dto.ReenviarSenhaDTO;
 import com.example.demo.dto.AlterarSenhaDTO;
 import com.example.demo.entity.Usuario;
@@ -14,6 +15,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,11 +31,14 @@ public class AuthController {
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
     private final UsuarioService usuarioService;
+    private final UserDetailsService userDetailsService;
 
-    public AuthController(AuthenticationManager authenticationManager, JwtService jwtService, UsuarioService usuarioService) {
+    public AuthController(AuthenticationManager authenticationManager, JwtService jwtService, UsuarioService usuarioService,
+                          UserDetailsService userDetailsService) {
         this.authenticationManager = authenticationManager;
         this.jwtService = jwtService;
         this.usuarioService = usuarioService;
+        this.userDetailsService = userDetailsService;
     }
 
     @PostMapping("/login")
@@ -55,6 +60,7 @@ public class AuthController {
                 );
                 return ResponseEntity.ok(ApiReturn.of(new AuthResponse(
                         jwtService.generateToken(claims, userDetails),
+                        jwtService.generateRefreshToken(claims, userDetails),
                         primeiroAcesso,
                         usuario.getNome(),
                         usuario.getEmail(),
@@ -76,5 +82,33 @@ public class AuthController {
     @PostMapping("/alterar-senha")
     public ResponseEntity<ApiReturn<String>> alterarSenha(@RequestBody AlterarSenhaDTO dto) {
         return ResponseEntity.ok(ApiReturn.of(usuarioService.alterarSenha(dto.getLogin(), dto.getSenhaAtual(), dto.getNovaSenha())));
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<ApiReturn<?>> refresh(@RequestBody RefreshTokenRequest request) {
+        try {
+            String username = jwtService.extractUsername(request.getRefreshToken());
+            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+            if (jwtService.isTokenValid(request.getRefreshToken(), userDetails)) {
+                Usuario usuario = usuarioService.buscarPorLogin(username);
+                Map<String, Object> claims = Map.of(
+                        "nome", usuario.getNome(),
+                        "email", usuario.getEmail(),
+                        "perfil", usuario.getPerfil().name()
+                );
+                return ResponseEntity.ok(ApiReturn.of(new AuthResponse(
+                        jwtService.generateToken(claims, userDetails),
+                        jwtService.generateRefreshToken(claims, userDetails),
+                        false,
+                        usuario.getNome(),
+                        usuario.getEmail(),
+                        usuario.getPerfil().name())));
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(401)
+                    .body(ApiReturn.of(ErrorType.UNAUTHORIZED, ErrorType.UNAUTHORIZED.getCode(), "Refresh token inválido", e));
+        }
+        return ResponseEntity.status(401)
+                .body(ApiReturn.of(ErrorType.UNAUTHORIZED, ErrorType.UNAUTHORIZED.getCode(), "Refresh token inválido", null));
     }
 }
