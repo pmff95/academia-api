@@ -1,5 +1,6 @@
 package com.example.demo.dto;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -11,6 +12,7 @@ public class FichaTreinoDTO {
     private String nome;
     private boolean preset;
     private List<FichaTreinoCategoriaDTO> categorias;
+    private LocalDate dataValidade;
     private LocalDateTime dataCadastro;
     private LocalDateTime dataAtualizacao;
 
@@ -60,6 +62,14 @@ public class FichaTreinoDTO {
 
     public void setCategorias(List<FichaTreinoCategoriaDTO> categorias) {
         this.categorias = categorias;
+    }
+
+    public LocalDate getDataValidade() {
+        return dataValidade;
+    }
+
+    public void setDataValidade(LocalDate dataValidade) {
+        this.dataValidade = dataValidade;
     }
 
     public LocalDateTime getDataCadastro() {

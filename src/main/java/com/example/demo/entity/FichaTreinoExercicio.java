@@ -27,6 +27,12 @@ public class FichaTreinoExercicio {
     @Column(nullable = false)
     private Double carga;
 
+    @Column(nullable = false)
+    private Integer series;
+
+    @Column(nullable = false)
+    private Integer tempoDescanso;
+
     @PrePersist
     private void gerarUuid() {
         if (uuid == null) {

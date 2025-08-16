@@ -32,6 +32,7 @@ public class FichaTreinoMapper {
         }
         dto.setNome(ficha.getNome());
         dto.setPreset(ficha.isPreset());
+        dto.setDataValidade(ficha.getDataValidade());
         dto.setDataCadastro(ficha.getDataCadastro());
         dto.setDataAtualizacao(ficha.getDataAtualizacao());
         dto.setCategorias(ficha.getCategorias().stream().map(this::toCategoriaDto).collect(Collectors.toList()));
@@ -46,6 +47,7 @@ public class FichaTreinoMapper {
         FichaTreinoCategoriaDTO dto = new FichaTreinoCategoriaDTO();
         dto.setUuid(categoria.getUuid());
         dto.setNome(categoria.getNome());
+        dto.setObservacao(categoria.getObservacao());
         dto.setExercicios(categoria.getExercicios().stream().map(this::toExercicioDto).collect(Collectors.toList()));
         return dto;
     }
@@ -56,6 +58,8 @@ public class FichaTreinoMapper {
         dto.setExercicioNome(exercicio.getExercicio().getNome());
         dto.setRepeticoes(exercicio.getRepeticoes());
         dto.setCarga(exercicio.getCarga());
+        dto.setSeries(exercicio.getSeries());
+        dto.setTempoDescanso(exercicio.getTempoDescanso());
         return dto;
     }
 

@@ -22,6 +22,9 @@ public class FichaTreinoCategoria {
     @Column(nullable = false)
     private String nome;
 
+    @Column
+    private String observacao;
+
     @OneToMany(mappedBy = "categoria", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<FichaTreinoExercicio> exercicios = new ArrayList<>();
 
