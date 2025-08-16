@@ -52,6 +52,12 @@ public class FichaTreinoController {
         return ResponseEntity.ok(ApiReturn.of(service.findHistoricoByAluno(alunoUuid)));
     }
 
+    @GetMapping("/presets")
+    @PreAuthorize("hasRole('PROFESSOR')")
+    public ResponseEntity<ApiReturn<List<FichaTreinoDTO>>> listarPresetsProfessor() {
+        return ResponseEntity.ok(ApiReturn.of(service.findPresetsByProfessor()));
+    }
+
     @PostMapping("/preset/{presetUuid}/aluno/{alunoUuid}")
     public ResponseEntity<ApiReturn<String>> atribuirPreset(@PathVariable UUID presetUuid, @PathVariable UUID alunoUuid) {
         return ResponseEntity.ok(ApiReturn.of(service.assignPreset(presetUuid, alunoUuid)));

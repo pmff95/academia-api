@@ -239,4 +239,13 @@ public class FichaTreinoService {
                 .map(h -> mapper.toDto(h.getFicha()))
                 .orElseThrow(() -> new ApiException("Aluno não possui ficha de treino"));
     }
+
+    public List<FichaTreinoDTO> findPresetsByProfessor() {
+        UsuarioLogado usuario = SecurityUtils.getUsuarioLogadoDetalhes();
+        if (usuario == null) {
+            throw new ApiException("Usuário não autenticado");
+        }
+        List<FichaTreino> fichas = repository.findByProfessor_UuidAndPresetTrue(usuario.getUuid());
+        return fichas.stream().map(mapper::toDto).toList();
+    }
 }
