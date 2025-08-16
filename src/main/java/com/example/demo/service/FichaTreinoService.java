@@ -205,4 +205,10 @@ public class FichaTreinoService {
                 .map(h -> mapper.toHistoricoDto(h.getFicha()))
                 .toList();
     }
+
+    public FichaTreinoDTO findCurrentByAluno(UUID alunoUuid) {
+        return historicoRepository.findFirstByAluno_UuidOrderByDataCadastroDesc(alunoUuid)
+                .map(h -> mapper.toDto(h.getFicha()))
+                .orElseThrow(() -> new ApiException("Aluno não possui ficha de treino"));
+    }
 }
