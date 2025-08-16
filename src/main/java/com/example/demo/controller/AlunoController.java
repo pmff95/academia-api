@@ -47,6 +47,13 @@ public class AlunoController {
         return ResponseEntity.ok(ApiReturn.of(service.findAll(nome, pageable)));
     }
 
+    @GetMapping("/disponiveis")
+    @PreAuthorize("hasRole('PROFESSOR')")
+    public ResponseEntity<ApiReturn<Page<AlunoDTO>>> listarDisponiveis(@RequestParam(required = false) String nome,
+                                                                       Pageable pageable) {
+        return ResponseEntity.ok(ApiReturn.of(service.findAllNotFromLoggedProfessor(nome, pageable)));
+    }
+
     @GetMapping("/{uuid}")
     @PreAuthorize("hasAnyRole('MASTER','ADMIN','PROFESSOR')")
     public ResponseEntity<ApiReturn<AlunoDTO>> buscar(@PathVariable UUID uuid) {
