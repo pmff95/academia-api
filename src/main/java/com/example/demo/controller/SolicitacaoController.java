@@ -41,7 +41,7 @@ public class SolicitacaoController {
         return ResponseEntity.ok(ApiReturn.of(service.listarPendentes(alunoUuid)));
     }
 
-    @GetMapping("/professores")
+    @GetMapping("/pendentes")
     @PreAuthorize("hasRole('PROFESSOR')")
     public ResponseEntity<ApiReturn<List<SolicitacaoDTO>>> listarPendentesProfessor() {
         return ResponseEntity.ok(ApiReturn.of(service.listarPendentesProfessor()));

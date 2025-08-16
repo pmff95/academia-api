@@ -32,20 +32,20 @@ public class FichaTreinoController {
         return ResponseEntity.ok(ApiReturn.of(service.create(dto)));
     }
 
-    @GetMapping
-    public ResponseEntity<ApiReturn<Page<FichaTreinoDTO>>> listar(Pageable pageable) {
-        return ResponseEntity.ok(ApiReturn.of(service.findAll(pageable)));
-    }
+//    @GetMapping
+//    public ResponseEntity<ApiReturn<Page<FichaTreinoDTO>>> listar(Pageable pageable) {
+//        return ResponseEntity.ok(ApiReturn.of(service.findAll(pageable)));
+//    }
 
     @GetMapping("/{fichaUuid}")
     public ResponseEntity<ApiReturn<FichaTreinoDTO>> detalhar(@PathVariable UUID fichaUuid) {
         return ResponseEntity.ok(ApiReturn.of(service.findByUuid(fichaUuid)));
     }
-
-    @GetMapping("/aluno/{alunoUuid}")
-    public ResponseEntity<ApiReturn<List<FichaTreinoDTO>>> listarPorAluno(@PathVariable UUID alunoUuid) {
-        return ResponseEntity.ok(ApiReturn.of(service.findByAluno(alunoUuid)));
-    }
+//
+//    @GetMapping("/aluno/{alunoUuid}")
+//    public ResponseEntity<ApiReturn<List<FichaTreinoDTO>>> listarPorAluno(@PathVariable UUID alunoUuid) {
+//        return ResponseEntity.ok(ApiReturn.of(service.findByAluno(alunoUuid)));
+//    }
 
     @GetMapping("/historico/{alunoUuid}")
     public ResponseEntity<ApiReturn<List<FichaTreinoHistoricoDTO>>> historicoPorAluno(@PathVariable UUID alunoUuid) {
@@ -57,7 +57,7 @@ public class FichaTreinoController {
         return ResponseEntity.ok(ApiReturn.of(service.assignPreset(presetUuid, alunoUuid)));
     }
 
-    @GetMapping("/me")
+    @GetMapping("/ficha-atual")
     @PreAuthorize("hasRole('ALUNO')")
     public ResponseEntity<ApiReturn<FichaTreinoDTO>> fichaAlunoLogado() {
         UUID alunoUuid = SecurityUtils.getUsuarioLogadoDetalhes().getUuid();
