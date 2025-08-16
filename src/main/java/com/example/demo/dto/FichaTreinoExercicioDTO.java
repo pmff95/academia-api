@@ -4,6 +4,7 @@ import java.util.UUID;
 
 public class FichaTreinoExercicioDTO {
     private UUID exercicioUuid;
+    private String exercicioNome;
     private Integer repeticoes;
     private Double carga;
 
@@ -13,6 +14,14 @@ public class FichaTreinoExercicioDTO {
 
     public void setExercicioUuid(UUID exercicioUuid) {
         this.exercicioUuid = exercicioUuid;
+    }
+
+    public String getExercicioNome() {
+        return exercicioNome;
+    }
+
+    public void setExercicioNome(String exercicioNome) {
+        this.exercicioNome = exercicioNome;
     }
 
     public Integer getRepeticoes() {
