@@ -3,6 +3,7 @@ package com.example.demo.service;
 import com.example.demo.common.security.SecurityUtils;
 import com.example.demo.common.security.UsuarioLogado;
 import com.example.demo.dto.FichaTreinoDTO;
+import com.example.demo.dto.FichaTreinoCategoriaDTO;
 import com.example.demo.entity.*;
 import com.example.demo.exception.ApiException;
 import com.example.demo.mapper.FichaTreinoMapper;
@@ -50,10 +51,8 @@ public class FichaTreinoService {
         Aluno aluno = obterAlunoSeNecessario(dto, usuario, isMaster, academia);
         Professor professor = obterProfessorSeNecessario(dto, academia);
 
-        validarCategoria(dto.getCategoria());
-
         FichaTreino ficha = montarFichaTreino(dto, aluno, professor);
-        ficha.setExercicios(montarExercicios(dto, ficha));
+        ficha.setCategorias(montarCategorias(dto, ficha));
 
         repository.save(ficha);
 
@@ -107,29 +106,34 @@ public class FichaTreinoService {
         return professor.getAcademia() != null && professor.getAcademia().getUuid().equals(academia.getUuid());
     }
 
-    private void validarCategoria(String categoria) {
-        if (categoria == null || categoria.isBlank()) {
-            throw new ApiException("Categoria é obrigatória");
-        }
-    }
-
     private FichaTreino montarFichaTreino(FichaTreinoDTO dto, Aluno aluno, Professor professor) {
         FichaTreino ficha = new FichaTreino();
-        ficha.setCategoria(dto.getCategoria());
         ficha.setPreset(dto.isPreset());
         ficha.setAluno(aluno);
         ficha.setProfessor(professor);
         return ficha;
     }
 
-    private List<FichaTreinoExercicio> montarExercicios(FichaTreinoDTO dto, FichaTreino ficha) {
-        return dto.getExercicios().stream().map(eDto -> {
+    private List<FichaTreinoCategoria> montarCategorias(FichaTreinoDTO dto, FichaTreino ficha) {
+        if (dto.getCategorias() == null) return List.of();
+        return dto.getCategorias().stream().map(cDto -> {
+            FichaTreinoCategoria categoria = new FichaTreinoCategoria();
+            categoria.setNome(cDto.getNome());
+            categoria.setFicha(ficha);
+            categoria.setExercicios(montarExercicios(cDto, categoria));
+            return categoria;
+        }).toList();
+    }
+
+    private List<FichaTreinoExercicio> montarExercicios(FichaTreinoCategoriaDTO cDto, FichaTreinoCategoria categoria) {
+        if (cDto.getExercicios() == null) return List.of();
+        return cDto.getExercicios().stream().map(eDto -> {
             Exercicio exercicio = exercicioRepository.findById(eDto.getExercicioUuid()).orElseThrow(() -> new ApiException("Exercício não encontrado"));
             FichaTreinoExercicio fe = new FichaTreinoExercicio();
             fe.setExercicio(exercicio);
             fe.setRepeticoes(eDto.getRepeticoes());
             fe.setCarga(eDto.getCarga());
-            fe.setFicha(ficha);
+            fe.setCategoria(categoria);
             return fe;
         }).toList();
     }
@@ -153,16 +157,22 @@ public class FichaTreinoService {
         FichaTreino ficha = new FichaTreino();
         ficha.setAluno(aluno);
         ficha.setProfessor(preset.getProfessor());
-        ficha.setCategoria(preset.getCategoria());
         ficha.setPreset(false);
-        ficha.setExercicios(new java.util.ArrayList<>());
-        for (FichaTreinoExercicio exercicio : preset.getExercicios()) {
-            FichaTreinoExercicio novo = new FichaTreinoExercicio();
-            novo.setExercicio(exercicio.getExercicio());
-            novo.setRepeticoes(exercicio.getRepeticoes());
-            novo.setCarga(exercicio.getCarga());
-            novo.setFicha(ficha);
-            ficha.getExercicios().add(novo);
+        ficha.setCategorias(new java.util.ArrayList<>());
+        for (FichaTreinoCategoria categoria : preset.getCategorias()) {
+            FichaTreinoCategoria novaCat = new FichaTreinoCategoria();
+            novaCat.setNome(categoria.getNome());
+            novaCat.setFicha(ficha);
+            novaCat.setExercicios(new java.util.ArrayList<>());
+            for (FichaTreinoExercicio exercicio : categoria.getExercicios()) {
+                FichaTreinoExercicio novo = new FichaTreinoExercicio();
+                novo.setExercicio(exercicio.getExercicio());
+                novo.setRepeticoes(exercicio.getRepeticoes());
+                novo.setCarga(exercicio.getCarga());
+                novo.setCategoria(novaCat);
+                novaCat.getExercicios().add(novo);
+            }
+            ficha.getCategorias().add(novaCat);
         }
         repository.save(ficha);
         FichaTreinoHistorico historico = new FichaTreinoHistorico();

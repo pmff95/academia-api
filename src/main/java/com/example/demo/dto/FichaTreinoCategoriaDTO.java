@@ -1,0 +1,34 @@
+package com.example.demo.dto;
+
+import java.util.List;
+import java.util.UUID;
+
+public class FichaTreinoCategoriaDTO {
+    private UUID uuid;
+    private String nome;
+    private List<FichaTreinoExercicioDTO> exercicios;
+
+    public UUID getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(UUID uuid) {
+        this.uuid = uuid;
+    }
+
+    public String getNome() {
+        return nome;
+    }
+
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
+
+    public List<FichaTreinoExercicioDTO> getExercicios() {
+        return exercicios;
+    }
+
+    public void setExercicios(List<FichaTreinoExercicioDTO> exercicios) {
+        this.exercicios = exercicios;
+    }
+}
