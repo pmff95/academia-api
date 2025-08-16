@@ -51,7 +51,7 @@ public class FichaTreinoService {
         boolean isNew = dto.getUuid() == null;
         Academia academia = obterAcademiaSeNecessario(usuario, isMaster);
         Aluno aluno = obterAlunoSeNecessario(dto, usuario, isMaster, academia);
-        Professor professor = obterProfessorSeNecessario(dto, academia);
+        Professor professor = obterProfessorSeNecessario(dto, usuario, academia);
 
         FichaTreino ficha;
         if (isNew) {
@@ -106,9 +106,16 @@ public class FichaTreinoService {
         return aluno.getAcademia() != null && aluno.getAcademia().getUuid().equals(academia.getUuid());
     }
 
-    private Professor obterProfessorSeNecessario(FichaTreinoDTO dto, Academia academia) {
-        if (dto.getProfessorUuid() != null) {
-            Professor professor = professorRepository.findById(dto.getProfessorUuid()).orElseThrow(() -> new ApiException("Professor não encontrado"));
+    private Professor obterProfessorSeNecessario(FichaTreinoDTO dto, UsuarioLogado usuario, Academia academia) {
+        UUID professorUuid = dto.getProfessorUuid();
+
+        if (usuario != null && usuario.possuiPerfil(Perfil.PROFESSOR)) {
+            professorUuid = usuario.getUuid();
+        }
+
+        if (professorUuid != null) {
+            Professor professor = professorRepository.findById(professorUuid)
+                    .orElseThrow(() -> new ApiException("Professor não encontrado"));
 
             if (academia != null && !professorPertenceAcademia(professor, academia)) {
                 throw new ApiException("Professor não pertence à sua academia");
