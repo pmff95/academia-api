@@ -14,12 +14,15 @@ import com.example.demo.repository.FichaTreinoHistoricoRepository;
 import com.example.demo.repository.FichaTreinoRepository;
 import com.example.demo.repository.ProfessorRepository;
 import com.example.demo.repository.UsuarioRepository;
+import com.example.demo.repository.TreinoSessaoRepository;
+import com.example.demo.repository.TreinoDesempenhoRepository;
 import com.example.demo.domain.enums.Perfil;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import jakarta.transaction.Transactional;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -35,6 +38,8 @@ public class FichaTreinoService {
     private final ExercicioRepository exercicioRepository;
     private final FichaTreinoHistoricoRepository historicoRepository;
     private final NotificacaoService notificacaoService;
+    private final TreinoSessaoRepository treinoSessaoRepository;
+    private final TreinoDesempenhoRepository desempenhoRepository;
 
     public FichaTreinoService(FichaTreinoRepository repository,
                               FichaTreinoMapper mapper,
@@ -43,7 +48,9 @@ public class FichaTreinoService {
                               UsuarioRepository usuarioRepository,
                               ExercicioRepository exercicioRepository,
                               FichaTreinoHistoricoRepository historicoRepository,
-                              NotificacaoService notificacaoService) {
+                              NotificacaoService notificacaoService,
+                              TreinoSessaoRepository treinoSessaoRepository,
+                              TreinoDesempenhoRepository desempenhoRepository) {
         this.repository = repository;
         this.mapper = mapper;
         this.alunoRepository = alunoRepository;
@@ -52,6 +59,8 @@ public class FichaTreinoService {
         this.exercicioRepository = exercicioRepository;
         this.historicoRepository = historicoRepository;
         this.notificacaoService = notificacaoService;
+        this.treinoSessaoRepository = treinoSessaoRepository;
+        this.desempenhoRepository = desempenhoRepository;
     }
 
     @Transactional
@@ -283,9 +292,41 @@ public class FichaTreinoService {
     }
 
     public FichaTreinoDTO findCurrentByAluno(UUID alunoUuid) {
-        return historicoRepository.findByAluno_UuidAndAtualTrue(alunoUuid)
-                .map(h -> mapper.toDto(h.getFicha()))
+        FichaTreino ficha = historicoRepository.findByAluno_UuidAndAtualTrue(alunoUuid)
+                .map(FichaTreinoHistorico::getFicha)
                 .orElseThrow(() -> new ApiException("Aluno não possui ficha de treino"));
+
+        FichaTreinoDTO dto = mapper.toDto(ficha);
+
+        if (dto.getCategorias() == null || dto.getCategorias().isEmpty()) {
+            return dto;
+        }
+
+        List<FichaTreinoCategoria> categorias = ficha.getCategorias();
+        List<TreinoSessao> sessoes = treinoSessaoRepository
+                .findByAlunoUuidAndDataBeforeOrderByDataDesc(alunoUuid, LocalDate.now());
+
+        UUID proximaCategoriaUuid;
+        if (sessoes.isEmpty()) {
+            proximaCategoriaUuid = categorias.get(0).getUuid();
+        } else {
+            LocalDate ultimaData = sessoes.get(0).getData();
+            int lastIndex = -1;
+            for (TreinoSessao sessao : sessoes) {
+                if (!sessao.getData().isEqual(ultimaData)) break;
+                int idx = categorias.indexOf(sessao.getExercicio().getCategoria());
+                if (idx > lastIndex) lastIndex = idx;
+            }
+            proximaCategoriaUuid = categorias.get((lastIndex + 1) % categorias.size()).getUuid();
+        }
+
+        dto.getCategorias().forEach(c -> {
+            c.setAtivo(c.getUuid().equals(proximaCategoriaUuid));
+            desempenhoRepository.findByAluno_UuidAndCategoria_UuidAndData(alunoUuid, c.getUuid(), LocalDate.now())
+                    .ifPresent(d -> c.setPercentualConcluido(d.getPercentual()));
+        });
+
+        return dto;
     }
 
     public List<FichaTreinoDTO> findPresetsByProfessor() {
