@@ -125,7 +125,7 @@ public class AlunoController {
 
     @GetMapping("/{uuid}/treinos")
     @PreAuthorize("hasAnyRole('MASTER','ADMIN','PROFESSOR')")
-    public ResponseEntity<ApiReturn<List<TreinoSessaoDTO>>> listarTreinos(@PathVariable UUID uuid) {
-        return ResponseEntity.ok(ApiReturn.of(treinoSessaoService.listarSessoes(uuid)));
+    public ResponseEntity<ApiReturn<List<TreinoSessaoDTO>>> listarTreinos(@PathVariable UUID alunoUuid) {
+        return ResponseEntity.ok(ApiReturn.of(treinoSessaoService.listarSessoes(alunoUuid)));
     }
 }
