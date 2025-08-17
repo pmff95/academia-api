@@ -33,7 +33,7 @@ public class UsuarioService {
     }
 
     public Usuario buscarPorLogin(String login) {
-        return repository.findByCpfOrEmailOrTelefone(login, login, login).orElse(null);
+        return repository.findByCpfOrEmailOrTelefoneOrNick(login, login, login, login).orElse(null);
     }
 
     @Transactional
@@ -64,7 +64,7 @@ public class UsuarioService {
 
     @Transactional
     public String reenviarSenha(String login) {
-        return repository.findByCpfOrEmailOrTelefone(login, login, login)
+        return repository.findByCpfOrEmailOrTelefoneOrNick(login, login, login, login)
                 .map(usuario -> {
                     String novaSenha = SenhaUtil.gerarSenhaNumerica(6);
                     usuario.setSenha(passwordEncoder.encode(novaSenha));
@@ -76,7 +76,7 @@ public class UsuarioService {
 
     @Transactional
     public String alterarSenha(String login, String senhaAtual, String novaSenha) {
-        return repository.findByCpfOrEmailOrTelefone(login, login, login)
+        return repository.findByCpfOrEmailOrTelefoneOrNick(login, login, login, login)
                 .map(usuario -> {
                     if (!passwordEncoder.matches(senhaAtual, usuario.getSenha())) {
                         return "Senha atual incorreta";

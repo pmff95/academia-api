@@ -10,7 +10,7 @@ import java.util.UUID;
 public interface UsuarioRepository extends JpaRepository<Usuario, UUID> {
     Optional<Usuario> findByEmail(String email);
 
-    Optional<Usuario> findByCpfOrEmailOrTelefone(String cpf, String email, String telefone);
+    Optional<Usuario> findByCpfOrEmailOrTelefoneOrNick(String cpf, String email, String telefone, String nick);
 
     Optional<Usuario> findByUuid(UUID uuid);
 //    @Query(value = "select * from public.usuario where uuid = :uuid", nativeQuery = true)
