@@ -1,9 +1,11 @@
 package com.example.demo.dto;
 
 import com.example.demo.entity.Musculo;
+import com.example.demo.domain.enums.StatusTreino;
 import java.util.UUID;
 
 public class FichaTreinoExercicioDTO {
+    private UUID uuid;
     private UUID exercicioUuid;
     private String exercicioNome;
     private Musculo musculo;
@@ -11,6 +13,15 @@ public class FichaTreinoExercicioDTO {
     private Double carga;
     private Integer series;
     private Integer tempoDescanso;
+    private StatusTreino status;
+
+    public UUID getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(UUID uuid) {
+        this.uuid = uuid;
+    }
 
     public UUID getExercicioUuid() {
         return exercicioUuid;
@@ -66,5 +77,13 @@ public class FichaTreinoExercicioDTO {
 
     public void setTempoDescanso(Integer tempoDescanso) {
         this.tempoDescanso = tempoDescanso;
+    }
+
+    public StatusTreino getStatus() {
+        return status;
+    }
+
+    public void setStatus(StatusTreino status) {
+        this.status = status;
     }
 }
