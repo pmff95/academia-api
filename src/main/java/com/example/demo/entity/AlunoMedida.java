@@ -21,6 +21,16 @@ public class AlunoMedida {
 
     private BigDecimal peso;
     private BigDecimal altura;
+    private BigDecimal bracoEsquerdo;
+    private BigDecimal bracoDireito;
+    private BigDecimal peito;
+    private BigDecimal abdomen;
+    private BigDecimal cintura;
+    private BigDecimal quadril;
+    private BigDecimal coxaEsquerda;
+    private BigDecimal coxaDireita;
+    private BigDecimal panturrilhaEsquerda;
+    private BigDecimal panturrilhaDireita;
 
     @CreationTimestamp
     private LocalDateTime dataRegistro;
