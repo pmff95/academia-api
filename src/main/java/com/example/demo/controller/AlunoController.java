@@ -109,10 +109,10 @@ public class AlunoController {
         return ResponseEntity.ok(ApiReturn.of(observacaoService.listarObservacoes(uuid)));
     }
 
-    @PostMapping("/{uuid}/treinos")
-    @PreAuthorize("hasAnyRole('MASTER','ADMIN','PROFESSOR')")
-    public ResponseEntity<ApiReturn<String>> registrarTreino(@PathVariable UUID uuid,
-                                                             @Validated @RequestBody TreinoSessaoDTO dto) {
+    @PostMapping("/registrar-treino")
+    @PreAuthorize("hasRole('ALUNO')")
+    public ResponseEntity<ApiReturn<String>> registrarTreino(@Validated @RequestBody TreinoSessaoDTO dto) {
+        UUID uuid = SecurityUtils.getUsuarioLogadoDetalhes().getUuid();
         return ResponseEntity.ok(ApiReturn.of(treinoSessaoService.registrarSessao(uuid, dto)));
     }
 
