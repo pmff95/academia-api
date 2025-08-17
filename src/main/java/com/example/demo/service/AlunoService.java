@@ -70,12 +70,17 @@ public class AlunoService {
         UsuarioLogado usuario = SecurityUtils.getUsuarioLogadoDetalhes();
         boolean isMaster = usuario != null && usuario.possuiPerfil(Perfil.MASTER);
         if (usuario != null && !isMaster) {
-
             Academia academia = academiaRepository.findByUuid(usuario.getAcademiaUuid());
             if (academia == null) {
                 throw new ApiException("Usuário precisa ter uma academia associada");
             }
-
+            entity.setAcademia(academia);
+        } else {
+            if (dto.getCodigoAcademia() == null || dto.getCodigoAcademia().isBlank()) {
+                throw new ApiException("Código da academia é obrigatório");
+            }
+            Academia academia = academiaRepository.findByCodigo(dto.getCodigoAcademia().toUpperCase())
+                    .orElseThrow(() -> new ApiException("Academia não encontrada"));
             entity.setAcademia(academia);
         }
         repository.save(entity);

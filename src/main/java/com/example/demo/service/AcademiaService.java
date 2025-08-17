@@ -88,6 +88,12 @@ public class AcademiaService {
         return mapper.toDto(entity);
     }
 
+    public AcademiaDTO findByCodigo(String codigo) {
+        Academia entity = repository.findByCodigo(codigo.toUpperCase())
+                .orElseThrow(() -> new ApiException("Academia não encontrada"));
+        return mapper.toDto(entity);
+    }
+
     @Transactional
     public String update(UUID uuid, AcademiaDTO dto) {
         Academia entity = repository.findById(uuid).orElseThrow(() -> new ApiException("Academia não encontrada"));
@@ -99,6 +105,7 @@ public class AcademiaService {
         entity.setLogradouro(dto.getLogradouro());
         entity.setBairro(dto.getBairro());
         entity.setTelefone(dto.getTelefone());
+        entity.setCodigo(dto.getCodigo());
 
         if (dto.getAdmin() != null && entity.getAdmin() != null) {
             entity.getAdmin().setNome(dto.getAdmin().getNome());
