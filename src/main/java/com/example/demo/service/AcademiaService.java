@@ -71,7 +71,7 @@ public class AcademiaService {
         if (admin == null || admin.getCpf() == null || admin.getEmail() == null || admin.getTelefone() == null) {
             throw new ApiException("Dados do administrador são obrigatórios");
         }
-        if (usuarioRepository.findByCpfOrEmailOrTelefone(admin.getCpf(), admin.getEmail(), admin.getTelefone()).isPresent()) {
+        if (usuarioRepository.findByCpfOrEmailOrTelefoneOrNick(admin.getCpf(), admin.getEmail(), admin.getTelefone(), admin.getNick()).isPresent()) {
             throw new ApiException("Administrador já cadastrado");
         }
     }

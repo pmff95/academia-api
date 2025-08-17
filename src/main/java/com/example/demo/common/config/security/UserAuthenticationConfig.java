@@ -18,7 +18,7 @@ public class UserAuthenticationConfig {
 
     @Bean
     public UserDetailsService userDetailsService(UsuarioRepository repository) {
-        return username -> repository.findByEmail(username)
+        return username -> repository.findByCpfOrEmailOrTelefoneOrNick(username, username, username, username)
                 .filter(usuario -> {
                     boolean usuarioAtivo = usuario.isAtivo();
                     boolean academiaAtiva = usuario.getAcademia() == null || usuario.getAcademia().isAtivo();

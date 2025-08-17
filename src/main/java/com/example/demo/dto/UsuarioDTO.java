@@ -12,6 +12,7 @@ public class UsuarioDTO {
     private String telefone;
     private String telefoneSecundario;
     private String email;
+    private String nick;
     private String numero;
     private String cep;
     private String logradouro;
@@ -73,6 +74,14 @@ public class UsuarioDTO {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getNick() {
+        return nick;
+    }
+
+    public void setNick(String nick) {
+        this.nick = nick;
     }
 
     public String getNumero() {

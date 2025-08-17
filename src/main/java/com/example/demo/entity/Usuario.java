@@ -35,6 +35,9 @@ public class Usuario {
     @Column(unique = true)
     private String email;
 
+    @Column(unique = true)
+    private String nick;
+
     private String numero;
 
     private String cep;
