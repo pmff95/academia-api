@@ -111,9 +111,16 @@ public class AlunoController {
 
     @PostMapping("/registrar-treino")
     @PreAuthorize("hasRole('ALUNO')")
-    public ResponseEntity<ApiReturn<String>> registrarTreino(@Validated @RequestBody TreinoSessaoDTO dto) {
+    public ResponseEntity<ApiReturn<Double>> registrarTreino(@Validated @RequestBody TreinoSessaoDTO dto) {
         UUID uuid = SecurityUtils.getUsuarioLogadoDetalhes().getUuid();
         return ResponseEntity.ok(ApiReturn.of(treinoSessaoService.registrarSessao(uuid, dto)));
+    }
+
+    @GetMapping("/me/treinos/percentual/{categoriaUuid}")
+    @PreAuthorize("hasRole('ALUNO')")
+    public ResponseEntity<ApiReturn<Double>> percentualTreino(@PathVariable UUID categoriaUuid) {
+        UUID uuid = SecurityUtils.getUsuarioLogadoDetalhes().getUuid();
+        return ResponseEntity.ok(ApiReturn.of(treinoSessaoService.buscarPercentualDoDia(uuid, categoriaUuid)));
     }
 
     @GetMapping("/{uuid}/treinos")

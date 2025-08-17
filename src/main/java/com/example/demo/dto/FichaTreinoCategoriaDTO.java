@@ -8,6 +8,8 @@ public class FichaTreinoCategoriaDTO {
     private String nome;
     private List<FichaTreinoExercicioDTO> exercicios;
     private String observacao;
+    private double percentualConcluido;
+    private boolean ativo;
 
     public UUID getUuid() {
         return uuid;
@@ -39,5 +41,21 @@ public class FichaTreinoCategoriaDTO {
 
     public void setObservacao(String observacao) {
         this.observacao = observacao;
+    }
+
+    public double getPercentualConcluido() {
+        return percentualConcluido;
+    }
+
+    public void setPercentualConcluido(double percentualConcluido) {
+        this.percentualConcluido = percentualConcluido;
+    }
+
+    public boolean isAtivo() {
+        return ativo;
+    }
+
+    public void setAtivo(boolean ativo) {
+        this.ativo = ativo;
     }
 }

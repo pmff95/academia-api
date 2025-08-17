@@ -8,12 +8,14 @@ import com.example.demo.repository.AlunoRepository;
 import com.example.demo.repository.TreinoSessaoRepository;
 import com.example.demo.repository.FichaTreinoRepository;
 import com.example.demo.repository.UsuarioRepository;
+import com.example.demo.repository.TreinoDesempenhoRepository;
 import com.example.demo.common.security.SecurityUtils;
 import com.example.demo.common.security.UsuarioLogado;
 import com.example.demo.domain.enums.Perfil;
 import org.springframework.stereotype.Service;
 import jakarta.transaction.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -25,21 +27,24 @@ public class TreinoSessaoService {
     private final UsuarioRepository usuarioRepository;
     private final FichaTreinoRepository fichaTreinoRepository;
     private final TreinoSessaoMapper mapper;
+    private final TreinoDesempenhoRepository desempenhoRepository;
 
     public TreinoSessaoService(TreinoSessaoRepository repository,
                                AlunoRepository alunoRepository,
                                UsuarioRepository usuarioRepository,
                                FichaTreinoRepository fichaTreinoRepository,
-                               TreinoSessaoMapper mapper) {
+                               TreinoSessaoMapper mapper,
+                               TreinoDesempenhoRepository desempenhoRepository) {
         this.repository = repository;
         this.alunoRepository = alunoRepository;
         this.usuarioRepository = usuarioRepository;
         this.fichaTreinoRepository = fichaTreinoRepository;
         this.mapper = mapper;
+        this.desempenhoRepository = desempenhoRepository;
     }
 
     @Transactional
-    public String registrarSessao(UUID alunoUuid, TreinoSessaoDTO dto) {
+    public Double registrarSessao(UUID alunoUuid, TreinoSessaoDTO dto) {
         Aluno aluno = alunoRepository.findById(alunoUuid)
                 .orElseThrow(() -> new ApiException("Aluno não encontrado"));
 
@@ -57,7 +62,25 @@ public class TreinoSessaoService {
         sessao.setExercicio(exercicio);
 
         repository.save(sessao);
-        return "Sessão registrada com sucesso";
+
+        FichaTreinoCategoria categoria = exercicio.getCategoria();
+        int total = categoria.getExercicios().size();
+        long realizados = repository.countByAlunoUuidAndExercicio_Categoria_UuidAndData(alunoUuid, categoria.getUuid(), dto.getData());
+        double percentual = (double) realizados / total * 100.0;
+
+        TreinoDesempenho desempenho = desempenhoRepository
+                .findByAluno_UuidAndCategoria_UuidAndData(alunoUuid, categoria.getUuid(), dto.getData())
+                .orElseGet(() -> {
+                    TreinoDesempenho d = new TreinoDesempenho();
+                    d.setAluno(aluno);
+                    d.setCategoria(categoria);
+                    d.setData(dto.getData());
+                    return d;
+                });
+        desempenho.setPercentual(percentual);
+        desempenhoRepository.save(desempenho);
+
+        return percentual;
     }
 
     public List<TreinoSessaoDTO> listarSessoes(UUID alunoUuid) {
@@ -67,6 +90,13 @@ public class TreinoSessaoService {
         return repository.findByAlunoUuid(alunoUuid).stream()
                 .map(mapper::toDto)
                 .collect(Collectors.toList());
+    }
+
+    public double buscarPercentualDoDia(UUID alunoUuid, UUID categoriaUuid) {
+        return desempenhoRepository
+                .findByAluno_UuidAndCategoria_UuidAndData(alunoUuid, categoriaUuid, LocalDate.now())
+                .map(TreinoDesempenho::getPercentual)
+                .orElse(0d);
     }
 
     private void validarMesmaAcademia(Aluno aluno) {
