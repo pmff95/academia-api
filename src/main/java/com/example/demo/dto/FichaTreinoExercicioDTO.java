@@ -1,10 +1,12 @@
 package com.example.demo.dto;
 
+import com.example.demo.entity.Musculo;
 import java.util.UUID;
 
 public class FichaTreinoExercicioDTO {
     private UUID exercicioUuid;
     private String exercicioNome;
+    private Musculo musculo;
     private Integer repeticoes;
     private Double carga;
     private Integer series;
@@ -24,6 +26,14 @@ public class FichaTreinoExercicioDTO {
 
     public void setExercicioNome(String exercicioNome) {
         this.exercicioNome = exercicioNome;
+    }
+
+    public Musculo getMusculo() {
+        return musculo;
+    }
+
+    public void setMusculo(Musculo musculo) {
+        this.musculo = musculo;
     }
 
     public Integer getRepeticoes() {
