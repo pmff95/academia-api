@@ -20,8 +20,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import jakarta.transaction.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class FichaTreinoService {
@@ -155,7 +157,7 @@ public class FichaTreinoService {
     }
 
     private List<FichaTreinoCategoria> montarCategorias(FichaTreinoDTO dto, FichaTreino ficha) {
-        if (dto.getCategorias() == null) return List.of();
+        if (dto.getCategorias() == null) return new ArrayList<>();
         return dto.getCategorias().stream().map(cDto -> {
             FichaTreinoCategoria categoria = new FichaTreinoCategoria();
             categoria.setNome(cDto.getNome());
@@ -163,11 +165,11 @@ public class FichaTreinoService {
             categoria.setFicha(ficha);
             categoria.setExercicios(montarExercicios(cDto, categoria));
             return categoria;
-        }).toList();
+        }).collect(Collectors.toList());
     }
 
     private List<FichaTreinoExercicio> montarExercicios(FichaTreinoCategoriaDTO cDto, FichaTreinoCategoria categoria) {
-        if (cDto.getExercicios() == null) return List.of();
+        if (cDto.getExercicios() == null) return new ArrayList<>();
         return cDto.getExercicios().stream().map(eDto -> {
             Exercicio exercicio = exercicioRepository.findById(eDto.getExercicioUuid()).orElseThrow(() -> new ApiException("Exercício não encontrado"));
             FichaTreinoExercicio fe = new FichaTreinoExercicio();
@@ -178,7 +180,7 @@ public class FichaTreinoService {
             fe.setTempoDescanso(eDto.getTempoDescanso());
             fe.setCategoria(categoria);
             return fe;
-        }).toList();
+        }).collect(Collectors.toList());
     }
 
     private void salvarHistoricoSeNecessario(FichaTreino ficha) {
@@ -210,13 +212,13 @@ public class FichaTreinoService {
         ficha.setProfessor(preset.getProfessor());
         ficha.setPreset(false);
         ficha.setDataValidade(preset.getDataValidade());
-        ficha.setCategorias(new java.util.ArrayList<>());
+        ficha.setCategorias(new ArrayList<>());
         for (FichaTreinoCategoria categoria : preset.getCategorias()) {
             FichaTreinoCategoria novaCat = new FichaTreinoCategoria();
             novaCat.setNome(categoria.getNome());
             novaCat.setObservacao(categoria.getObservacao());
             novaCat.setFicha(ficha);
-            novaCat.setExercicios(new java.util.ArrayList<>());
+            novaCat.setExercicios(new ArrayList<>());
             for (FichaTreinoExercicio exercicio : categoria.getExercicios()) {
                 FichaTreinoExercicio novo = new FichaTreinoExercicio();
                 novo.setExercicio(exercicio.getExercicio());
