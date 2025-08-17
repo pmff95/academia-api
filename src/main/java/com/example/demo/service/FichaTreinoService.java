@@ -27,6 +27,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import java.util.Map;
+
+import com.example.demo.domain.enums.StatusTreino;
 
 @Service
 public class FichaTreinoService {
@@ -320,10 +323,16 @@ public class FichaTreinoService {
             proximaCategoriaUuid = categorias.get((lastIndex + 1) % categorias.size()).getUuid();
         }
 
+        List<TreinoSessao> sessoesHoje = treinoSessaoRepository
+                .findByAlunoUuidAndData(alunoUuid, LocalDate.now());
+        Map<UUID, StatusTreino> statusMap = sessoesHoje.stream()
+                .collect(Collectors.toMap(s -> s.getExercicio().getUuid(), TreinoSessao::getStatus, (a, b) -> b));
+
         dto.getCategorias().forEach(c -> {
             c.setAtivo(c.getUuid().equals(proximaCategoriaUuid));
             desempenhoRepository.findByAluno_UuidAndCategoria_UuidAndData(alunoUuid, c.getUuid(), LocalDate.now())
                     .ifPresent(d -> c.setPercentualConcluido(d.getPercentual()));
+            c.getExercicios().forEach(e -> e.setStatus(statusMap.getOrDefault(e.getUuid(), StatusTreino.PENDENTE)));
         });
 
         return dto;

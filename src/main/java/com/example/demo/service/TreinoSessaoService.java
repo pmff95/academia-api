@@ -12,6 +12,7 @@ import com.example.demo.repository.TreinoDesempenhoRepository;
 import com.example.demo.common.security.SecurityUtils;
 import com.example.demo.common.security.UsuarioLogado;
 import com.example.demo.domain.enums.Perfil;
+import com.example.demo.domain.enums.StatusTreino;
 import org.springframework.stereotype.Service;
 import jakarta.transaction.Transactional;
 
@@ -57,15 +58,26 @@ public class TreinoSessaoService {
                 .findFirst()
                 .orElseThrow(() -> new ApiException("Exercício não encontrado na ficha do aluno"));
 
-        TreinoSessao sessao = mapper.toEntity(dto);
-        sessao.setAluno(aluno);
-        sessao.setExercicio(exercicio);
+        TreinoSessao sessao = repository
+                .findByAlunoUuidAndExercicio_UuidAndData(alunoUuid, dto.getExercicioUuid(), dto.getData())
+                .orElse(null);
+
+        if (sessao == null) {
+            sessao = mapper.toEntity(dto);
+            sessao.setAluno(aluno);
+            sessao.setExercicio(exercicio);
+            sessao.setStatus(StatusTreino.EM_ANDAMENTO);
+        } else {
+            sessao.setRepeticoesRealizadas(dto.getRepeticoesRealizadas());
+            sessao.setCargaRealizada(dto.getCargaRealizada());
+            sessao.setStatus(StatusTreino.CONCLUIDO);
+        }
 
         repository.save(sessao);
 
         FichaTreinoCategoria categoria = exercicio.getCategoria();
         int total = categoria.getExercicios().size();
-        long realizados = repository.countByAlunoUuidAndExercicio_Categoria_UuidAndData(alunoUuid, categoria.getUuid(), dto.getData());
+        long realizados = repository.countByAlunoUuidAndExercicio_Categoria_UuidAndDataAndStatus(alunoUuid, categoria.getUuid(), dto.getData(), StatusTreino.CONCLUIDO);
         double percentual = (double) realizados / total * 100.0;
 
         TreinoDesempenho desempenho = desempenhoRepository
