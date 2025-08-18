@@ -54,7 +54,7 @@ public class TreinoSessaoService {
         FichaTreinoExercicio exercicio = fichaTreinoRepository.findByAluno_Uuid(alunoUuid).stream()
                 .flatMap(f -> f.getCategorias().stream())
                 .flatMap(c -> c.getExercicios().stream())
-                .filter(e -> e.getUuid().equals(dto.getExercicioUuid()))
+                .filter(e -> e.getExercicio().getUuid().equals(dto.getExercicioUuid()))
                 .findFirst()
                 .orElseThrow(() -> new ApiException("Exercício não encontrado na ficha do aluno"));
 
@@ -88,7 +88,7 @@ public class TreinoSessaoService {
                     TreinoDesempenho d = new TreinoDesempenho();
                     d.setAluno(aluno);
                     d.setCategoria(categoria);
-                    d.setData(dto.getData());
+                    d.setData(LocalDate.now());
                     return d;
                 });
         desempenho.setPercentual(percentual);
