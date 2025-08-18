@@ -66,9 +66,11 @@ public class TreinoSessaoService {
             sessao = mapper.toEntity(dto);
             sessao.setAluno(aluno);
             sessao.setExercicio(exercicio);
+            sessao.setData(LocalDate.now());
             sessao.setStatus(StatusTreino.EM_ANDAMENTO);
         } else {
             sessao.setRepeticoesRealizadas(dto.getRepeticoesRealizadas());
+            sessao.setData(LocalDate.now());
             sessao.setCargaRealizada(dto.getCargaRealizada());
             sessao.setStatus(StatusTreino.CONCLUIDO);
         }

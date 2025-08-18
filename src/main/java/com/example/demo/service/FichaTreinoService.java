@@ -44,16 +44,7 @@ public class FichaTreinoService {
     private final TreinoSessaoRepository treinoSessaoRepository;
     private final TreinoDesempenhoRepository desempenhoRepository;
 
-    public FichaTreinoService(FichaTreinoRepository repository,
-                              FichaTreinoMapper mapper,
-                              AlunoRepository alunoRepository,
-                              ProfessorRepository professorRepository,
-                              UsuarioRepository usuarioRepository,
-                              ExercicioRepository exercicioRepository,
-                              FichaTreinoHistoricoRepository historicoRepository,
-                              NotificacaoService notificacaoService,
-                              TreinoSessaoRepository treinoSessaoRepository,
-                              TreinoDesempenhoRepository desempenhoRepository) {
+    public FichaTreinoService(FichaTreinoRepository repository, FichaTreinoMapper mapper, AlunoRepository alunoRepository, ProfessorRepository professorRepository, UsuarioRepository usuarioRepository, ExercicioRepository exercicioRepository, FichaTreinoHistoricoRepository historicoRepository, NotificacaoService notificacaoService, TreinoSessaoRepository treinoSessaoRepository, TreinoDesempenhoRepository desempenhoRepository) {
         this.repository = repository;
         this.mapper = mapper;
         this.alunoRepository = alunoRepository;
@@ -80,19 +71,21 @@ public class FichaTreinoService {
         if (isNew) {
             ficha = montarFichaTreino(dto, aluno, professor);
         } else {
-            ficha = repository.findByUuid(dto.getUuid())
-                    .orElseThrow(() -> new ApiException("Ficha de treino não encontrada"));
+            ficha = repository.findByUuid(dto.getUuid()).orElseThrow(() -> new ApiException("Ficha de treino não encontrada"));
             ficha.setNome(dto.getNome());
             ficha.setPreset(dto.isPreset());
             ficha.setAluno(aluno);
             ficha.setProfessor(professor);
             ficha.setDataValidade(dto.getDataValidade());
+
+            // limpa categorias antigas mas mantém a mesma lista
             ficha.getCategorias().clear();
+            // adiciona novas
+            ficha.getCategorias().addAll(montarCategorias(dto, ficha));
         }
 
-        ficha.setCategorias(montarCategorias(dto, ficha));
-
         repository.save(ficha);
+
         if (isNew) {
             salvarHistoricoSeNecessario(ficha);
             if (aluno != null) {
@@ -105,6 +98,7 @@ public class FichaTreinoService {
         }
         return "Ficha de treino atualizada com sucesso";
     }
+
 
     private Academia obterAcademiaSeNecessario(UsuarioLogado usuario, boolean isMaster) {
         if (usuario != null && !isMaster) {
@@ -143,8 +137,7 @@ public class FichaTreinoService {
         }
 
         if (professorUuid != null) {
-            Professor professor = professorRepository.findById(professorUuid)
-                    .orElseThrow(() -> new ApiException("Professor não encontrado"));
+            Professor professor = professorRepository.findById(professorUuid).orElseThrow(() -> new ApiException("Professor não encontrado"));
 
             if (academia != null && !professorPertenceAcademia(professor, academia)) {
                 throw new ApiException("Professor não pertence à sua academia");
@@ -197,11 +190,10 @@ public class FichaTreinoService {
 
     private void salvarHistoricoSeNecessario(FichaTreino ficha) {
         if (!ficha.isPreset() && ficha.getAluno() != null) {
-            historicoRepository.findByAluno_UuidAndAtualTrue(ficha.getAluno().getUuid())
-                    .ifPresent(h -> {
-                        h.setAtual(false);
-                        historicoRepository.save(h);
-                    });
+            historicoRepository.findByAluno_UuidAndAtualTrue(ficha.getAluno().getUuid()).ifPresent(h -> {
+                h.setAtual(false);
+                historicoRepository.save(h);
+            });
 
             FichaTreinoHistorico historico = new FichaTreinoHistorico();
             historico.setAluno(ficha.getAluno());
@@ -244,11 +236,10 @@ public class FichaTreinoService {
             ficha.getCategorias().add(novaCat);
         }
         repository.save(ficha);
-        historicoRepository.findByAluno_UuidAndAtualTrue(aluno.getUuid())
-                .ifPresent(h -> {
-                    h.setAtual(false);
-                    historicoRepository.save(h);
-                });
+        historicoRepository.findByAluno_UuidAndAtualTrue(aluno.getUuid()).ifPresent(h -> {
+            h.setAtual(false);
+            historicoRepository.save(h);
+        });
 
         FichaTreinoHistorico historico = new FichaTreinoHistorico();
         historico.setAluno(aluno);
@@ -261,32 +252,26 @@ public class FichaTreinoService {
 
 
     public FichaTreinoDTO findByUuid(UUID fichaUuid) {
-        FichaTreino ficha = repository.findByUuid(fichaUuid)
-                .orElseThrow(() -> new ApiException("Ficha de treino não encontrada"));
+        FichaTreino ficha = repository.findByUuid(fichaUuid).orElseThrow(() -> new ApiException("Ficha de treino não encontrada"));
         return mapper.toDto(ficha);
     }
 
     public List<FichaTreinoHistoricoDTO> findHistoricoByAluno(UUID alunoUuid) {
-        return historicoRepository.findByAluno_UuidOrderByDataCadastroDesc(alunoUuid)
-                .stream()
-                .map(mapper::toHistoricoDto)
-                .toList();
+        return historicoRepository.findByAluno_UuidOrderByDataCadastroDesc(alunoUuid).stream().map(mapper::toHistoricoDto).toList();
     }
 
     @Transactional
     public String atualizarFichaAtual(UUID fichaUuid) {
-        FichaTreinoHistorico historico = historicoRepository.findByFicha_Uuid(fichaUuid)
-                .orElseThrow(() -> new ApiException("Ficha de treino não encontrada"));
+        FichaTreinoHistorico historico = historicoRepository.findByFicha_Uuid(fichaUuid).orElseThrow(() -> new ApiException("Ficha de treino não encontrada"));
 
         UUID alunoUuid = historico.getAluno().getUuid();
 
-        historicoRepository.findByAluno_UuidAndAtualTrue(alunoUuid)
-                .ifPresent(h -> {
-                    if (!h.getFicha().getUuid().equals(fichaUuid)) {
-                        h.setAtual(false);
-                        historicoRepository.save(h);
-                    }
-                });
+        historicoRepository.findByAluno_UuidAndAtualTrue(alunoUuid).ifPresent(h -> {
+            if (!h.getFicha().getUuid().equals(fichaUuid)) {
+                h.setAtual(false);
+                historicoRepository.save(h);
+            }
+        });
 
         historico.setAtual(true);
         historicoRepository.save(historico);
@@ -295,9 +280,7 @@ public class FichaTreinoService {
     }
 
     public FichaTreinoDTO findCurrentByAluno(UUID alunoUuid) {
-        FichaTreino ficha = historicoRepository.findByAluno_UuidAndAtualTrue(alunoUuid)
-                .map(FichaTreinoHistorico::getFicha)
-                .orElseThrow(() -> new ApiException("Aluno não possui ficha de treino"));
+        FichaTreino ficha = historicoRepository.findByAluno_UuidAndAtualTrue(alunoUuid).map(FichaTreinoHistorico::getFicha).orElseThrow(() -> new ApiException("Aluno não possui ficha de treino"));
 
         FichaTreinoDTO dto = mapper.toDto(ficha);
 
@@ -306,8 +289,7 @@ public class FichaTreinoService {
         }
 
         List<FichaTreinoCategoria> categorias = ficha.getCategorias();
-        List<TreinoSessao> sessoes = treinoSessaoRepository
-                .findByAlunoUuidAndDataBeforeOrderByDataDesc(alunoUuid, LocalDate.now());
+        List<TreinoSessao> sessoes = treinoSessaoRepository.findByAlunoUuidAndDataBeforeOrderByDataDesc(alunoUuid, LocalDate.now());
 
         UUID proximaCategoriaUuid;
         if (sessoes.isEmpty()) {
