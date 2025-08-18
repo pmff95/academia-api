@@ -19,4 +19,6 @@ public interface TreinoSessaoRepository extends JpaRepository<TreinoSessao, UUID
     List<TreinoSessao> findByAlunoUuidAndData(UUID alunoUuid, LocalDate data);
 
     List<TreinoSessao> findByAlunoUuidAndDataBeforeOrderByDataDesc(UUID alunoUuid, LocalDate data);
+
+    boolean existsByExercicio_Uuid(UUID exercicioUuid);
 }
