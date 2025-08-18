@@ -40,7 +40,7 @@ public class TreinoSessao {
             uuid = UUID.randomUUID();
         }
         if (status == null) {
-            status = StatusTreino.EM_ANDAMENTO;
+            status = StatusTreino.PENDENTE;
         }
     }
 }
