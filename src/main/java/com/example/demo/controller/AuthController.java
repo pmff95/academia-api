@@ -56,7 +56,8 @@ public class AuthController {
                 Map<String, Object> claims = Map.of(
                         "nome", usuario.getNome(),
                         "email", usuario.getEmail(),
-                        "perfil", usuario.getPerfil().name()
+                        "perfil", usuario.getPerfil().name(),
+                        "tema", usuario.getTema().name()
                 );
                 return ResponseEntity.ok(ApiReturn.of(new AuthResponse(
                         jwtService.generateToken(claims, userDetails),
@@ -64,7 +65,8 @@ public class AuthController {
                         primeiroAcesso,
                         usuario.getNome(),
                         usuario.getEmail(),
-                        usuario.getPerfil().name())));
+                        usuario.getPerfil().name(),
+                        usuario.getTema().name())));
             }
         } catch (Exception e) {
             return ResponseEntity.status(401)
@@ -94,7 +96,8 @@ public class AuthController {
                 Map<String, Object> claims = Map.of(
                         "nome", usuario.getNome(),
                         "email", usuario.getEmail(),
-                        "perfil", usuario.getPerfil().name()
+                        "perfil", usuario.getPerfil().name(),
+                        "tema", usuario.getTema().name()
                 );
                 return ResponseEntity.ok(ApiReturn.of(new AuthResponse(
                         jwtService.generateToken(claims, userDetails),
@@ -102,7 +105,8 @@ public class AuthController {
                         false,
                         usuario.getNome(),
                         usuario.getEmail(),
-                        usuario.getPerfil().name())));
+                        usuario.getPerfil().name(),
+                        usuario.getTema().name())));
             }
         } catch (Exception e) {
             return ResponseEntity.status(401)

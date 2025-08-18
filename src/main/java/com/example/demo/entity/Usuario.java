@@ -1,6 +1,7 @@
 package com.example.demo.entity;
 
 import com.example.demo.domain.enums.Perfil;
+import com.example.demo.domain.enums.Tema;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
@@ -54,6 +55,10 @@ public class Usuario {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Perfil perfil;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Tema tema = Tema.CLARO;
 
     @Column(nullable = false)
     private boolean ativo = true;

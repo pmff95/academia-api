@@ -7,17 +7,19 @@ public class AuthResponse {
     private String nome;
     private String email;
     private String perfil;
+    private String tema;
 
     public AuthResponse() {
     }
 
-    public AuthResponse(String token, String refreshToken, boolean primeiroAcesso, String nome, String email, String perfil) {
+    public AuthResponse(String token, String refreshToken, boolean primeiroAcesso, String nome, String email, String perfil, String tema) {
         this.token = token;
         this.refreshToken = refreshToken;
         this.primeiroAcesso = primeiroAcesso;
         this.nome = nome;
         this.email = email;
         this.perfil = perfil;
+        this.tema = tema;
     }
 
     public String getToken() {
@@ -66,5 +68,13 @@ public class AuthResponse {
 
     public void setPerfil(String perfil) {
         this.perfil = perfil;
+    }
+
+    public String getTema() {
+        return tema;
+    }
+
+    public void setTema(String tema) {
+        this.tema = tema;
     }
 }
