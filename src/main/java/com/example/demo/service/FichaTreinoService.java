@@ -5,6 +5,7 @@ import com.example.demo.common.security.UsuarioLogado;
 import com.example.demo.dto.FichaTreinoDTO;
 import com.example.demo.dto.FichaTreinoCategoriaDTO;
 import com.example.demo.dto.FichaTreinoHistoricoDTO;
+import com.example.demo.dto.FichaTreinoExercicioDTO;
 import com.example.demo.entity.*;
 import com.example.demo.exception.ApiException;
 import com.example.demo.mapper.FichaTreinoMapper;
@@ -78,10 +79,7 @@ public class FichaTreinoService {
             ficha.setProfessor(professor);
             ficha.setDataValidade(dto.getDataValidade());
 
-            // limpa categorias antigas mas mantém a mesma lista
-            ficha.getCategorias().clear();
-            // adiciona novas
-            ficha.getCategorias().addAll(montarCategorias(dto, ficha));
+            atualizarCategorias(ficha, dto.getCategorias());
         }
 
         repository.save(ficha);
@@ -186,6 +184,74 @@ public class FichaTreinoService {
             fe.setCategoria(categoria);
             return fe;
         }).collect(Collectors.toList());
+    }
+
+    private void atualizarCategorias(FichaTreino ficha, List<FichaTreinoCategoriaDTO> categoriasDto) {
+        Map<UUID, FichaTreinoCategoria> existentes = ficha.getCategorias().stream()
+                .collect(Collectors.toMap(FichaTreinoCategoria::getUuid, c -> c));
+
+        List<FichaTreinoCategoria> atualizadas = new ArrayList<>();
+
+        if (categoriasDto != null) {
+            for (FichaTreinoCategoriaDTO cDto : categoriasDto) {
+                FichaTreinoCategoria categoria = cDto.getUuid() != null ? existentes.remove(cDto.getUuid()) : null;
+                if (categoria == null) {
+                    categoria = new FichaTreinoCategoria();
+                    categoria.setFicha(ficha);
+                }
+                categoria.setNome(cDto.getNome());
+                categoria.setObservacao(cDto.getObservacao());
+                atualizarExercicios(categoria, cDto.getExercicios());
+                atualizadas.add(categoria);
+            }
+        }
+
+        for (FichaTreinoCategoria antiga : existentes.values()) {
+            boolean referenced = antiga.getExercicios().stream()
+                    .anyMatch(ex -> treinoSessaoRepository.existsByExercicio_Uuid(ex.getUuid()));
+            if (referenced) {
+                atualizadas.add(antiga);
+            }
+            // categorias não referenciadas não são adicionadas e serão removidas
+        }
+
+        ficha.getCategorias().clear();
+        ficha.getCategorias().addAll(atualizadas);
+    }
+
+    private void atualizarExercicios(FichaTreinoCategoria categoria, List<FichaTreinoExercicioDTO> exerciciosDto) {
+        Map<UUID, FichaTreinoExercicio> existentes = categoria.getExercicios().stream()
+                .collect(Collectors.toMap(FichaTreinoExercicio::getUuid, e -> e));
+
+        List<FichaTreinoExercicio> atualizados = new ArrayList<>();
+
+        if (exerciciosDto != null) {
+            for (FichaTreinoExercicioDTO eDto : exerciciosDto) {
+                FichaTreinoExercicio exercicio = eDto.getUuid() != null ? existentes.remove(eDto.getUuid()) : null;
+                if (exercicio == null) {
+                    exercicio = new FichaTreinoExercicio();
+                    exercicio.setCategoria(categoria);
+                }
+                Exercicio exercicioEntity = exercicioRepository.findById(eDto.getExercicioUuid())
+                        .orElseThrow(() -> new ApiException("Exercício não encontrado"));
+                exercicio.setExercicio(exercicioEntity);
+                exercicio.setRepeticoes(eDto.getRepeticoes());
+                exercicio.setCarga(eDto.getCarga());
+                exercicio.setSeries(eDto.getSeries());
+                exercicio.setTempoDescanso(eDto.getTempoDescanso());
+                atualizados.add(exercicio);
+            }
+        }
+
+        for (FichaTreinoExercicio antigo : existentes.values()) {
+            if (treinoSessaoRepository.existsByExercicio_Uuid(antigo.getUuid())) {
+                atualizados.add(antigo);
+            }
+            // exercícios não referenciados não são adicionados e serão removidos
+        }
+
+        categoria.getExercicios().clear();
+        categoria.getExercicios().addAll(atualizados);
     }
 
     private void salvarHistoricoSeNecessario(FichaTreino ficha) {
