@@ -215,7 +215,8 @@ public class FichaTreinoService {
             // categorias não referenciadas não são adicionadas e serão removidas
         }
 
-        ficha.setCategorias(atualizadas);
+        ficha.getCategorias().clear();
+        ficha.getCategorias().addAll(atualizadas);
     }
 
     private void atualizarExercicios(FichaTreinoCategoria categoria, List<FichaTreinoExercicioDTO> exerciciosDto) {
@@ -249,7 +250,9 @@ public class FichaTreinoService {
             // exercícios não referenciados não são adicionados e serão removidos
         }
 
-        categoria.setExercicios(atualizados);
+        categoria.getExercicios().clear();
+        categoria.getExercicios().addAll(atualizados);
+
     }
 
     private void salvarHistoricoSeNecessario(FichaTreino ficha) {
