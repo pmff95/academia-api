@@ -252,6 +252,7 @@ public class FichaTreinoService {
 
         categoria.getExercicios().clear();
         categoria.getExercicios().addAll(atualizados);
+
     }
 
     private void salvarHistoricoSeNecessario(FichaTreino ficha) {
