@@ -58,15 +58,17 @@ public class TreinoSessaoService {
                 .findFirst()
                 .orElseThrow(() -> new ApiException("Exercício não encontrado na ficha do aluno"));
 
+        LocalDate dataAtual = LocalDate.now();
+
         TreinoSessao sessao = repository
-                .findByAlunoUuidAndExercicio_UuidAndData(alunoUuid, dto.getExercicioUuid(), dto.getData())
+                .findByAlunoUuidAndExercicio_UuidAndData(alunoUuid, dto.getExercicioUuid(), dataAtual)
                 .orElse(null);
 
         if (sessao == null) {
             sessao = mapper.toEntity(dto);
             sessao.setAluno(aluno);
             sessao.setExercicio(exercicio);
-            sessao.setData(LocalDate.now());
+            sessao.setData(dataAtual);
             sessao.setStatus(StatusTreino.CONCLUIDO);
         } else if (sessao.getStatus() == StatusTreino.CONCLUIDO) {
             sessao.setStatus(StatusTreino.PENDENTE);
@@ -74,7 +76,7 @@ public class TreinoSessaoService {
             sessao.setCargaRealizada(null);
         } else {
             sessao.setRepeticoesRealizadas(dto.getRepeticoesRealizadas());
-            sessao.setData(LocalDate.now());
+            sessao.setData(dataAtual);
             sessao.setCargaRealizada(dto.getCargaRealizada());
             sessao.setStatus(StatusTreino.CONCLUIDO);
         }
@@ -83,16 +85,16 @@ public class TreinoSessaoService {
 
         FichaTreinoCategoria categoria = exercicio.getCategoria();
         int total = categoria.getExercicios().size();
-        long realizados = repository.countByAlunoUuidAndExercicio_Categoria_UuidAndDataAndStatus(alunoUuid, categoria.getUuid(), dto.getData(), StatusTreino.CONCLUIDO);
+        long realizados = repository.countByAlunoUuidAndExercicio_Categoria_UuidAndDataAndStatus(alunoUuid, categoria.getUuid(), dataAtual, StatusTreino.CONCLUIDO);
         double percentual = (double) realizados / total * 100.0;
 
         TreinoDesempenho desempenho = desempenhoRepository
-                .findByAluno_UuidAndCategoria_UuidAndData(alunoUuid, categoria.getUuid(), dto.getData())
+                .findByAluno_UuidAndCategoria_UuidAndData(alunoUuid, categoria.getUuid(), dataAtual)
                 .orElseGet(() -> {
                     TreinoDesempenho d = new TreinoDesempenho();
                     d.setAluno(aluno);
                     d.setCategoria(categoria);
-                    d.setData(LocalDate.now());
+                    d.setData(dataAtual);
                     return d;
                 });
         desempenho.setPercentual(percentual);
