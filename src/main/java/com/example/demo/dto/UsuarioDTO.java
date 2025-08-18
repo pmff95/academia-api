@@ -1,6 +1,7 @@
 package com.example.demo.dto;
 
 import com.example.demo.domain.enums.Perfil;
+import com.example.demo.domain.enums.Tema;
 import java.time.LocalDate;
 import java.util.UUID;
 
@@ -19,6 +20,7 @@ public class UsuarioDTO {
     private String uf;
     private String cidade;
     private Perfil perfil;
+    private Tema tema;
 
     public UUID getUuid() {
         return uuid;
@@ -130,5 +132,13 @@ public class UsuarioDTO {
 
     public void setPerfil(Perfil perfil) {
         this.perfil = perfil;
+    }
+
+    public Tema getTema() {
+        return tema;
+    }
+
+    public void setTema(Tema tema) {
+        this.tema = tema;
     }
 }

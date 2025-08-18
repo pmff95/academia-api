@@ -8,6 +8,7 @@ import com.example.demo.entity.Usuario;
 import com.example.demo.repository.UsuarioRepository;
 import com.example.demo.common.security.SecurityUtils;
 import com.example.demo.common.security.UsuarioLogado;
+import com.example.demo.domain.enums.Tema;
 import com.example.demo.common.util.SenhaUtil;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -94,6 +95,20 @@ public class UsuarioService {
                     usuario.setAtivo(ativo);
                     repository.save(usuario);
                     return ativo ? "Usuário ativado" : "Usuário desativado";
+                }).orElse("Usuário não encontrado");
+    }
+
+    @Transactional
+    public String alterarTema(Tema tema) {
+        UsuarioLogado usuarioLogado = SecurityUtils.getUsuarioLogadoDetalhes();
+        if (usuarioLogado == null) {
+            return "Usuário não autenticado";
+        }
+        return repository.findByUuid(usuarioLogado.getUuid())
+                .map(usuario -> {
+                    usuario.setTema(tema);
+                    repository.save(usuario);
+                    return "Tema atualizado";
                 }).orElse("Usuário não encontrado");
     }
 
