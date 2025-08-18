@@ -67,7 +67,11 @@ public class TreinoSessaoService {
             sessao.setAluno(aluno);
             sessao.setExercicio(exercicio);
             sessao.setData(LocalDate.now());
-            sessao.setStatus(StatusTreino.EM_ANDAMENTO);
+            sessao.setStatus(StatusTreino.CONCLUIDO);
+        } else if (sessao.getStatus() == StatusTreino.CONCLUIDO) {
+            sessao.setStatus(StatusTreino.PENDENTE);
+            sessao.setRepeticoesRealizadas(null);
+            sessao.setCargaRealizada(null);
         } else {
             sessao.setRepeticoesRealizadas(dto.getRepeticoesRealizadas());
             sessao.setData(LocalDate.now());
