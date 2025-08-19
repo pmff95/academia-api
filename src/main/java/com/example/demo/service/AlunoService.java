@@ -175,6 +175,22 @@ public class AlunoService {
         repository.delete(entity);
     }
 
+    public Page<AlunoDTO> findAllFromLoggedProfessor(String nome, Pageable pageable) {
+        UsuarioLogado usuario = SecurityUtils.getUsuarioLogadoDetalhes();
+        if (usuario == null || !usuario.possuiPerfil(Perfil.PROFESSOR)) {
+            throw new ApiException("Usuário precisa ter perfil de professor");
+        }
+        Academia academia = obterAcademiaUsuario(usuario);
+        if (nome != null && !nome.isBlank()) {
+            return repository
+                    .findByAcademiaUuidAndProfessorUuidAndNomeContainingIgnoreCase(academia.getUuid(), usuario.getUuid(), nome, pageable)
+                    .map(mapper::toDto);
+        }
+        return repository
+                .findByAcademiaUuidAndProfessorUuid(academia.getUuid(), usuario.getUuid(), pageable)
+                .map(mapper::toDto);
+    }
+
     public Page<AlunoDTO> findAllNotFromLoggedProfessor(String nome, Pageable pageable) {
         UsuarioLogado usuario = SecurityUtils.getUsuarioLogadoDetalhes();
         if (usuario == null || !usuario.possuiPerfil(Perfil.PROFESSOR)) {
