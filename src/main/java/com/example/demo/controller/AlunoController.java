@@ -1,5 +1,6 @@
 package com.example.demo.controller;
 
+import com.example.demo.common.security.UsuarioLogado;
 import com.example.demo.dto.*;
 import com.example.demo.common.response.ApiReturn;
 import com.example.demo.service.AlunoMedidaService;
@@ -68,6 +69,13 @@ public class AlunoController {
     @PreAuthorize("hasAnyRole('MASTER','ADMIN','PROFESSOR')")
     public ResponseEntity<ApiReturn<String>> atualizar(@PathVariable UUID uuid, @Validated @RequestBody AlunoDTO dto) {
         return ResponseEntity.ok(ApiReturn.of(service.update(uuid, dto)));
+    }
+
+    @PutMapping()
+    @PreAuthorize("hasAnyRole('ALUNO')")
+    public ResponseEntity<ApiReturn<String>> atualizarUsuarioLogado( @Validated @RequestBody AlunoDTO dto) {
+        UsuarioLogado usuarioLogado = SecurityUtils.getUsuarioLogadoDetalhes();
+        return ResponseEntity.ok(ApiReturn.of(service.update(usuarioLogado.getUuid(), dto)));
     }
 
     @DeleteMapping("/{uuid}")

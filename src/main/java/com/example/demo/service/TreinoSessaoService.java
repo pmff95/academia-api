@@ -59,7 +59,7 @@ public class TreinoSessaoService {
                 .orElseThrow(() -> new ApiException("Exercício não encontrado na ficha do aluno"));
 
         TreinoSessao sessao = repository
-                .findByAlunoUuidAndExercicio_UuidAndData(alunoUuid, dto.getExercicioUuid(), dto.getData())
+                .findByAluno_UuidAndUuidAndData(alunoUuid, dto.getExercicioUuid(), LocalDate.now())
                 .orElse(null);
 
         if (sessao == null) {
@@ -69,9 +69,7 @@ public class TreinoSessaoService {
             sessao.setData(LocalDate.now());
             sessao.setStatus(StatusTreino.CONCLUIDO);
         } else if (sessao.getStatus() == StatusTreino.CONCLUIDO) {
-            sessao.setStatus(StatusTreino.PENDENTE);
-            sessao.setRepeticoesRealizadas(null);
-            sessao.setCargaRealizada(null);
+            repository.delete(sessao);
         } else {
             sessao.setRepeticoesRealizadas(dto.getRepeticoesRealizadas());
             sessao.setData(LocalDate.now());
@@ -87,7 +85,7 @@ public class TreinoSessaoService {
         double percentual = (double) realizados / total * 100.0;
 
         TreinoDesempenho desempenho = desempenhoRepository
-                .findByAluno_UuidAndCategoria_UuidAndData(alunoUuid, categoria.getUuid(), dto.getData())
+                .findByAluno_UuidAndCategoria_UuidAndData(alunoUuid, categoria.getUuid(), LocalDate.now())
                 .orElseGet(() -> {
                     TreinoDesempenho d = new TreinoDesempenho();
                     d.setAluno(aluno);

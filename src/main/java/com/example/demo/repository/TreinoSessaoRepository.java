@@ -12,7 +12,7 @@ import java.util.UUID;
 public interface TreinoSessaoRepository extends JpaRepository<TreinoSessao, UUID> {
     List<TreinoSessao> findByAlunoUuid(UUID alunoUuid);
 
-    Optional<TreinoSessao> findByAlunoUuidAndExercicio_UuidAndData(UUID alunoUuid, UUID exercicioUuid, LocalDate data);
+    Optional<TreinoSessao> findByAluno_UuidAndUuidAndData(UUID alunoUuid, UUID exercicioUuid, LocalDate data);
 
     long countByAlunoUuidAndExercicio_Categoria_UuidAndDataAndStatus(UUID alunoUuid, UUID categoriaUuid, LocalDate data, StatusTreino status);
 

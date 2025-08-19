@@ -32,20 +32,10 @@ public class FichaTreinoController {
         return ResponseEntity.ok(ApiReturn.of(service.save(dto)));
     }
 
-//    @GetMapping
-//    public ResponseEntity<ApiReturn<Page<FichaTreinoDTO>>> listar(Pageable pageable) {
-//        return ResponseEntity.ok(ApiReturn.of(service.findAll(pageable)));
-//    }
-
     @GetMapping("/{fichaUuid}")
     public ResponseEntity<ApiReturn<FichaTreinoDTO>> detalhar(@PathVariable UUID fichaUuid) {
         return ResponseEntity.ok(ApiReturn.of(service.findByUuid(fichaUuid)));
     }
-//
-//    @GetMapping("/aluno/{alunoUuid}")
-//    public ResponseEntity<ApiReturn<List<FichaTreinoDTO>>> listarPorAluno(@PathVariable UUID alunoUuid) {
-//        return ResponseEntity.ok(ApiReturn.of(service.findByAluno(alunoUuid)));
-//    }
 
     @GetMapping("/historico/{alunoUuid}")
     public ResponseEntity<ApiReturn<List<FichaTreinoHistoricoDTO>>> historicoPorAluno(@PathVariable UUID alunoUuid) {
