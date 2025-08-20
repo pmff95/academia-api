@@ -1,6 +1,7 @@
 package com.example.demo.service;
 
 import com.example.demo.dto.AlunoMedidaDTO;
+import com.example.demo.dto.AlunoMedidaHistoricoDTO;
 import com.example.demo.dto.AlunoMedidaResultadoDTO;
 import com.example.demo.entity.Aluno;
 import com.example.demo.entity.AlunoMedida;
@@ -19,6 +20,8 @@ import jakarta.transaction.Transactional;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -83,17 +86,45 @@ public class AlunoMedidaService {
         return resultado;
     }
 
-    public List<AlunoMedidaDTO> listarMedidas(UUID alunoUuid) {
+    public AlunoMedidaDTO buscarUltima(UUID alunoUuid) {
         Aluno aluno = alunoRepository.findById(alunoUuid)
                 .orElseThrow(() -> new ApiException("Aluno não encontrado"));
 
         validarMesmaAcademia(aluno);
 
-        LocalDateTime inicio = LocalDateTime.now().minusMonths(6);
-        return repository.findByAlunoUuidAndDataRegistroAfterOrderByDataRegistroDesc(alunoUuid, inicio)
-                .stream()
+        return repository.findTopByAlunoUuidOrderByDataRegistroDesc(alunoUuid)
+                .map(mapper::toDto)
+                .orElse(null);
+    }
+
+    public AlunoMedidaHistoricoDTO listarHistorico(UUID alunoUuid) {
+        Aluno aluno = alunoRepository.findById(alunoUuid)
+                .orElseThrow(() -> new ApiException("Aluno não encontrado"));
+
+        validarMesmaAcademia(aluno);
+
+        List<AlunoMedida> medidas = repository.findTop10ByAlunoUuidOrderByDataRegistroDesc(alunoUuid);
+        List<AlunoMedidaDTO> dtos = medidas.stream()
                 .map(mapper::toDto)
                 .collect(Collectors.toList());
+
+        Map<String, BigDecimal> medias = new HashMap<>();
+        if (medidas.size() > 1) {
+            Map<String, BigDecimal> somas = new HashMap<>();
+            List<AlunoMedida> ordenadas = new ArrayList<>(medidas);
+            Collections.reverse(ordenadas); // oldest to newest
+            for (int i = 1; i < ordenadas.size(); i++) {
+                Map<String, BigDecimal> variacoes = calcularVariacoes(ordenadas.get(i - 1), ordenadas.get(i));
+                variacoes.forEach((k, v) -> somas.merge(k, v, BigDecimal::add));
+            }
+            int count = ordenadas.size() - 1;
+            somas.forEach((k, v) -> medias.put(k, v.divide(BigDecimal.valueOf(count), 4, RoundingMode.HALF_UP)));
+        }
+
+        AlunoMedidaHistoricoDTO historico = new AlunoMedidaHistoricoDTO();
+        historico.setMedidas(dtos);
+        historico.setMediaVariacoes(medias);
+        return historico;
     }
 
     private void validarMesmaAcademia(Aluno aluno) {
