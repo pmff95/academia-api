@@ -98,15 +98,31 @@ public class AlunoController {
 
     @GetMapping({"/{uuid}/medidas", "/medidas"})
     @PreAuthorize("hasAnyRole('ADMIN','PROFESSOR','ALUNO')")
-    public ResponseEntity<ApiReturn<List<AlunoMedidaDTO>>> listarMedidas(@PathVariable(required = false) UUID uuid) {
+    public ResponseEntity<ApiReturn<AlunoMedidaDTO>> obterUltimaMedida(@PathVariable(required = false) UUID uuid) {
         UsuarioLogado usuarioLogado = SecurityUtils.getUsuarioLogadoDetalhes();
 
         if (uuid == null && usuarioLogado.possuiPerfil(Perfil.ALUNO)) {
             return ResponseEntity.ok(ApiReturn.of(
-                    medidaService.listarMedidas(usuarioLogado.getUuid())));
+                    medidaService.buscarUltima(usuarioLogado.getUuid())));
         } else if (uuid != null && !usuarioLogado.possuiPerfil(Perfil.ALUNO)) {
             return ResponseEntity.ok(ApiReturn.of(
-                    medidaService.listarMedidas(uuid)));
+                    medidaService.buscarUltima(uuid)));
+        }
+
+        return ResponseEntity.status(401).build();
+    }
+
+    @GetMapping({"/{uuid}/medidas/historico", "/medidas/historico"})
+    @PreAuthorize("hasAnyRole('ADMIN','PROFESSOR','ALUNO')")
+    public ResponseEntity<ApiReturn<AlunoMedidaHistoricoDTO>> historicoMedidas(@PathVariable(required = false) UUID uuid) {
+        UsuarioLogado usuarioLogado = SecurityUtils.getUsuarioLogadoDetalhes();
+
+        if (uuid == null && usuarioLogado.possuiPerfil(Perfil.ALUNO)) {
+            return ResponseEntity.ok(ApiReturn.of(
+                    medidaService.listarHistorico(usuarioLogado.getUuid())));
+        } else if (uuid != null && !usuarioLogado.possuiPerfil(Perfil.ALUNO)) {
+            return ResponseEntity.ok(ApiReturn.of(
+                    medidaService.listarHistorico(uuid)));
         }
 
         return ResponseEntity.status(401).build();

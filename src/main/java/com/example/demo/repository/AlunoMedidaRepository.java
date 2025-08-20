@@ -15,5 +15,7 @@ public interface AlunoMedidaRepository extends JpaRepository<AlunoMedida, UUID> 
 
     List<AlunoMedida> findByAlunoUuidAndDataRegistroAfterOrderByDataRegistroDesc(UUID alunoUuid, LocalDateTime data);
 
+    List<AlunoMedida> findTop10ByAlunoUuidOrderByDataRegistroDesc(UUID alunoUuid);
+
     void deleteByAlunoUuidAndDataRegistroBefore(UUID alunoUuid, LocalDateTime data);
 }
