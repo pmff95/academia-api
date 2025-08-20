@@ -14,6 +14,7 @@ public class AcademiaDTO {
     private String telefone;
     private String codigo;
     private UsuarioDTO admin;
+    private Integer limiteAlunos;
 
     public UUID getUuid() {
         return uuid;
@@ -101,5 +102,13 @@ public class AcademiaDTO {
 
     public void setAdmin(UsuarioDTO admin) {
         this.admin = admin;
+    }
+
+    public Integer getLimiteAlunos() {
+        return limiteAlunos;
+    }
+
+    public void setLimiteAlunos(Integer limiteAlunos) {
+        this.limiteAlunos = limiteAlunos;
     }
 }

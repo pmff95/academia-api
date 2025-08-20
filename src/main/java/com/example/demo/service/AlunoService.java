@@ -69,8 +69,9 @@ public class AlunoService {
 
         UsuarioLogado usuario = SecurityUtils.getUsuarioLogadoDetalhes();
         boolean isMaster = usuario != null && usuario.possuiPerfil(Perfil.MASTER);
+        Academia academia;
         if (usuario != null && !isMaster) {
-            Academia academia = academiaRepository.findByUuid(usuario.getAcademiaUuid());
+            academia = academiaRepository.findByUuid(usuario.getAcademiaUuid());
             if (academia == null) {
                 throw new ApiException("Usuário precisa ter uma academia associada");
             }
@@ -79,10 +80,18 @@ public class AlunoService {
             if (dto.getCodigoAcademia() == null || dto.getCodigoAcademia().isBlank()) {
                 throw new ApiException("Código da academia é obrigatório");
             }
-            Academia academia = academiaRepository.findByCodigo(dto.getCodigoAcademia().toUpperCase())
+            academia = academiaRepository.findByCodigo(dto.getCodigoAcademia().toUpperCase())
                     .orElseThrow(() -> new ApiException("Academia não encontrada"));
             entity.setAcademia(academia);
         }
+
+        if (academia.getLimiteAlunos() != null) {
+            long count = repository.countByAcademiaUuid(academia.getUuid());
+            if (count >= academia.getLimiteAlunos()) {
+                throw new ApiException("Limite de alunos da academia atingido");
+            }
+        }
+
         repository.save(entity);
         emailService.enviarSenha(entity.getEmail(), senha);
         return "Aluno criado com sucesso";

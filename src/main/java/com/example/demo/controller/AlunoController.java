@@ -91,8 +91,8 @@ public class AlunoController {
 
     @PostMapping("/{uuid}/medidas")
     @PreAuthorize("hasAnyRole('MASTER','ADMIN','PROFESSOR')")
-    public ResponseEntity<ApiReturn<String>> adicionarMedida(@PathVariable UUID uuid,
-                                                             @Validated @RequestBody AlunoMedidaDTO dto) {
+    public ResponseEntity<ApiReturn<AlunoMedidaResultadoDTO>> adicionarMedida(@PathVariable UUID uuid,
+                                                                              @Validated @RequestBody AlunoMedidaDTO dto) {
         return ResponseEntity.ok(ApiReturn.of(medidaService.adicionarMedida(uuid, dto)));
     }
 
