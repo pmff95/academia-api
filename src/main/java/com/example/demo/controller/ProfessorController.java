@@ -12,6 +12,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.v3.oas.annotations.tags.Tag;
+
 import java.util.UUID;
 
 @Tag(name = "Professores")
@@ -60,8 +61,10 @@ public class ProfessorController {
 
     @GetMapping("/alunos")
     @PreAuthorize("hasRole('PROFESSOR')")
-    public ResponseEntity<ApiReturn<Page<AlunoDTO>>> listarAlunosVinculados(@RequestParam(required = false) String nome,
-                                                                           Pageable pageable) {
+    public ResponseEntity<ApiReturn<Page<AlunoDTO>>> listarAlunosVinculados(
+            @RequestParam(required = false) String nome,
+            Pageable pageable
+    ) {
         return ResponseEntity.ok(ApiReturn.of(alunoService.findAllFromLoggedProfessor(nome, pageable)));
     }
 }

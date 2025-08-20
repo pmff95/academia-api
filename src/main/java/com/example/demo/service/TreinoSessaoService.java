@@ -99,14 +99,7 @@ public class TreinoSessaoService {
         return percentual;
     }
 
-    public List<TreinoSessaoDTO> listarSessoes(UUID alunoUuid) {
-        Aluno aluno = alunoRepository.findById(alunoUuid)
-                .orElseThrow(() -> new ApiException("Aluno não encontrado"));
-        validarMesmaAcademia(aluno);
-        return repository.findByAlunoUuid(alunoUuid).stream()
-                .map(mapper::toDto)
-                .collect(Collectors.toList());
-    }
+
 
     public double buscarPercentualDoDia(UUID alunoUuid, UUID categoriaUuid) {
         return desempenhoRepository

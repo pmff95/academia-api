@@ -1,6 +1,8 @@
 package com.example.demo.controller;
 
+import com.example.demo.common.response.ErrorType;
 import com.example.demo.common.security.UsuarioLogado;
+import com.example.demo.domain.enums.Perfil;
 import com.example.demo.dto.*;
 import com.example.demo.common.response.ApiReturn;
 import com.example.demo.service.AlunoMedidaService;
@@ -12,10 +14,12 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 import java.util.UUID;
 
@@ -48,7 +52,7 @@ public class AlunoController {
     @GetMapping
     @PreAuthorize("hasAnyRole('MASTER','ADMIN','PROFESSOR')")
     public ResponseEntity<ApiReturn<Page<AlunoDTO>>> listar(@RequestParam(required = false) String nome,
-                                                           Pageable pageable) {
+                                                            Pageable pageable) {
         return ResponseEntity.ok(ApiReturn.of(service.findAll(nome, pageable)));
     }
 
@@ -73,7 +77,7 @@ public class AlunoController {
 
     @PutMapping()
     @PreAuthorize("hasAnyRole('ALUNO')")
-    public ResponseEntity<ApiReturn<String>> atualizarUsuarioLogado( @Validated @RequestBody AlunoDTO dto) {
+    public ResponseEntity<ApiReturn<String>> atualizarUsuarioLogado(@Validated @RequestBody AlunoDTO dto) {
         UsuarioLogado usuarioLogado = SecurityUtils.getUsuarioLogadoDetalhes();
         return ResponseEntity.ok(ApiReturn.of(service.update(usuarioLogado.getUuid(), dto)));
     }
@@ -92,17 +96,22 @@ public class AlunoController {
         return ResponseEntity.ok(ApiReturn.of(medidaService.adicionarMedida(uuid, dto)));
     }
 
-    @GetMapping("/{uuid}/medidas")
-    @PreAuthorize("hasAnyRole('MASTER','ADMIN','PROFESSOR')")
-    public ResponseEntity<ApiReturn<List<AlunoMedidaDTO>>> listarMedidas(@PathVariable UUID uuid) {
-        return ResponseEntity.ok(ApiReturn.of(medidaService.listarMedidas(uuid)));
+    @GetMapping({"/{uuid}/medidas", "/medidas"})
+    @PreAuthorize("hasAnyRole('ADMIN','PROFESSOR','ALUNO')")
+    public ResponseEntity<ApiReturn<List<AlunoMedidaDTO>>> listarMedidas(@PathVariable(required = false) UUID uuid) {
+        UsuarioLogado usuarioLogado = SecurityUtils.getUsuarioLogadoDetalhes();
+
+        if (uuid == null && usuarioLogado.possuiPerfil(Perfil.ALUNO)) {
+            return ResponseEntity.ok(ApiReturn.of(
+                    medidaService.listarMedidas(usuarioLogado.getUuid())));
+        } else if (uuid != null && !usuarioLogado.possuiPerfil(Perfil.ALUNO)) {
+            return ResponseEntity.ok(ApiReturn.of(
+                    medidaService.listarMedidas(uuid)));
+        }
+
+        return ResponseEntity.status(401).build();
     }
 
-    @GetMapping("/me/medidas")
-    @PreAuthorize("hasRole('ALUNO')")
-    public ResponseEntity<ApiReturn<List<AlunoMedidaDTO>>> listarMedidasAlunoLogado() {
-        return ResponseEntity.ok(ApiReturn.of(medidaService.listarMedidas(SecurityUtils.getUsuarioLogadoDetalhes().getUuid())));
-    }
 
     @PostMapping("/{uuid}/observacoes")
     @PreAuthorize("hasAnyRole('MASTER','ADMIN','PROFESSOR')")
@@ -131,9 +140,5 @@ public class AlunoController {
         return ResponseEntity.ok(ApiReturn.of(treinoSessaoService.buscarPercentualDoDia(uuid, categoriaUuid)));
     }
 
-    @GetMapping("/{uuid}/treinos")
-    @PreAuthorize("hasAnyRole('MASTER','ADMIN','PROFESSOR')")
-    public ResponseEntity<ApiReturn<List<TreinoSessaoDTO>>> listarTreinos(@PathVariable UUID alunoUuid) {
-        return ResponseEntity.ok(ApiReturn.of(treinoSessaoService.listarSessoes(alunoUuid)));
-    }
+
 }

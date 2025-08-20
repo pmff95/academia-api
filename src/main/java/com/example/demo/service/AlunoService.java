@@ -111,11 +111,6 @@ public class AlunoService {
         return repository.findAll(pageable).map(mapper::toDto);
     }
 
-    public Page<AlunoDTO> findAllByEscola(Pageable pageable) {
-//        return repository.findAllByescol(pageable).map(mapper::toDto);
-        return null;
-    }
-
     public AlunoDTO findByUuid(UUID uuid) {
         Aluno entity = repository.findById(uuid).orElseThrow(() -> new ApiException("Aluno não encontrado"));
         Academia academia = obterAcademiaUsuario();
