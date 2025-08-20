@@ -24,4 +24,6 @@ public interface AlunoRepository extends JpaRepository<Aluno, UUID> {
 
     @Query("SELECT a FROM Aluno a WHERE a.academia.uuid = :academiaUuid AND (a.professor IS NULL OR a.professor.uuid <> :professorUuid) AND LOWER(a.nome) LIKE LOWER(CONCAT('%', :nome, '%'))")
     Page<Aluno> findByAcademiaUuidAndProfessorUuidNotOrProfessorIsNullAndNomeContainingIgnoreCase(UUID academiaUuid, UUID professorUuid, String nome, Pageable pageable);
+
+    long countByAcademiaUuid(UUID academiaUuid);
 }

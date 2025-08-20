@@ -29,6 +29,8 @@ public class Academia {
     @Column(nullable = false)
     private boolean ativo = true;
 
+    private Integer limiteAlunos;
+
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "admin_uuid", referencedColumnName = "uuid", nullable = false)
     private Usuario admin;
