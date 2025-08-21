@@ -15,6 +15,7 @@ public class AcademiaDTO {
     private String codigo;
     private UsuarioDTO admin;
     private Integer limiteAlunos;
+    private Boolean exibirPatrocinadores;
 
     public UUID getUuid() {
         return uuid;
@@ -110,5 +111,13 @@ public class AcademiaDTO {
 
     public void setLimiteAlunos(Integer limiteAlunos) {
         this.limiteAlunos = limiteAlunos;
+    }
+
+    public Boolean getExibirPatrocinadores() {
+        return exibirPatrocinadores;
+    }
+
+    public void setExibirPatrocinadores(Boolean exibirPatrocinadores) {
+        this.exibirPatrocinadores = exibirPatrocinadores;
     }
 }

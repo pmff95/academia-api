@@ -107,6 +107,9 @@ public class AcademiaService {
         entity.setTelefone(dto.getTelefone());
         entity.setCodigo(dto.getCodigo());
         entity.setLimiteAlunos(dto.getLimiteAlunos());
+        if (dto.getExibirPatrocinadores() != null) {
+            entity.setExibirPatrocinadores(dto.getExibirPatrocinadores());
+        }
 
         if (dto.getAdmin() != null && entity.getAdmin() != null) {
             entity.getAdmin().setNome(dto.getAdmin().getNome());
