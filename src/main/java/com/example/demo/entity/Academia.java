@@ -31,6 +31,9 @@ public class Academia {
 
     private Integer limiteAlunos;
 
+    @Column(nullable = false)
+    private boolean exibirPatrocinadores = true;
+
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "admin_uuid", referencedColumnName = "uuid", nullable = false)
     private Usuario admin;
