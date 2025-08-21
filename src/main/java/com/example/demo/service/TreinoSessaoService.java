@@ -84,28 +84,19 @@ public class TreinoSessaoService {
         long realizados = repository.countByAlunoUuidAndExercicio_Categoria_UuidAndDataAndStatus(alunoUuid, categoria.getUuid(), dto.getData(), StatusTreino.CONCLUIDO);
         double percentual = (double) realizados / total * 100.0;
 
-        TreinoDesempenho desempenho = desempenhoRepository
-                .findByAluno_UuidAndCategoria_UuidAndData(alunoUuid, categoria.getUuid(), LocalDate.now())
-                .orElseGet(() -> {
-                    TreinoDesempenho d = new TreinoDesempenho();
-                    d.setAluno(aluno);
-                    d.setCategoria(categoria);
-                    d.setData(LocalDate.now());
-                    return d;
-                });
-        desempenho.setPercentual(percentual);
-        desempenhoRepository.save(desempenho);
+//        TreinoDesempenho desempenho = desempenhoRepository
+//                .findByAluno_UuidAndCategoria_UuidAndData(alunoUuid, categoria.getUuid(), LocalDate.now())
+//                .orElseGet(() -> {
+//                    TreinoDesempenho d = new TreinoDesempenho();
+//                    d.setAluno(aluno);
+//                    d.setCategoria(categoria);
+//                    d.setData(LocalDate.now());
+//                    return d;
+//                });
+//        desempenho.setPercentual(percentual);
+//        desempenhoRepository.save(desempenho);
 
         return percentual;
-    }
-
-
-
-    public double buscarPercentualDoDia(UUID alunoUuid, UUID categoriaUuid) {
-        return desempenhoRepository
-                .findByAluno_UuidAndCategoria_UuidAndData(alunoUuid, categoriaUuid, LocalDate.now())
-                .map(TreinoDesempenho::getPercentual)
-                .orElse(0d);
     }
 
     private void validarMesmaAcademia(Aluno aluno) {

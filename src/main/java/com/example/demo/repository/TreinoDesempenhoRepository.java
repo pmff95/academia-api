@@ -8,5 +8,4 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface TreinoDesempenhoRepository extends JpaRepository<TreinoDesempenho, UUID> {
-    Optional<TreinoDesempenho> findByAluno_UuidAndCategoria_UuidAndData(UUID alunoUuid, UUID categoriaUuid, LocalDate data);
 }

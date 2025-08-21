@@ -84,16 +84,23 @@ public class AlunoController {
 
     @DeleteMapping("/{uuid}")
     @PreAuthorize("hasAnyRole('MASTER','ADMIN','PROFESSOR')")
-    public ResponseEntity<ApiReturn<String>> remover(@PathVariable UUID uuid) {
+    public ResponseEntity<ApiReturn<String>> removerAluno(@PathVariable UUID uuid) {
         service.delete(uuid);
         return ResponseEntity.ok(ApiReturn.of("Aluno removido"));
     }
 
-    @PostMapping("/{uuid}/medidas")
+    @PostMapping({"/{uuid}/medidas", "/medidas"})
     @PreAuthorize("hasAnyRole('MASTER','ADMIN','PROFESSOR')")
-    public ResponseEntity<ApiReturn<AlunoMedidaResultadoDTO>> adicionarMedida(@PathVariable UUID uuid,
+    public ResponseEntity<ApiReturn<AlunoMedidaResultadoDTO>> adicionarMedida(@PathVariable(required = false) UUID uuid,
                                                                               @Validated @RequestBody AlunoMedidaDTO dto) {
-        return ResponseEntity.ok(ApiReturn.of(medidaService.adicionarMedida(uuid, dto)));
+        UsuarioLogado usuarioLogado = SecurityUtils.getUsuarioLogadoDetalhes();
+
+        if (uuid == null && usuarioLogado.possuiPerfil(Perfil.ALUNO)) {
+            return ResponseEntity.ok(ApiReturn.of(medidaService.adicionarMedida(usuarioLogado.getUuid(), dto)));
+        } else if (uuid != null && !usuarioLogado.possuiPerfil(Perfil.ALUNO)) {
+            return ResponseEntity.ok(ApiReturn.of(medidaService.adicionarMedida(uuid, dto)));
+        }
+        return ResponseEntity.status(401).build();
     }
 
     @GetMapping({"/{uuid}/medidas", "/medidas"})
@@ -148,13 +155,4 @@ public class AlunoController {
         UUID uuid = SecurityUtils.getUsuarioLogadoDetalhes().getUuid();
         return ResponseEntity.ok(ApiReturn.of(treinoSessaoService.registrarSessao(uuid, dto)));
     }
-
-    @GetMapping("/me/treinos/percentual/{categoriaUuid}")
-    @PreAuthorize("hasRole('ALUNO')")
-    public ResponseEntity<ApiReturn<Double>> percentualTreino(@PathVariable UUID categoriaUuid) {
-        UUID uuid = SecurityUtils.getUsuarioLogadoDetalhes().getUuid();
-        return ResponseEntity.ok(ApiReturn.of(treinoSessaoService.buscarPercentualDoDia(uuid, categoriaUuid)));
-    }
-
-
 }
