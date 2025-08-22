@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
+import java.time.LocalDate;
 
 @Tag(name = "Alunos")
 @Slf4j
@@ -154,5 +155,16 @@ public class AlunoController {
     public ResponseEntity<ApiReturn<Double>> registrarTreino(@Validated @RequestBody TreinoSessaoDTO dto) {
         UUID uuid = SecurityUtils.getUsuarioLogadoDetalhes().getUuid();
         return ResponseEntity.ok(ApiReturn.of(treinoSessaoService.registrarSessao(uuid, dto)));
+    }
+
+    @GetMapping("/treinos/resumo")
+    @PreAuthorize("hasRole('ALUNO')")
+    public ResponseEntity<ApiReturn<TreinoResumoDTO>> resumoTreinos(@RequestParam(required = false) Integer ano,
+                                                                    @RequestParam(required = false) Integer mes) {
+        UUID uuid = SecurityUtils.getUsuarioLogadoDetalhes().getUuid();
+        LocalDate now = LocalDate.now();
+        int year = ano != null ? ano : now.getYear();
+        int month = mes != null ? mes : now.getMonthValue();
+        return ResponseEntity.ok(ApiReturn.of(treinoSessaoService.resumoTreinos(uuid, year, month)));
     }
 }
