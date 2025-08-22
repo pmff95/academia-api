@@ -17,6 +17,7 @@ import com.example.demo.repository.ProfessorRepository;
 import com.example.demo.repository.UsuarioRepository;
 import com.example.demo.repository.TreinoSessaoRepository;
 import com.example.demo.repository.TreinoDesempenhoRepository;
+import com.example.demo.service.TreinoSessaoService;
 import com.example.demo.domain.enums.Perfil;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -44,8 +45,9 @@ public class FichaTreinoService {
     private final NotificacaoService notificacaoService;
     private final TreinoSessaoRepository treinoSessaoRepository;
     private final TreinoDesempenhoRepository desempenhoRepository;
+    private final TreinoSessaoService treinoSessaoService;
 
-    public FichaTreinoService(FichaTreinoRepository repository, FichaTreinoMapper mapper, AlunoRepository alunoRepository, ProfessorRepository professorRepository, UsuarioRepository usuarioRepository, ExercicioRepository exercicioRepository, FichaTreinoHistoricoRepository historicoRepository, NotificacaoService notificacaoService, TreinoSessaoRepository treinoSessaoRepository, TreinoDesempenhoRepository desempenhoRepository) {
+    public FichaTreinoService(FichaTreinoRepository repository, FichaTreinoMapper mapper, AlunoRepository alunoRepository, ProfessorRepository professorRepository, UsuarioRepository usuarioRepository, ExercicioRepository exercicioRepository, FichaTreinoHistoricoRepository historicoRepository, NotificacaoService notificacaoService, TreinoSessaoRepository treinoSessaoRepository, TreinoDesempenhoRepository desempenhoRepository, TreinoSessaoService treinoSessaoService) {
         this.repository = repository;
         this.mapper = mapper;
         this.alunoRepository = alunoRepository;
@@ -56,6 +58,7 @@ public class FichaTreinoService {
         this.notificacaoService = notificacaoService;
         this.treinoSessaoRepository = treinoSessaoRepository;
         this.desempenhoRepository = desempenhoRepository;
+        this.treinoSessaoService = treinoSessaoService;
     }
 
     @Transactional
@@ -85,6 +88,10 @@ public class FichaTreinoService {
         repository.save(ficha);
 
         if (isNew) {
+            if (aluno != null) {
+                treinoSessaoRepository.deleteByAlunoUuid(aluno.getUuid());
+                treinoSessaoService.gerarSessoesFuturas(ficha, LocalDate.now(), 0);
+            }
             salvarHistoricoSeNecessario(ficha);
             if (aluno != null) {
                 notificacaoService.notificarNovaFichaTreino(aluno);

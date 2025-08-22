@@ -12,13 +12,21 @@ import java.util.UUID;
 public interface TreinoSessaoRepository extends JpaRepository<TreinoSessao, UUID> {
     List<TreinoSessao> findByAlunoUuid(UUID alunoUuid);
 
-    Optional<TreinoSessao> findByAluno_UuidAndUuidAndData(UUID alunoUuid, UUID exercicioUuid, LocalDate data);
+    Optional<TreinoSessao> findByAluno_UuidAndExercicio_UuidAndData(UUID alunoUuid, UUID exercicioUuid, LocalDate data);
+
+    Optional<TreinoSessao> findFirstByAluno_UuidAndExercicio_UuidAndStatusOrderByDataAsc(UUID alunoUuid, UUID exercicioUuid, StatusTreino status);
 
     long countByAlunoUuidAndExercicio_Categoria_UuidAndDataAndStatus(UUID alunoUuid, UUID categoriaUuid, LocalDate data, StatusTreino status);
 
     List<TreinoSessao> findByAlunoUuidAndData(UUID alunoUuid, LocalDate data);
 
+    List<TreinoSessao> findByAlunoUuidAndDataAfter(UUID alunoUuid, LocalDate data);
+
     List<TreinoSessao> findByAlunoUuidAndDataBeforeOrderByDataDesc(UUID alunoUuid, LocalDate data);
+
+    void deleteByAlunoUuidAndDataAfter(UUID alunoUuid, LocalDate data);
+
+    void deleteByAlunoUuid(UUID alunoUuid);
 
     boolean existsByExercicio_Uuid(UUID exercicioUuid);
 }
