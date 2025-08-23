@@ -16,6 +16,7 @@ public class AcademiaDTO {
     private UsuarioDTO admin;
     private Integer limiteAlunos;
     private Boolean exibirPatrocinadores;
+    private Boolean exibirMarketplace;
 
     public UUID getUuid() {
         return uuid;
@@ -119,5 +120,13 @@ public class AcademiaDTO {
 
     public void setExibirPatrocinadores(Boolean exibirPatrocinadores) {
         this.exibirPatrocinadores = exibirPatrocinadores;
+    }
+
+    public Boolean getExibirMarketplace() {
+        return exibirMarketplace;
+    }
+
+    public void setExibirMarketplace(Boolean exibirMarketplace) {
+        this.exibirMarketplace = exibirMarketplace;
     }
 }

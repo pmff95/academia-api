@@ -45,4 +45,17 @@ public class AcademiaController {
                                                        @Validated @RequestBody AcademiaDTO dto) {
         return ResponseEntity.ok(ApiReturn.of(service.update(uuid, dto)));
     }
+
+    @PutMapping("/{uuid}/marketplace")
+    public ResponseEntity<ApiReturn<String>> alterarExibirMarketplace(@PathVariable UUID uuid,
+                                                                      @RequestParam boolean exibir) {
+        return ResponseEntity.ok(ApiReturn.of(service.alterarExibirMarketplace(uuid, exibir)));
+    }
+
+    @PutMapping("/{uuid}/patrocinadores")
+    @PreAuthorize("hasRole('MASTER')")
+    public ResponseEntity<ApiReturn<String>> alterarExibirPatrocinadores(@PathVariable UUID uuid,
+                                                                         @RequestParam boolean exibir) {
+        return ResponseEntity.ok(ApiReturn.of(service.alterarExibirPatrocinadores(uuid, exibir)));
+    }
 }

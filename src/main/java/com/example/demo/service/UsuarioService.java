@@ -120,7 +120,14 @@ public class UsuarioService {
         }
 
         return repository.findByUuid(usuarioLogado.getUuid())
-                .map(u -> ApiReturn.of(mapper.map(u, UsuarioDTO.class)))
+                .map(u -> {
+                    UsuarioDTO dto = mapper.map(u, UsuarioDTO.class);
+                    if (u.getAcademia() != null) {
+                        dto.setExibirPatrocinadores(u.getAcademia().isExibirPatrocinadores());
+                        dto.setExibirMarketplace(u.getAcademia().isExibirMarketplace());
+                    }
+                    return ApiReturn.of(dto);
+                })
                 .orElseThrow(() -> EurekaException.ofNotFound("Usuário não encontrado"));
     }
 }

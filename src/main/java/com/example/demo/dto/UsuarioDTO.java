@@ -21,6 +21,8 @@ public class UsuarioDTO {
     private String cidade;
     private Perfil perfil;
     private Tema tema;
+    private Boolean exibirPatrocinadores;
+    private Boolean exibirMarketplace;
 
     public UUID getUuid() {
         return uuid;
@@ -140,5 +142,21 @@ public class UsuarioDTO {
 
     public void setTema(Tema tema) {
         this.tema = tema;
+    }
+
+    public Boolean getExibirPatrocinadores() {
+        return exibirPatrocinadores;
+    }
+
+    public void setExibirPatrocinadores(Boolean exibirPatrocinadores) {
+        this.exibirPatrocinadores = exibirPatrocinadores;
+    }
+
+    public Boolean getExibirMarketplace() {
+        return exibirMarketplace;
+    }
+
+    public void setExibirMarketplace(Boolean exibirMarketplace) {
+        this.exibirMarketplace = exibirMarketplace;
     }
 }

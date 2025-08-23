@@ -34,6 +34,9 @@ public class Academia {
     @Column(nullable = false)
     private boolean exibirPatrocinadores = true;
 
+    @Column(nullable = false)
+    private boolean exibirMarketplace = true;
+
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "admin_uuid", referencedColumnName = "uuid", nullable = false)
     private Usuario admin;
