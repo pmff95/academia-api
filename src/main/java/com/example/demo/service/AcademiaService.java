@@ -107,9 +107,6 @@ public class AcademiaService {
         entity.setTelefone(dto.getTelefone());
         entity.setCodigo(dto.getCodigo());
         entity.setLimiteAlunos(dto.getLimiteAlunos());
-        if (dto.getExibirPatrocinadores() != null) {
-            entity.setExibirPatrocinadores(dto.getExibirPatrocinadores());
-        }
 
         if (dto.getAdmin() != null && entity.getAdmin() != null) {
             entity.getAdmin().setNome(dto.getAdmin().getNome());
@@ -127,5 +124,21 @@ public class AcademiaService {
 
         repository.save(entity);
         return "Academia atualizada";
+    }
+
+    @Transactional
+    public String alterarExibirMarketplace(UUID uuid, boolean exibir) {
+        Academia entity = repository.findById(uuid).orElseThrow(() -> new ApiException("Academia não encontrada"));
+        entity.setExibirMarketplace(exibir);
+        repository.save(entity);
+        return exibir ? "Marketplace habilitado" : "Marketplace desabilitado";
+    }
+
+    @Transactional
+    public String alterarExibirPatrocinadores(UUID uuid, boolean exibir) {
+        Academia entity = repository.findById(uuid).orElseThrow(() -> new ApiException("Academia não encontrada"));
+        entity.setExibirPatrocinadores(exibir);
+        repository.save(entity);
+        return exibir ? "Patrocinadores habilitados" : "Patrocinadores desabilitados";
     }
 }
