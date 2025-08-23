@@ -1,6 +1,7 @@
 package com.example.demo.dto;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
 
 import com.example.demo.domain.enums.StatusTreino;
@@ -8,8 +9,8 @@ import com.example.demo.domain.enums.StatusTreino;
 public class TreinoSessaoDTO {
     private UUID exercicioUuid;
     private LocalDate data;
-    private Integer repeticoesRealizadas;
-    private Double cargaRealizada;
+    private List<Integer> repeticoesRealizadas;
+    private List<Double> cargaRealizada;
     private StatusTreino status;
 
     public UUID getExercicioUuid() {
@@ -28,19 +29,19 @@ public class TreinoSessaoDTO {
         this.data = data;
     }
 
-    public Integer getRepeticoesRealizadas() {
+    public List<Integer> getRepeticoesRealizadas() {
         return repeticoesRealizadas;
     }
 
-    public void setRepeticoesRealizadas(Integer repeticoesRealizadas) {
+    public void setRepeticoesRealizadas(List<Integer> repeticoesRealizadas) {
         this.repeticoesRealizadas = repeticoesRealizadas;
     }
 
-    public Double getCargaRealizada() {
+    public List<Double> getCargaRealizada() {
         return cargaRealizada;
     }
 
-    public void setCargaRealizada(Double cargaRealizada) {
+    public void setCargaRealizada(List<Double> cargaRealizada) {
         this.cargaRealizada = cargaRealizada;
     }
 

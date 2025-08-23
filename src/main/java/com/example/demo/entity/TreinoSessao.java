@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
 
 import com.example.demo.domain.enums.StatusTreino;
@@ -24,11 +25,15 @@ public class TreinoSessao {
     @Column(nullable = false)
     private LocalDate data;
 
-    @Column
-    private Integer repeticoesRealizadas;
+    @ElementCollection
+    @CollectionTable(name = "treino_sessao_repeticoes", joinColumns = @JoinColumn(name = "treino_sessao_uuid"))
+    @Column(name = "repeticao")
+    private List<Integer> repeticoesRealizadas;
 
-    @Column
-    private Double cargaRealizada;
+    @ElementCollection
+    @CollectionTable(name = "treino_sessao_cargas", joinColumns = @JoinColumn(name = "treino_sessao_uuid"))
+    @Column(name = "carga")
+    private List<Double> cargaRealizada;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

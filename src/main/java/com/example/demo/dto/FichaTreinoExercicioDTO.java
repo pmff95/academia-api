@@ -2,6 +2,7 @@ package com.example.demo.dto;
 
 import com.example.demo.entity.Musculo;
 import com.example.demo.domain.enums.StatusTreino;
+import java.util.List;
 import java.util.UUID;
 
 public class FichaTreinoExercicioDTO {
@@ -9,8 +10,8 @@ public class FichaTreinoExercicioDTO {
     private UUID exercicioUuid;
     private String exercicioNome;
     private Musculo musculo;
-    private Integer repeticoes;
-    private Double carga;
+    private List<Integer> repeticoes;
+    private List<Double> carga;
     private Integer series;
     private Integer tempoDescanso;
     private StatusTreino status;
@@ -47,19 +48,19 @@ public class FichaTreinoExercicioDTO {
         this.musculo = musculo;
     }
 
-    public Integer getRepeticoes() {
+    public List<Integer> getRepeticoes() {
         return repeticoes;
     }
 
-    public void setRepeticoes(Integer repeticoes) {
+    public void setRepeticoes(List<Integer> repeticoes) {
         this.repeticoes = repeticoes;
     }
 
-    public Double getCarga() {
+    public List<Double> getCarga() {
         return carga;
     }
 
-    public void setCarga(Double carga) {
+    public void setCarga(List<Double> carga) {
         this.carga = carga;
     }
 
