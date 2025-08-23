@@ -194,8 +194,7 @@ public class FichaTreinoService {
     }
 
     private void atualizarCategorias(FichaTreino ficha, List<FichaTreinoCategoriaDTO> categoriasDto) {
-        Map<UUID, FichaTreinoCategoria> existentes = ficha.getCategorias().stream()
-                .collect(Collectors.toMap(FichaTreinoCategoria::getUuid, c -> c));
+        Map<UUID, FichaTreinoCategoria> existentes = ficha.getCategorias().stream().collect(Collectors.toMap(FichaTreinoCategoria::getUuid, c -> c));
 
         List<FichaTreinoCategoria> atualizadas = new ArrayList<>();
 
@@ -214,8 +213,7 @@ public class FichaTreinoService {
         }
 
         for (FichaTreinoCategoria antiga : existentes.values()) {
-            boolean referenced = antiga.getExercicios().stream()
-                    .anyMatch(ex -> treinoSessaoRepository.existsByExercicio_Uuid(ex.getUuid()));
+            boolean referenced = antiga.getExercicios().stream().anyMatch(ex -> treinoSessaoRepository.existsByExercicio_Uuid(ex.getUuid()));
             if (referenced) {
                 atualizadas.add(antiga);
             }
@@ -227,8 +225,7 @@ public class FichaTreinoService {
     }
 
     private void atualizarExercicios(FichaTreinoCategoria categoria, List<FichaTreinoExercicioDTO> exerciciosDto) {
-        Map<UUID, FichaTreinoExercicio> existentes = categoria.getExercicios().stream()
-                .collect(Collectors.toMap(FichaTreinoExercicio::getUuid, e -> e));
+        Map<UUID, FichaTreinoExercicio> existentes = categoria.getExercicios().stream().collect(Collectors.toMap(FichaTreinoExercicio::getUuid, e -> e));
 
         List<FichaTreinoExercicio> atualizados = new ArrayList<>();
 
@@ -239,8 +236,7 @@ public class FichaTreinoService {
                     exercicio = new FichaTreinoExercicio();
                     exercicio.setCategoria(categoria);
                 }
-                Exercicio exercicioEntity = exercicioRepository.findById(eDto.getExercicioUuid())
-                        .orElseThrow(() -> new ApiException("Exercício não encontrado"));
+                Exercicio exercicioEntity = exercicioRepository.findById(eDto.getExercicioUuid()).orElseThrow(() -> new ApiException("Exercício não encontrado"));
                 exercicio.setExercicio(exercicioEntity);
                 exercicio.setRepeticoes(eDto.getRepeticoes());
                 exercicio.setCarga(eDto.getCarga());
@@ -379,15 +375,12 @@ public class FichaTreinoService {
             proximaCategoriaUuid = categorias.get((lastIndex + 1) % categorias.size()).getUuid();
         }
 
-        List<TreinoSessao> sessoesHoje = treinoSessaoRepository
-                .findByAlunoUuidAndData(alunoUuid, LocalDate.now());
-        Map<UUID, StatusTreino> statusMap = sessoesHoje.stream()
-                .collect(Collectors.toMap(s -> s.getExercicio().getUuid(), TreinoSessao::getStatus, (a, b) -> b));
+        List<TreinoSessao> sessoesHoje = treinoSessaoRepository.findByAlunoUuidAndData(alunoUuid, LocalDate.now());
+        Map<UUID, StatusTreino> statusMap = sessoesHoje.stream().collect(Collectors.toMap(s -> s.getExercicio().getUuid(), TreinoSessao::getStatus, (a, b) -> b));
 
         dto.getCategorias().forEach(c -> {
             c.setAtivo(c.getUuid().equals(proximaCategoriaUuid));
-            desempenhoRepository.findByAluno_UuidAndCategoria_UuidAndData(alunoUuid, c.getUuid(), LocalDate.now())
-                    .ifPresent(d -> c.setPercentualConcluido(d.getPercentual()));
+            desempenhoRepository.findByAluno_UuidAndCategoria_UuidAndData(alunoUuid, c.getUuid(), LocalDate.now()).ifPresent(d -> c.setPercentualConcluido(d.getPercentual()));
             c.getExercicios().forEach(e -> e.setStatus(statusMap.getOrDefault(e.getUuid(), StatusTreino.PENDENTE)));
         });
 
