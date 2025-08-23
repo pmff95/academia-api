@@ -11,32 +11,32 @@ import software.amazon.awssdk.services.s3.S3Configuration;
 
 import java.net.URI;
 
-//@Configuration
-//public class S3Config {
-//
-//    @Value("${cloudflare.r2.access-key}")
-//    private String accessKey;
-//
-//    @Value("${cloudflare.r2.secret-key}")
-//    private String secretKey;
-//
-//    @Value("${cloudflare.r2.endpoint}")
-//    private String endpoint;
-//
-//    @Bean
-//    public S3Client s3Client() {
-//        return S3Client.builder()
-//                .credentialsProvider(
-//                        StaticCredentialsProvider.create(
-//                                AwsBasicCredentials.create(accessKey, secretKey)
-//                        )
-//                )
-//                .region(Region.of("us-east-1"))
-//                .serviceConfiguration(S3Configuration.builder()
-//                        .pathStyleAccessEnabled(true)
-//                        .build())
-//                .endpointOverride(URI.create(endpoint))
-//                .build();
-//    }
-//
-//}
+@Configuration
+public class S3Config {
+
+    @Value("${cloudflare.r2.access-key}")
+    private String accessKey;
+
+    @Value("${cloudflare.r2.secret-key}")
+    private String secretKey;
+
+    @Value("${cloudflare.r2.endpoint}")
+    private String endpoint;
+
+    @Bean
+    public S3Client s3Client() {
+        return S3Client.builder()
+                .credentialsProvider(
+                        StaticCredentialsProvider.create(
+                                AwsBasicCredentials.create(accessKey, secretKey)
+                        )
+                )
+                .region(Region.of("us-east-1"))
+                .serviceConfiguration(S3Configuration.builder()
+                        .pathStyleAccessEnabled(true)
+                        .build())
+                .endpointOverride(URI.create(endpoint))
+                .build();
+    }
+}
+
