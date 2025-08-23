@@ -122,10 +122,20 @@ public class UsuarioService {
         return repository.findByUuid(usuarioLogado.getUuid())
                 .map(u -> {
                     UsuarioDTO dto = mapper.map(u, UsuarioDTO.class);
-                    if (u.getAcademia() != null) {
-                        dto.setExibirPatrocinadores(u.getAcademia().isExibirPatrocinadores());
-                        dto.setExibirMarketplace(u.getAcademia().isExibirMarketplace());
+
+                    if (!Perfil.MASTER.equals(u.getPerfil())) {
+                        boolean exibirPatrocinadores = false;
+                        boolean exibirMarketplace = false;
+
+                        if (u.getAcademia() != null) {
+                            exibirPatrocinadores = u.getAcademia().isExibirPatrocinadores();
+                            exibirMarketplace = u.getAcademia().isExibirMarketplace();
+                        }
+
+                        dto.setExibirPatrocinadores(exibirPatrocinadores);
+                        dto.setExibirMarketplace(exibirMarketplace);
                     }
+
                     return ApiReturn.of(dto);
                 })
                 .orElseThrow(() -> EurekaException.ofNotFound("Usuário não encontrado"));
