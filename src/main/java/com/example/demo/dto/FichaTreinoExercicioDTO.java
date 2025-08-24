@@ -4,14 +4,15 @@ import com.example.demo.entity.Musculo;
 import com.example.demo.domain.enums.StatusTreino;
 import java.util.List;
 import java.util.UUID;
+import com.example.demo.dto.CargaDTO;
 
 public class FichaTreinoExercicioDTO {
     private UUID uuid;
     private UUID exercicioUuid;
     private String exercicioNome;
     private Musculo musculo;
-    private List<Integer> repeticoes;
-    private List<Double> carga;
+    private String tipo;
+    private List<CargaDTO> cargas;
     private Integer series;
     private Integer tempoDescanso;
     private StatusTreino status;
@@ -48,20 +49,20 @@ public class FichaTreinoExercicioDTO {
         this.musculo = musculo;
     }
 
-    public List<Integer> getRepeticoes() {
-        return repeticoes;
+    public String getTipo() {
+        return tipo;
     }
 
-    public void setRepeticoes(List<Integer> repeticoes) {
-        this.repeticoes = repeticoes;
+    public void setTipo(String tipo) {
+        this.tipo = tipo;
     }
 
-    public List<Double> getCarga() {
-        return carga;
+    public List<CargaDTO> getCargas() {
+        return cargas;
     }
 
-    public void setCarga(List<Double> carga) {
-        this.carga = carga;
+    public void setCargas(List<CargaDTO> cargas) {
+        this.cargas = cargas;
     }
 
     public Integer getSeries() {

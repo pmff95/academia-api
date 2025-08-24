@@ -22,6 +22,9 @@ public class FichaTreinoExercicio {
     @JoinColumn(name = "exercicio_uuid", referencedColumnName = "uuid")
     private Exercicio exercicio;
 
+    @Column
+    private String tipo;
+
     @ElementCollection
     @CollectionTable(name = "ficha_exercicio_repeticoes", joinColumns = @JoinColumn(name = "ficha_exercicio_uuid"))
     @Column(name = "repeticao", nullable = false)
