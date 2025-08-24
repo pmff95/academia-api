@@ -338,6 +338,18 @@ public class FichaTreinoService {
         return mapper.toDto(ficha);
     }
 
+    public FichaTreinoDTO findByCategoriaUuid(UUID categoriaUuid) {
+        FichaTreino ficha = repository.findByCategorias_Uuid(categoriaUuid)
+                .orElseThrow(() -> new ApiException("Categoria de treino não encontrada"));
+        FichaTreinoDTO dto = mapper.toDto(ficha);
+        if (dto.getCategorias() != null) {
+            dto.setCategorias(dto.getCategorias().stream()
+                    .filter(c -> c.getUuid().equals(categoriaUuid))
+                    .collect(Collectors.toList()));
+        }
+        return dto;
+    }
+
     public List<FichaTreinoHistoricoDTO> findHistoricoByAluno(UUID alunoUuid) {
         return historicoRepository.findByAluno_UuidOrderByDataCadastroDesc(alunoUuid).stream().map(mapper::toHistoricoDto).toList();
     }
