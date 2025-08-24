@@ -397,28 +397,36 @@ public class FichaTreinoService {
         }
 
         List<FichaTreinoCategoria> categorias = ficha.getCategorias();
-        List<TreinoSessao> sessoes = treinoSessaoRepository.findByAlunoUuidAndDataBeforeOrderByDataDesc(alunoUuid, LocalDate.now());
+        List<TreinoSessao> sessoesHoje = treinoSessaoRepository.findByAlunoUuidAndData(alunoUuid, LocalDate.now());
 
         UUID proximaCategoriaUuid;
-        if (sessoes.isEmpty()) {
-            proximaCategoriaUuid = categorias.get(0).getUuid();
+        if (!sessoesHoje.isEmpty()) {
+            proximaCategoriaUuid = sessoesHoje.get(0).getExercicio().getCategoria().getUuid();
         } else {
-            LocalDate ultimaData = sessoes.get(0).getData();
-            int lastIndex = -1;
-            for (TreinoSessao sessao : sessoes) {
-                if (!sessao.getData().isEqual(ultimaData)) break;
-                int idx = categorias.indexOf(sessao.getExercicio().getCategoria());
-                if (idx > lastIndex) lastIndex = idx;
+            List<TreinoSessao> sessoes = treinoSessaoRepository
+                    .findByAlunoUuidAndDataBeforeOrderByDataDesc(alunoUuid, LocalDate.now());
+            if (sessoes.isEmpty()) {
+                proximaCategoriaUuid = categorias.get(0).getUuid();
+            } else {
+                LocalDate ultimaData = sessoes.get(0).getData();
+                int lastIndex = -1;
+                for (TreinoSessao sessao : sessoes) {
+                    if (!sessao.getData().isEqual(ultimaData)) break;
+                    int idx = categorias.indexOf(sessao.getExercicio().getCategoria());
+                    if (idx > lastIndex) lastIndex = idx;
+                }
+                proximaCategoriaUuid = categorias.get((lastIndex + 1) % categorias.size()).getUuid();
             }
-            proximaCategoriaUuid = categorias.get((lastIndex + 1) % categorias.size()).getUuid();
         }
 
-        List<TreinoSessao> sessoesHoje = treinoSessaoRepository.findByAlunoUuidAndData(alunoUuid, LocalDate.now());
-        Map<UUID, StatusTreino> statusMap = sessoesHoje.stream().collect(Collectors.toMap(s -> s.getExercicio().getUuid(), TreinoSessao::getStatus, (a, b) -> b));
+        Map<UUID, StatusTreino> statusMap = sessoesHoje.stream()
+                .collect(Collectors.toMap(s -> s.getExercicio().getUuid(), TreinoSessao::getStatus, (a, b) -> b));
 
         dto.getCategorias().forEach(c -> {
-            c.setAtivo(c.getUuid().equals(proximaCategoriaUuid));
-            desempenhoRepository.findByAluno_UuidAndCategoria_UuidAndData(alunoUuid, c.getUuid(), LocalDate.now()).ifPresent(d -> c.setPercentualConcluido(d.getPercentual()));
+            boolean isAtivo = c.getUuid().equals(proximaCategoriaUuid);
+            c.setAtivo(isAtivo);
+            desempenhoRepository.findByAluno_UuidAndCategoria_UuidAndData(alunoUuid, c.getUuid(), LocalDate.now())
+                    .ifPresent(d -> c.setPercentualConcluido(d.getPercentual()));
             c.getExercicios().forEach(e -> e.setStatus(statusMap.getOrDefault(e.getUuid(), StatusTreino.PENDENTE)));
         });
 
