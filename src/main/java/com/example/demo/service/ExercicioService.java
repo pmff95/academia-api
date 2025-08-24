@@ -3,9 +3,11 @@ package com.example.demo.service;
 import com.example.demo.dto.ExercicioDTO;
 import com.example.demo.entity.Exercicio;
 import com.example.demo.entity.Musculo;
+import com.example.demo.entity.Maquina;
 import com.example.demo.mapper.ExercicioMapper;
 import com.example.demo.repository.ExercicioRepository;
 import com.example.demo.repository.UsuarioRepository;
+import com.example.demo.repository.MaquinaRepository;
 import com.example.demo.common.security.SecurityUtils;
 import com.example.demo.common.security.UsuarioLogado;
 import com.example.demo.entity.Academia;
@@ -23,17 +25,24 @@ public class ExercicioService {
     private final ExercicioRepository repository;
     private final ExercicioMapper mapper;
     private final UsuarioRepository usuarioRepository;
+    private final MaquinaRepository maquinaRepository;
 
     public ExercicioService(ExercicioRepository repository, ExercicioMapper mapper,
-                            UsuarioRepository usuarioRepository) {
+                            UsuarioRepository usuarioRepository, MaquinaRepository maquinaRepository) {
         this.repository = repository;
         this.mapper = mapper;
         this.usuarioRepository = usuarioRepository;
+        this.maquinaRepository = maquinaRepository;
     }
 
     @Transactional
     public String create(ExercicioDTO dto) {
         Exercicio entity = mapper.toEntity(dto);
+        if (dto.getMaquinaUuid() != null) {
+            Maquina maquina = maquinaRepository.findById(dto.getMaquinaUuid())
+                    .orElseThrow(() -> new IllegalArgumentException("Máquina não encontrada"));
+            entity.setMaquina(maquina);
+        }
         UsuarioLogado usuario = SecurityUtils.getUsuarioLogadoDetalhes();
         boolean isMaster = usuario != null && usuario.possuiPerfil(Perfil.MASTER);
 

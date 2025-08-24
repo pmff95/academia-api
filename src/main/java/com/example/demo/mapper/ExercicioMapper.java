@@ -14,7 +14,11 @@ public class ExercicioMapper {
     }
 
     public ExercicioDTO toDto(Exercicio exercicio) {
-        return mapper.map(exercicio, ExercicioDTO.class);
+        ExercicioDTO dto = mapper.map(exercicio, ExercicioDTO.class);
+        if (exercicio.getMaquina() != null) {
+            dto.setMaquinaUuid(exercicio.getMaquina().getUuid());
+        }
+        return dto;
     }
 
     public Exercicio toEntity(ExercicioDTO dto) {
