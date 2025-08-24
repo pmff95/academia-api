@@ -7,6 +7,7 @@ import com.example.demo.dto.FichaTreinoCategoriaDTO;
 import com.example.demo.dto.FichaTreinoHistoricoDTO;
 import com.example.demo.dto.FichaTreinoExercicioDTO;
 import com.example.demo.dto.CategoriaListagemDTO;
+import com.example.demo.dto.CargaDTO;
 import com.example.demo.entity.*;
 import com.example.demo.exception.ApiException;
 import com.example.demo.mapper.FichaTreinoMapper;
@@ -185,8 +186,11 @@ public class FichaTreinoService {
             Exercicio exercicio = exercicioRepository.findById(eDto.getExercicioUuid()).orElseThrow(() -> new ApiException("Exercício não encontrado"));
             FichaTreinoExercicio fe = new FichaTreinoExercicio();
             fe.setExercicio(exercicio);
-            fe.setRepeticoes(eDto.getRepeticoes());
-            fe.setCarga(eDto.getCarga());
+            fe.setTipo(eDto.getTipo());
+            if (eDto.getCargas() != null) {
+                fe.setRepeticoes(eDto.getCargas().stream().map(CargaDTO::getRepeticoes).collect(Collectors.toList()));
+                fe.setCarga(eDto.getCargas().stream().map(CargaDTO::getPeso).collect(Collectors.toList()));
+            }
             fe.setSeries(eDto.getSeries());
             fe.setTempoDescanso(eDto.getTempoDescanso());
             fe.setCategoria(categoria);
@@ -239,8 +243,14 @@ public class FichaTreinoService {
                 }
                 Exercicio exercicioEntity = exercicioRepository.findById(eDto.getExercicioUuid()).orElseThrow(() -> new ApiException("Exercício não encontrado"));
                 exercicio.setExercicio(exercicioEntity);
-                exercicio.setRepeticoes(eDto.getRepeticoes());
-                exercicio.setCarga(eDto.getCarga());
+                exercicio.setTipo(eDto.getTipo());
+                if (eDto.getCargas() != null) {
+                    exercicio.setRepeticoes(eDto.getCargas().stream().map(CargaDTO::getRepeticoes).collect(Collectors.toList()));
+                    exercicio.setCarga(eDto.getCargas().stream().map(CargaDTO::getPeso).collect(Collectors.toList()));
+                } else {
+                    exercicio.setRepeticoes(null);
+                    exercicio.setCarga(null);
+                }
                 exercicio.setSeries(eDto.getSeries());
                 exercicio.setTempoDescanso(eDto.getTempoDescanso());
                 atualizados.add(exercicio);
@@ -297,6 +307,7 @@ public class FichaTreinoService {
             for (FichaTreinoExercicio exercicio : categoria.getExercicios()) {
                 FichaTreinoExercicio novo = new FichaTreinoExercicio();
                 novo.setExercicio(exercicio.getExercicio());
+                novo.setTipo(exercicio.getTipo());
                 novo.setRepeticoes(exercicio.getRepeticoes());
                 novo.setCarga(exercicio.getCarga());
                 novo.setSeries(exercicio.getSeries());

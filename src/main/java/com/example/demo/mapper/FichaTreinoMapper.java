@@ -4,6 +4,7 @@ import com.example.demo.dto.FichaTreinoCategoriaDTO;
 import com.example.demo.dto.FichaTreinoDTO;
 import com.example.demo.dto.FichaTreinoHistoricoDTO;
 import com.example.demo.dto.FichaTreinoExercicioDTO;
+import com.example.demo.dto.CargaDTO;
 import com.example.demo.entity.FichaTreino;
 import com.example.demo.entity.FichaTreinoCategoria;
 import com.example.demo.entity.FichaTreinoExercicio;
@@ -12,6 +13,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 
 import java.util.stream.Collectors;
+import java.util.List;
 
 @Component
 public class FichaTreinoMapper {
@@ -58,11 +60,27 @@ public class FichaTreinoMapper {
         dto.setExercicioUuid(exercicio.getExercicio().getUuid());
         dto.setExercicioNome(exercicio.getExercicio().getNome());
         dto.setMusculo(exercicio.getExercicio().getMusculo());
-        dto.setRepeticoes(exercicio.getRepeticoes());
-        dto.setCarga(exercicio.getCarga());
+        dto.setTipo(exercicio.getTipo());
+        dto.setCargas(montarCargas(exercicio));
         dto.setSeries(exercicio.getSeries());
         dto.setTempoDescanso(exercicio.getTempoDescanso());
         return dto;
+    }
+
+    private List<CargaDTO> montarCargas(FichaTreinoExercicio exercicio) {
+        List<CargaDTO> cargas = new java.util.ArrayList<>();
+        List<Double> pesos = exercicio.getCarga();
+        List<Integer> reps = exercicio.getRepeticoes();
+        if (pesos != null && reps != null) {
+            int max = Math.min(pesos.size(), reps.size());
+            for (int i = 0; i < max; i++) {
+                CargaDTO c = new CargaDTO();
+                c.setPeso(pesos.get(i));
+                c.setRepeticoes(reps.get(i));
+                cargas.add(c);
+            }
+        }
+        return cargas;
     }
 
     public FichaTreinoHistoricoDTO toHistoricoDto(FichaTreinoHistorico historico) {
