@@ -8,6 +8,7 @@ public class ExercicioDTO {
     private String nome;
     private String descricao;
     private Musculo musculo;
+    private UUID maquinaUuid;
 
     public UUID getUuid() {
         return uuid;
@@ -39,5 +40,13 @@ public class ExercicioDTO {
 
     public void setMusculo(Musculo musculo) {
         this.musculo = musculo;
+    }
+
+    public UUID getMaquinaUuid() {
+        return maquinaUuid;
+    }
+
+    public void setMaquinaUuid(UUID maquinaUuid) {
+        this.maquinaUuid = maquinaUuid;
     }
 }
