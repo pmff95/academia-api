@@ -76,6 +76,7 @@ public class FichaTreinoService {
         FichaTreino ficha;
         if (isNew) {
             ficha = montarFichaTreino(dto, aluno, professor);
+            ficha.setCategorias(montarCategorias(dto, ficha));
         } else {
             ficha = repository.findByUuid(dto.getUuid()).orElseThrow(() -> new ApiException("Ficha de treino não encontrada"));
             ficha.setNome(dto.getNome());
