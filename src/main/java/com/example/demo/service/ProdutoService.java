@@ -21,16 +21,18 @@ public class ProdutoService {
     private final ProdutoRepository repository;
     private final FornecedorRepository fornecedorRepository;
     private final ProdutoMapper mapper;
-    private final CloudflareService cloudflareService;
+//    private final CloudflareService cloudflareService;
 
     public ProdutoService(ProdutoRepository repository,
                           FornecedorRepository fornecedorRepository,
-                          ProdutoMapper mapper,
-                          CloudflareService cloudflareService) {
+                          ProdutoMapper mapper
+//            ,
+//                          CloudflareService cloudflareService
+    ) {
         this.repository = repository;
         this.fornecedorRepository = fornecedorRepository;
         this.mapper = mapper;
-        this.cloudflareService = cloudflareService;
+//        this.cloudflareService = cloudflareService;
     }
 
     @Transactional
@@ -39,14 +41,14 @@ public class ProdutoService {
                 .orElseThrow(() -> new ApiException("Fornecedor não encontrado"));
         Produto entity = mapper.toEntity(dto);
         entity.setFornecedor(fornecedor);
-        if (imagem != null && !imagem.isEmpty()) {
-            try {
-                String url = cloudflareService.upload(imagem);
-                entity.setImagemUrl(url);
-            } catch (IOException e) {
-                throw new ApiException("Erro ao enviar imagem");
-            }
-        }
+//        if (imagem != null && !imagem.isEmpty()) {
+//            try {
+//                String url = cloudflareService.upload(imagem);
+//                entity.setImagemUrl(url);
+//            } catch (IOException e) {
+//                throw new ApiException("Erro ao enviar imagem");
+//            }
+//        }
         repository.save(entity);
         return "Produto criado";
     }
@@ -72,14 +74,14 @@ public class ProdutoService {
         entity.setPreco(dto.getPreco());
         entity.setPrecoDesconto(dto.getPrecoDesconto());
         entity.setAtivo(dto.getAtivo() != null ? dto.getAtivo() : entity.isAtivo());
-        if (imagem != null && !imagem.isEmpty()) {
-            try {
-                String url = cloudflareService.upload(imagem);
-                entity.setImagemUrl(url);
-            } catch (IOException e) {
-                throw new ApiException("Erro ao enviar imagem");
-            }
-        }
+//        if (imagem != null && !imagem.isEmpty()) {
+//            try {
+//                String url = cloudflareService.upload(imagem);
+//                entity.setImagemUrl(url);
+//            } catch (IOException e) {
+//                throw new ApiException("Erro ao enviar imagem");
+//            }
+//        }
         repository.save(entity);
         return "Produto atualizado";
     }

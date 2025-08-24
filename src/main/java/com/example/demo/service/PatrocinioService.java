@@ -21,16 +21,18 @@ public class PatrocinioService {
     private final PatrocinioRepository repository;
     private final PatrocinadorRepository patrocinadorRepository;
     private final PatrocinioMapper mapper;
-    private final CloudflareService cloudflareService;
+//    private final CloudflareService cloudflareService;
 
     public PatrocinioService(PatrocinioRepository repository,
                              PatrocinadorRepository patrocinadorRepository,
-                             PatrocinioMapper mapper,
-                             CloudflareService cloudflareService) {
+                             PatrocinioMapper mapper
+//            ,
+//                             CloudflareService cloudflareService
+    ) {
         this.repository = repository;
         this.patrocinadorRepository = patrocinadorRepository;
         this.mapper = mapper;
-        this.cloudflareService = cloudflareService;
+//        this.cloudflareService = cloudflareService;
     }
 
     @Transactional
@@ -39,14 +41,14 @@ public class PatrocinioService {
                 .orElseThrow(() -> new ApiException("Patrocinador não encontrado"));
         Patrocinio entity = mapper.toEntity(dto);
         entity.setPatrocinador(patrocinador);
-        if (imagem != null && !imagem.isEmpty()) {
-            try {
-                String url = cloudflareService.upload(imagem);
-                entity.setImagemUrl(url);
-            } catch (IOException e) {
-                throw new ApiException("Erro ao enviar imagem");
-            }
-        }
+//        if (imagem != null && !imagem.isEmpty()) {
+//            try {
+//                String url = cloudflareService.upload(imagem);
+//                entity.setImagemUrl(url);
+//            } catch (IOException e) {
+//                throw new ApiException("Erro ao enviar imagem");
+//            }
+//        }
         repository.save(entity);
         return "Patrocínio criado";
     }

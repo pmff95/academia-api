@@ -14,22 +14,22 @@ import java.util.Map;
 @RestController
 @RequestMapping("/pagamentos")
 public class MercadoPagoController {
-    private final MercadoPagoService service;
-
-    public MercadoPagoController(MercadoPagoService service) {
-        this.service = service;
-    }
-
-    @PostMapping("/preference")
-    @PreAuthorize("hasAnyRole('MASTER','ADMIN')")
-    public ResponseEntity<ApiReturn<String>> criarPreferencia(@RequestBody MercadoPagoPreferenceDTO dto) {
-        return ResponseEntity.ok(ApiReturn.of(service.criarPreferencia(dto)));
-    }
-
-    @PostMapping("/webhook")
-    public ResponseEntity<String> webhook(@RequestBody String payload, @RequestHeader Map<String, String> headers) {
-        service.tratarWebhook(payload, headers);
-        return ResponseEntity.ok("ok");
-    }
+//    private final MercadoPagoService service;
+//
+//    public MercadoPagoController(MercadoPagoService service) {
+//        this.service = service;
+//    }
+//
+//    @PostMapping("/preference")
+//    @PreAuthorize("hasAnyRole('MASTER','ADMIN')")
+//    public ResponseEntity<ApiReturn<String>> criarPreferencia(@RequestBody MercadoPagoPreferenceDTO dto) {
+//        return ResponseEntity.ok(ApiReturn.of(service.criarPreferencia(dto)));
+//    }
+//
+//    @PostMapping("/webhook")
+//    public ResponseEntity<String> webhook(@RequestBody String payload, @RequestHeader Map<String, String> headers) {
+//        service.tratarWebhook(payload, headers);
+//        return ResponseEntity.ok("ok");
+//    }
 }
 

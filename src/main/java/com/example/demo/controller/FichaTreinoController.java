@@ -18,7 +18,6 @@ import java.util.UUID;
 @Tag(name = "Fichas de Treino")
 @RestController
 @RequestMapping("/fichas")
-@PreAuthorize("hasAnyRole('MASTER','ADMIN','PROFESSOR')")
 public class FichaTreinoController {
     private final FichaTreinoService service;
 
@@ -32,11 +31,13 @@ public class FichaTreinoController {
     }
 
     @GetMapping("/{fichaUuid}")
+    @PreAuthorize("hasAnyRole('ADMIN','PROFESSOR','ALUNO')")
     public ResponseEntity<ApiReturn<FichaTreinoDTO>> detalhar(@PathVariable UUID fichaUuid) {
         return ResponseEntity.ok(ApiReturn.of(service.findByUuid(fichaUuid)));
     }
 
     @GetMapping("/historico/{alunoUuid}")
+    @PreAuthorize("hasAnyRole('ADMIN','PROFESSOR','ALUNO')")
     public ResponseEntity<ApiReturn<List<FichaTreinoHistoricoDTO>>> historicoPorAluno(@PathVariable UUID alunoUuid) {
         return ResponseEntity.ok(ApiReturn.of(service.findHistoricoByAluno(alunoUuid)));
     }
@@ -48,6 +49,7 @@ public class FichaTreinoController {
     }
 
     @PostMapping("/preset/{presetUuid}/aluno/{alunoUuid}")
+    @PreAuthorize("hasRole('PROFESSOR')")
     public ResponseEntity<ApiReturn<String>> atribuirPreset(@PathVariable UUID presetUuid, @PathVariable UUID alunoUuid) {
         return ResponseEntity.ok(ApiReturn.of(service.assignPreset(presetUuid, alunoUuid)));
     }
@@ -66,6 +68,7 @@ public class FichaTreinoController {
     }
 
     @PutMapping("/ficha-atual/{fichaUuid}")
+    @PreAuthorize("hasAnyRole('PROFESSOR','ADMIN')")
     public ResponseEntity<ApiReturn<String>> atualizarFichaAtual(@PathVariable UUID fichaUuid) {
         return ResponseEntity.ok(ApiReturn.of(service.atualizarFichaAtual(fichaUuid)));
     }
