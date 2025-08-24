@@ -338,6 +338,31 @@ public class FichaTreinoService {
         return mapper.toDto(ficha);
     }
 
+    @Transactional(readOnly = true)
+    public FichaTreinoDTO findByCategoriaUuid(UUID categoriaUuid) {
+        FichaTreino ficha = repository.findByCategorias_Uuid(categoriaUuid)
+                .orElseThrow(() -> new ApiException("Categoria de treino não encontrada"));
+
+        List<FichaTreinoCategoria> categorias = ficha.getCategorias().stream()
+                .filter(c -> c.getUuid().equals(categoriaUuid))
+                .collect(Collectors.toList());
+
+        categorias.forEach(c -> c.getExercicios().size());
+
+        FichaTreino fichaTemp = new FichaTreino();
+        fichaTemp.setUuid(ficha.getUuid());
+        fichaTemp.setAluno(ficha.getAluno());
+        fichaTemp.setProfessor(ficha.getProfessor());
+        fichaTemp.setNome(ficha.getNome());
+        fichaTemp.setPreset(ficha.isPreset());
+        fichaTemp.setDataValidade(ficha.getDataValidade());
+        fichaTemp.setDataCadastro(ficha.getDataCadastro());
+        fichaTemp.setDataAtualizacao(ficha.getDataAtualizacao());
+        fichaTemp.setCategorias(categorias);
+
+        return mapper.toDto(fichaTemp);
+    }
+
     public List<FichaTreinoHistoricoDTO> findHistoricoByAluno(UUID alunoUuid) {
         return historicoRepository.findByAluno_UuidOrderByDataCadastroDesc(alunoUuid).stream().map(mapper::toHistoricoDto).toList();
     }
