@@ -17,6 +17,6 @@ public interface FichaTreinoRepository extends JpaRepository<FichaTreino, UUID> 
     @EntityGraph(attributePaths = {"categorias"})
     Optional<FichaTreino> findByUuid(UUID uuid);
 
-    @EntityGraph(attributePaths = {"categorias", "categorias.exercicios"})
+    @EntityGraph(attributePaths = {"categorias"})
     Optional<FichaTreino> findByCategorias_Uuid(UUID categoriaUuid);
 }
