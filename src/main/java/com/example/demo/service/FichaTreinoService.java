@@ -6,6 +6,7 @@ import com.example.demo.dto.FichaTreinoDTO;
 import com.example.demo.dto.FichaTreinoCategoriaDTO;
 import com.example.demo.dto.FichaTreinoHistoricoDTO;
 import com.example.demo.dto.FichaTreinoExercicioDTO;
+import com.example.demo.dto.CategoriaListagemDTO;
 import com.example.demo.entity.*;
 import com.example.demo.exception.ApiException;
 import com.example.demo.mapper.FichaTreinoMapper;
@@ -385,6 +386,35 @@ public class FichaTreinoService {
         });
 
         return dto;
+    }
+
+    public List<CategoriaListagemDTO> listarCategorias(UUID usuarioUuid) {
+        UUID alunoUuid = usuarioUuid;
+        if (alunoUuid == null) {
+            UsuarioLogado usuario = SecurityUtils.getUsuarioLogadoDetalhes();
+            if (usuario == null) {
+                throw new ApiException("Usuário não autenticado");
+            }
+            alunoUuid = usuario.getUuid();
+        }
+
+        FichaTreinoDTO ficha = findCurrentByAluno(alunoUuid);
+
+        if (ficha.getCategorias() == null) {
+            return new ArrayList<>();
+        }
+
+        return ficha.getCategorias().stream().map(c -> {
+            CategoriaListagemDTO dto = new CategoriaListagemDTO();
+            dto.setUuid(c.getUuid());
+            dto.setNome(c.getNome());
+            List<Musculo> musculos = c.getExercicios().stream()
+                    .map(FichaTreinoExercicioDTO::getMusculo)
+                    .distinct()
+                    .collect(Collectors.toList());
+            dto.setMusculos(musculos);
+            return dto;
+        }).collect(Collectors.toList());
     }
 
     public List<FichaTreinoDTO> findPresetsByProfessor() {

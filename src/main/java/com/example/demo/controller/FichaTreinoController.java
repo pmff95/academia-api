@@ -2,11 +2,10 @@ package com.example.demo.controller;
 
 import com.example.demo.common.response.ApiReturn;
 import com.example.demo.common.security.SecurityUtils;
+import com.example.demo.dto.CategoriaListagemDTO;
 import com.example.demo.dto.FichaTreinoDTO;
 import com.example.demo.dto.FichaTreinoHistoricoDTO;
 import com.example.demo.service.FichaTreinoService;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
@@ -69,5 +68,11 @@ public class FichaTreinoController {
     @PutMapping("/ficha-atual/{fichaUuid}")
     public ResponseEntity<ApiReturn<String>> atualizarFichaAtual(@PathVariable UUID fichaUuid) {
         return ResponseEntity.ok(ApiReturn.of(service.atualizarFichaAtual(fichaUuid)));
+    }
+    
+    @GetMapping("/listagem")
+    @PreAuthorize("hasAnyRole('MASTER','ADMIN','PROFESSOR','ALUNO')")
+    public ResponseEntity<ApiReturn<List<CategoriaListagemDTO>>> listagem(@RequestParam(required = false) UUID usuarioUuid) {
+        return ResponseEntity.ok(ApiReturn.of(service.listarCategorias(usuarioUuid)));
     }
 }
