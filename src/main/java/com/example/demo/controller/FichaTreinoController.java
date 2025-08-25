@@ -36,6 +36,12 @@ public class FichaTreinoController {
         return ResponseEntity.ok(ApiReturn.of(service.findByCategoriaUuid(categoriaUuid)));
     }
 
+    @GetMapping("/categoria/{categoriaUuid}")
+    @PreAuthorize("hasAnyRole('ADMIN','PROFESSOR','ALUNO')")
+    public ResponseEntity<ApiReturn<FichaTreinoDTO>> detalharPorCategoria(@PathVariable UUID categoriaUuid) {
+        return ResponseEntity.ok(ApiReturn.of(service.findByCategoriaUuid(categoriaUuid)));
+    }
+
     @GetMapping("/historico/{alunoUuid}")
     @PreAuthorize("hasAnyRole('ADMIN','PROFESSOR','ALUNO')")
     public ResponseEntity<ApiReturn<List<FichaTreinoHistoricoDTO>>> historicoPorAluno(@PathVariable UUID alunoUuid) {
