@@ -62,6 +62,39 @@ public class TreinoSessaoService {
                 .findByAluno_UuidAndExercicio_UuidAndData(alunoUuid, dto.getExercicioUuid(), LocalDate.now())
                 .orElse(null);
 
+        FichaTreinoCategoria categoria = exercicio.getCategoria();
+
+        if (sessao != null && sessao.getStatus() == StatusTreino.CONCLUIDO) {
+            sessao.setRepeticoesRealizadas(null);
+            sessao.setCargaRealizada(null);
+            sessao.setStatus(StatusTreino.PENDENTE);
+            repository.save(sessao);
+
+            int total = categoria.getExercicios().size();
+            long realizados = repository.countByAlunoUuidAndExercicio_Categoria_UuidAndDataAndStatus(alunoUuid, categoria.getUuid(), LocalDate.now(), StatusTreino.CONCLUIDO);
+            double percentual = (double) realizados / total * 100.0;
+
+            TreinoDesempenho desempenho = desempenhoRepository
+                    .findByAluno_UuidAndCategoria_UuidAndData(alunoUuid, categoria.getUuid(), LocalDate.now())
+                    .orElseGet(() -> {
+                        TreinoDesempenho d = new TreinoDesempenho();
+                        d.setAluno(aluno);
+                        d.setCategoria(categoria);
+                        d.setData(LocalDate.now());
+                        return d;
+                    });
+            desempenho.setPercentual(percentual);
+            desempenhoRepository.save(desempenho);
+
+            FichaTreino ficha = categoria.getFicha();
+            repository.deleteByAlunoUuidAndDataAfter(alunoUuid, LocalDate.now());
+            List<FichaTreinoCategoria> categorias = ficha.getCategorias();
+            int idx = categorias.indexOf(categoria);
+            gerarSessoesFuturas(ficha, LocalDate.now().plusDays(1), idx);
+
+            return percentual;
+        }
+
         if (sessao == null) {
             sessao = repository.findFirstByAluno_UuidAndExercicio_UuidAndStatusOrderByDataAsc(alunoUuid, dto.getExercicioUuid(), StatusTreino.PENDENTE)
                     .orElse(null);
@@ -84,7 +117,6 @@ public class TreinoSessaoService {
 
         repository.save(sessao);
 
-        FichaTreinoCategoria categoria = exercicio.getCategoria();
         int total = categoria.getExercicios().size();
         long realizados = repository.countByAlunoUuidAndExercicio_Categoria_UuidAndDataAndStatus(alunoUuid, categoria.getUuid(), LocalDate.now(), StatusTreino.CONCLUIDO);
         double percentual = (double) realizados / total * 100.0;
