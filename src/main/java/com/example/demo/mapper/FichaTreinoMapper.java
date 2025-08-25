@@ -59,6 +59,7 @@ public class FichaTreinoMapper {
         dto.setUuid(exercicio.getUuid());
         dto.setExercicioUuid(exercicio.getExercicio().getUuid());
         dto.setExercicioNome(exercicio.getExercicio().getNome());
+        dto.setExercicioDescricao(exercicio.getExercicio().getDescricao());
         dto.setMusculo(exercicio.getExercicio().getMusculo());
         dto.setTipo(exercicio.getTipo());
         dto.setCargas(montarCargas(exercicio));

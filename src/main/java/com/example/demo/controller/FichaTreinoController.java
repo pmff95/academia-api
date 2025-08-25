@@ -30,10 +30,10 @@ public class FichaTreinoController {
         return ResponseEntity.ok(ApiReturn.of(service.save(dto)));
     }
 
-    @GetMapping("/{categoriaUuid}")
+    @GetMapping("/{fichaUuid}")
     @PreAuthorize("hasAnyRole('ADMIN','PROFESSOR','ALUNO')")
-    public ResponseEntity<ApiReturn<FichaTreinoDTO>> detalhar(@PathVariable UUID categoriaUuid) {
-        return ResponseEntity.ok(ApiReturn.of(service.findByCategoriaUuid(categoriaUuid)));
+    public ResponseEntity<ApiReturn<FichaTreinoDTO>> detalhar(@PathVariable UUID fichaUuid) {
+        return ResponseEntity.ok(ApiReturn.of(service.findByUuid(fichaUuid)));
     }
 
     @GetMapping("/categoria/{categoriaUuid}")
