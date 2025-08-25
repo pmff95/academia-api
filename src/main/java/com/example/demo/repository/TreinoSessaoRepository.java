@@ -12,8 +12,6 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface TreinoSessaoRepository extends JpaRepository<TreinoSessao, UUID> {
-    List<TreinoSessao> findByAlunoUuid(UUID alunoUuid);
-
     Optional<TreinoSessao> findByAluno_UuidAndExercicio_UuidAndData(UUID alunoUuid, UUID exercicioUuid, LocalDate data);
 
     @Query("SELECT s FROM TreinoSessao s " +
@@ -30,8 +28,6 @@ public interface TreinoSessaoRepository extends JpaRepository<TreinoSessao, UUID
     long countByAlunoUuidAndExercicio_Categoria_UuidAndDataAndStatus(UUID alunoUuid, UUID categoriaUuid, LocalDate data, StatusTreino status);
 
     List<TreinoSessao> findByAlunoUuidAndData(UUID alunoUuid, LocalDate data);
-
-    List<TreinoSessao> findByAlunoUuidAndDataAfter(UUID alunoUuid, LocalDate data);
 
     List<TreinoSessao> findByAlunoUuidAndDataBeforeOrderByDataDesc(UUID alunoUuid, LocalDate data);
 

@@ -16,7 +16,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @Tag(name = "Usuário Logado")
 @RestController
 @RequestMapping("/api/usuario")
-@PreAuthorize("hasAnyRole('MASTER','ADMIN','PROFESSOR','ALUNO')")
+@PreAuthorize("hasAnyRole('MASTER','ADMIN','PROFESSOR','ALUNO', 'FORNECEDOR')")
 public class UsuarioLogadoController {
 
     private final UsuarioService service;
