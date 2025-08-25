@@ -10,6 +10,7 @@ public class FichaTreinoExercicioDTO {
     private UUID uuid;
     private UUID exercicioUuid;
     private String exercicioNome;
+    private String exercicioDescricao;
     private Musculo musculo;
     private String tipo;
     private List<CargaDTO> cargas;
@@ -39,6 +40,14 @@ public class FichaTreinoExercicioDTO {
 
     public void setExercicioNome(String exercicioNome) {
         this.exercicioNome = exercicioNome;
+    }
+
+    public String getExercicioDescricao() {
+        return exercicioDescricao;
+    }
+
+    public void setExercicioDescricao(String exercicioDescricao) {
+        this.exercicioDescricao = exercicioDescricao;
     }
 
     public Musculo getMusculo() {
