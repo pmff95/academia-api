@@ -342,7 +342,7 @@ public class FichaTreinoService {
         return mapper.toDto(ficha);
     }
 
-    @Transactional(readOnly = true)
+    @Transactional()
     public FichaTreinoDTO findByCategoriaUuid(UUID categoriaUuid) {
         FichaTreino ficha = repository.findByCategorias_Uuid(categoriaUuid)
                 .orElseThrow(() -> new ApiException("Categoria de treino não encontrada"));
