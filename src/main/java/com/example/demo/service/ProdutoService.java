@@ -70,6 +70,11 @@ public class ProdutoService {
                 .orElseThrow(() -> new ApiException("Produto não encontrado"));
         entity.setNome(dto.getNome());
         entity.setDescricao(dto.getDescricao());
+        entity.setTamanhos(dto.getTamanhos());
+        entity.setCores(dto.getCores());
+        entity.setSabores(dto.getSabores());
+        entity.setMarca(dto.getMarca());
+        entity.setQuantidade(dto.getQuantidade());
         entity.setEstoque(dto.getEstoque());
         entity.setPreco(dto.getPreco());
         entity.setPrecoDesconto(dto.getPrecoDesconto());
