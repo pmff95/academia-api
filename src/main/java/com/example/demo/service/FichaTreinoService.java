@@ -361,7 +361,19 @@ public class FichaTreinoService {
         fichaTemp.setDataAtualizacao(ficha.getDataAtualizacao());
         fichaTemp.setCategorias(categorias);
 
-        return mapper.toDto(fichaTemp);
+        FichaTreinoDTO dto = mapper.toDto(fichaTemp);
+
+        if (ficha.getAluno() != null && !dto.getCategorias().isEmpty()) {
+            UUID alunoUuid = ficha.getAluno().getUuid();
+            Map<UUID, StatusTreino> statusMap = treinoSessaoRepository.findByAlunoUuidAndData(alunoUuid, LocalDate.now())
+                    .stream()
+                    .collect(Collectors.toMap(s -> s.getExercicio().getUuid(), TreinoSessao::getStatus, (a, b) -> b));
+            dto.getCategorias().forEach(c ->
+                    c.getExercicios().forEach(e ->
+                            e.setStatus(statusMap.getOrDefault(e.getUuid(), StatusTreino.PENDENTE))));
+        }
+
+        return dto;
     }
 
     public List<FichaTreinoHistoricoDTO> findHistoricoByAluno(UUID alunoUuid) {
