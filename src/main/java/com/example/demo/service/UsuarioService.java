@@ -4,6 +4,7 @@ import com.example.demo.domain.enums.Perfil;
 import com.example.demo.common.response.ApiReturn;
 import com.example.demo.common.response.exception.EurekaException;
 import com.example.demo.dto.UsuarioDTO;
+import com.example.demo.dto.AlunoPagamentoDTO;
 import com.example.demo.entity.Usuario;
 import com.example.demo.repository.UsuarioRepository;
 import com.example.demo.common.security.SecurityUtils;
@@ -24,13 +25,15 @@ public class UsuarioService {
     private final ModelMapper mapper;
     private final PasswordEncoder passwordEncoder;
     private final EmailService emailService;
+    private final AlunoPagamentoService alunoPagamentoService;
 
     public UsuarioService(UsuarioRepository repository, ModelMapper mapper, PasswordEncoder passwordEncoder,
-                          EmailService emailService) {
+                          EmailService emailService, AlunoPagamentoService alunoPagamentoService) {
         this.repository = repository;
         this.mapper = mapper;
         this.passwordEncoder = passwordEncoder;
         this.emailService = emailService;
+        this.alunoPagamentoService = alunoPagamentoService;
     }
 
     public Usuario buscarPorLogin(String login) {
@@ -134,6 +137,11 @@ public class UsuarioService {
 
                         dto.setExibirPatrocinadores(exibirPatrocinadores);
                         dto.setExibirMarketplace(exibirMarketplace);
+
+                        if (Perfil.ALUNO.equals(u.getPerfil())) {
+                            AlunoPagamentoDTO pagamento = alunoPagamentoService.buscarUltimoPagamento(u.getUuid());
+                            dto.setUltimoPagamento(pagamento);
+                        }
                     }
 
                     return ApiReturn.of(dto);

@@ -3,6 +3,7 @@ package com.example.demo.service;
 import com.example.demo.common.security.SecurityUtils;
 import com.example.demo.common.security.UsuarioLogado;
 import com.example.demo.dto.AlunoDTO;
+import com.example.demo.dto.AlunoPagamentoDTO;
 import com.example.demo.entity.Academia;
 import com.example.demo.entity.Aluno;
 import com.example.demo.entity.Professor;
@@ -16,7 +17,9 @@ import com.example.demo.repository.UsuarioRepository;
 import com.example.demo.domain.enums.Perfil;
 import com.example.demo.common.util.SenhaUtil;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import jakarta.transaction.Transactional;
@@ -33,6 +36,7 @@ public class AlunoService {
     private final PasswordEncoder passwordEncoder;
     private final EmailService emailService;
     private final AcademiaRepository academiaRepository;
+    private final AlunoPagamentoService alunoPagamentoService;
 
     public AlunoService(AlunoRepository repository,
                         AlunoMapper mapper,
@@ -40,7 +44,8 @@ public class AlunoService {
                         UsuarioRepository usuarioRepository,
                         PasswordEncoder passwordEncoder,
                         EmailService emailService,
-                        AcademiaRepository academiaRepository) {
+                        AcademiaRepository academiaRepository,
+                        AlunoPagamentoService alunoPagamentoService) {
         this.repository = repository;
         this.mapper = mapper;
         this.academiaRepository = academiaRepository;
@@ -48,6 +53,7 @@ public class AlunoService {
         this.usuarioRepository = usuarioRepository;
         this.passwordEncoder = passwordEncoder;
         this.emailService = emailService;
+        this.alunoPagamentoService = alunoPagamentoService;
     }
 
     @Transactional
@@ -98,6 +104,7 @@ public class AlunoService {
     }
 
     public Page<AlunoDTO> findAll(String nome, Pageable pageable) {
+        Pageable sortedPageable = sortByNome(pageable);
         UsuarioLogado usuario = SecurityUtils.getUsuarioLogadoDetalhes();
         boolean isMaster = usuario != null && usuario.possuiPerfil(Perfil.MASTER);
         if (usuario != null && !isMaster) {
@@ -109,15 +116,15 @@ public class AlunoService {
             }
             if (nome != null && !nome.isBlank()) {
                 return repository
-                        .findByAcademiaUuidAndNomeContainingIgnoreCase(academia.getUuid(), nome, pageable)
-                        .map(mapper::toDto);
+                        .findByAcademiaUuidAndNomeContainingIgnoreCase(academia.getUuid(), nome, sortedPageable)
+                        .map(this::mapToDto);
             }
-            return repository.findByAcademiaUuid(academia.getUuid(), pageable).map(mapper::toDto);
+            return repository.findByAcademiaUuid(academia.getUuid(), sortedPageable).map(this::mapToDto);
         }
         if (nome != null && !nome.isBlank()) {
-            return repository.findByNomeContainingIgnoreCase(nome, pageable).map(mapper::toDto);
+            return repository.findByNomeContainingIgnoreCase(nome, sortedPageable).map(this::mapToDto);
         }
-        return repository.findAll(pageable).map(mapper::toDto);
+        return repository.findAll(sortedPageable).map(this::mapToDto);
     }
 
     public AlunoDTO findByUuid(UUID uuid) {
@@ -126,7 +133,7 @@ public class AlunoService {
         if (academia != null && (entity.getAcademia() == null || !academia.getUuid().equals(entity.getAcademia().getUuid()))) {
             throw new ApiException("Acesso negado a aluno de outra academia");
         }
-        return mapper.toDto(entity);
+        return mapToDto(entity);
     }
 
     @Transactional
@@ -180,6 +187,7 @@ public class AlunoService {
     }
 
     public Page<AlunoDTO> findAllFromLoggedProfessor(String nome, Pageable pageable) {
+        Pageable sortedPageable = sortByNome(pageable);
         UsuarioLogado usuario = SecurityUtils.getUsuarioLogadoDetalhes();
         if (usuario == null || !usuario.possuiPerfil(Perfil.PROFESSOR)) {
             throw new ApiException("Usuário precisa ter perfil de professor");
@@ -187,15 +195,16 @@ public class AlunoService {
         Academia academia = obterAcademiaUsuario(usuario);
         if (nome != null && !nome.isBlank()) {
             return repository
-                    .findByAcademiaUuidAndProfessorUuidAndNomeContainingIgnoreCase(academia.getUuid(), usuario.getUuid(), nome, pageable)
-                    .map(mapper::toDto);
+                    .findByAcademiaUuidAndProfessorUuidAndNomeContainingIgnoreCase(academia.getUuid(), usuario.getUuid(), nome, sortedPageable)
+                    .map(this::mapToDto);
         }
         return repository
-                .findByAcademiaUuidAndProfessorUuid(academia.getUuid(), usuario.getUuid(), pageable)
-                .map(mapper::toDto);
+                .findByAcademiaUuidAndProfessorUuid(academia.getUuid(), usuario.getUuid(), sortedPageable)
+                .map(this::mapToDto);
     }
 
     public Page<AlunoDTO> findAllNotFromLoggedProfessor(String nome, Pageable pageable) {
+        Pageable sortedPageable = sortByNome(pageable);
         UsuarioLogado usuario = SecurityUtils.getUsuarioLogadoDetalhes();
         if (usuario == null || !usuario.possuiPerfil(Perfil.PROFESSOR)) {
             throw new ApiException("Usuário precisa ter perfil de professor");
@@ -203,12 +212,12 @@ public class AlunoService {
         Academia academia = obterAcademiaUsuario(usuario);
         if (nome != null && !nome.isBlank()) {
             return repository
-                    .findByAcademiaUuidAndProfessorUuidNotOrProfessorIsNullAndNomeContainingIgnoreCase(academia.getUuid(), usuario.getUuid(), nome, pageable)
-                    .map(mapper::toDto);
+                    .findByAcademiaUuidAndProfessorUuidNotOrProfessorIsNullAndNomeContainingIgnoreCase(academia.getUuid(), usuario.getUuid(), nome, sortedPageable)
+                    .map(this::mapToDto);
         }
         return repository
-                .findByAcademiaUuidAndProfessorUuidNotOrProfessorIsNull(academia.getUuid(), usuario.getUuid(), pageable)
-                .map(mapper::toDto);
+                .findByAcademiaUuidAndProfessorUuidNotOrProfessorIsNull(academia.getUuid(), usuario.getUuid(), sortedPageable)
+                .map(this::mapToDto);
     }
 
     private Academia obterAcademiaUsuario() {
@@ -227,5 +236,16 @@ public class AlunoService {
             return academia;
         }
         return null;
+    }
+
+    private Pageable sortByNome(Pageable pageable) {
+        return PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("nome"));
+    }
+
+    private AlunoDTO mapToDto(Aluno aluno) {
+        AlunoDTO dto = mapper.toDto(aluno);
+        AlunoPagamentoDTO pagamento = alunoPagamentoService.buscarUltimoPagamento(aluno.getUuid());
+        dto.setUltimoPagamento(pagamento);
+        return dto;
     }
 }

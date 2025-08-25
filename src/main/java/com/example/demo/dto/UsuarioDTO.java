@@ -23,6 +23,7 @@ public class UsuarioDTO {
     private Tema tema;
     private Boolean exibirPatrocinadores;
     private Boolean exibirMarketplace;
+    private AlunoPagamentoDTO ultimoPagamento;
 
     public UUID getUuid() {
         return uuid;
@@ -158,5 +159,13 @@ public class UsuarioDTO {
 
     public void setExibirMarketplace(Boolean exibirMarketplace) {
         this.exibirMarketplace = exibirMarketplace;
+    }
+
+    public AlunoPagamentoDTO getUltimoPagamento() {
+        return ultimoPagamento;
+    }
+
+    public void setUltimoPagamento(AlunoPagamentoDTO ultimoPagamento) {
+        this.ultimoPagamento = ultimoPagamento;
     }
 }
