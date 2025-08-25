@@ -7,6 +7,7 @@ import com.example.demo.dto.*;
 import com.example.demo.common.response.ApiReturn;
 import com.example.demo.service.AlunoMedidaService;
 import com.example.demo.service.AlunoObservacaoService;
+import com.example.demo.service.AlunoPagamentoService;
 import com.example.demo.service.AlunoService;
 import com.example.demo.service.TreinoSessaoService;
 import com.example.demo.common.security.SecurityUtils;
@@ -32,15 +33,18 @@ public class AlunoController {
     private final AlunoService service;
     private final AlunoMedidaService medidaService;
     private final AlunoObservacaoService observacaoService;
+    private final AlunoPagamentoService pagamentoService;
     private final TreinoSessaoService treinoSessaoService;
 
     public AlunoController(AlunoService service,
                            AlunoMedidaService medidaService,
                            AlunoObservacaoService observacaoService,
+                           AlunoPagamentoService pagamentoService,
                            TreinoSessaoService treinoSessaoService) {
         this.service = service;
         this.medidaService = medidaService;
         this.observacaoService = observacaoService;
+        this.pagamentoService = pagamentoService;
         this.treinoSessaoService = treinoSessaoService;
     }
 
@@ -88,6 +92,13 @@ public class AlunoController {
     public ResponseEntity<ApiReturn<String>> removerAluno(@PathVariable UUID uuid) {
         service.delete(uuid);
         return ResponseEntity.ok(ApiReturn.of("Aluno removido"));
+    }
+
+    @PostMapping("/{uuid}/pagamentos")
+    @PreAuthorize("hasAnyRole('MASTER','ADMIN')")
+    public ResponseEntity<ApiReturn<String>> registrarPagamento(@PathVariable UUID uuid,
+                                                                 @Validated @RequestBody AlunoPagamentoDTO dto) {
+        return ResponseEntity.ok(ApiReturn.of(pagamentoService.registrar(uuid, dto)));
     }
 
     @PostMapping({"/{uuid}/medidas", "/medidas"})
