@@ -92,7 +92,7 @@ public class TreinoSessaoService {
         }
 
         if (sessao == null) {
-            sessao = repository.findFirstByAluno_UuidAndExercicio_UuidAndStatusOrderByDataAsc(
+            sessao = repository.findFirstByAlunoAndExercicioWithStatusOrNull(
                             alunoUuid, dto.getExercicioUuid(), StatusTreino.PENDENTE)
                     .orElseThrow(() -> new ApiException("Sessão de treino não encontrada"));
 
