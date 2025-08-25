@@ -4,6 +4,7 @@ import com.example.demo.common.response.ApiReturn;
 import com.example.demo.common.response.ErrorType;
 import com.example.demo.common.response.exception.EurekaException;
 import com.example.demo.common.response.exception.NoContentException;
+import com.example.demo.exception.ApiException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -43,6 +44,12 @@ public class EurekaExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiReturn<?>> handleValidationException(MethodArgumentNotValidException ex) {
         return handleEurekaException(EurekaException.ofValidation(ex.getBindingResult().getFieldError().getDefaultMessage()));
+    }
+
+    @ExceptionHandler(ApiException.class)
+    public ResponseEntity<ApiReturn<?>> handleApiException(ApiException ex) {
+        ApiReturn<?> apiReturn = ApiReturn.of(ErrorType.VALIDATION, ErrorType.VALIDATION.getCode(), ex.getMessage(), ex);
+        return new ResponseEntity<>(apiReturn, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
