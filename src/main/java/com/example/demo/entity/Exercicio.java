@@ -29,6 +29,10 @@ public class Exercicio {
     private Musculo musculo;
 
     @ManyToOne
+    @JoinColumn(name = "maquina_uuid", referencedColumnName = "uuid")
+    private Maquina maquina;
+
+    @ManyToOne
     @JoinColumn(name = "academia_uuid", referencedColumnName = "uuid")
     private Academia academia;
 
