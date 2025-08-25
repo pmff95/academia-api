@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.UUID;
 
 @Data
@@ -19,6 +20,14 @@ public class Produto {
 
     private String nome;
     private String descricao;
+    @ElementCollection
+    private List<String> tamanhos;
+    @ElementCollection
+    private List<String> cores;
+    @ElementCollection
+    private List<String> sabores;
+    private String marca;
+    private Integer quantidade;
     private Integer estoque;
     private BigDecimal preco;
     private BigDecimal precoDesconto;
