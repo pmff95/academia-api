@@ -93,8 +93,15 @@ public class TreinoSessaoService {
 
         if (sessao == null) {
             sessao = repository.findFirstByAlunoAndExercicioWithStatusOrNull(
-                            alunoUuid, dto.getExercicioUuid(), StatusTreino.PENDENTE)
-                    .orElseThrow(() -> new ApiException("Sessão de treino não encontrada"));
+                    alunoUuid, dto.getExercicioUuid(), StatusTreino.PENDENTE)
+                .orElseGet(() -> {
+                    TreinoSessao nova = new TreinoSessao();
+                    nova.setAluno(aluno);
+                    nova.setExercicio(exercicio);
+                    nova.setData(LocalDate.now());
+                    nova.setStatus(StatusTreino.PENDENTE);
+                    return repository.save(nova);
+                });
 
             if (sessao.getData().isAfter(LocalDate.now())) {
                 List<TreinoSessao> mesmasDatas = repository.findByAlunoUuidAndData(alunoUuid, sessao.getData());
