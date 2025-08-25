@@ -3,7 +3,6 @@ package com.example.demo.service;
 import com.example.demo.dto.*;
 import com.example.demo.entity.*;
 import com.example.demo.exception.ApiException;
-import com.example.demo.mapper.TreinoSessaoMapper;
 import com.example.demo.repository.AlunoRepository;
 import com.example.demo.repository.TreinoSessaoRepository;
 import com.example.demo.repository.FichaTreinoRepository;
@@ -27,20 +26,17 @@ public class TreinoSessaoService {
     private final AlunoRepository alunoRepository;
     private final UsuarioRepository usuarioRepository;
     private final FichaTreinoRepository fichaTreinoRepository;
-    private final TreinoSessaoMapper mapper;
     private final TreinoDesempenhoRepository desempenhoRepository;
 
     public TreinoSessaoService(TreinoSessaoRepository repository,
                                AlunoRepository alunoRepository,
                                UsuarioRepository usuarioRepository,
                                FichaTreinoRepository fichaTreinoRepository,
-                               TreinoSessaoMapper mapper,
                                TreinoDesempenhoRepository desempenhoRepository) {
         this.repository = repository;
         this.alunoRepository = alunoRepository;
         this.usuarioRepository = usuarioRepository;
         this.fichaTreinoRepository = fichaTreinoRepository;
-        this.mapper = mapper;
         this.desempenhoRepository = desempenhoRepository;
     }
 
@@ -96,19 +92,15 @@ public class TreinoSessaoService {
         }
 
         if (sessao == null) {
-            sessao = repository.findFirstByAluno_UuidAndExercicio_UuidAndStatusOrderByDataAsc(alunoUuid, dto.getExercicioUuid(), StatusTreino.PENDENTE)
-                    .orElse(null);
-            if (sessao != null && sessao.getData().isAfter(LocalDate.now())) {
+            sessao = repository.findFirstByAluno_UuidAndExercicio_UuidAndStatusOrderByDataAsc(
+                            alunoUuid, dto.getExercicioUuid(), StatusTreino.PENDENTE)
+                    .orElseThrow(() -> new ApiException("Sessão de treino não encontrada"));
+
+            if (sessao.getData().isAfter(LocalDate.now())) {
                 List<TreinoSessao> mesmasDatas = repository.findByAlunoUuidAndData(alunoUuid, sessao.getData());
                 mesmasDatas.forEach(s -> s.setData(LocalDate.now()));
+                repository.saveAll(mesmasDatas);
             }
-        }
-
-        if (sessao == null) {
-            sessao = mapper.toEntity(dto);
-            sessao.setAluno(aluno);
-            sessao.setExercicio(exercicio);
-            sessao.setData(LocalDate.now());
         }
 
         sessao.setRepeticoesRealizadas(dto.getRepeticoesRealizadas());
