@@ -334,8 +334,11 @@ public class FichaTreinoService {
     }
 
 
+    @Transactional
     public FichaTreinoDTO findByUuid(UUID fichaUuid) {
-        FichaTreino ficha = repository.findByUuid(fichaUuid).orElseThrow(() -> new ApiException("Ficha de treino não encontrada"));
+        FichaTreino ficha = repository.findByUuid(fichaUuid)
+                .orElseThrow(() -> new ApiException("Ficha de treino não encontrada"));
+        ficha.getCategorias().forEach(c -> c.getExercicios().size());
         return mapper.toDto(ficha);
     }
 
