@@ -5,7 +5,9 @@ import com.example.demo.common.response.ApiReturn;
 import com.example.demo.common.response.exception.EurekaException;
 import com.example.demo.dto.UsuarioDTO;
 import com.example.demo.dto.AlunoPagamentoDTO;
+import com.example.demo.dto.FornecedorDTO;
 import com.example.demo.entity.Usuario;
+import com.example.demo.entity.Fornecedor;
 import com.example.demo.repository.UsuarioRepository;
 import com.example.demo.common.security.SecurityUtils;
 import com.example.demo.common.security.UsuarioLogado;
@@ -124,7 +126,12 @@ public class UsuarioService {
 
         return repository.findByUuid(usuarioLogado.getUuid())
                 .map(u -> {
-                    UsuarioDTO dto = mapper.map(u, UsuarioDTO.class);
+                    UsuarioDTO dto;
+                    if (u instanceof Fornecedor fornecedor) {
+                        dto = mapper.map(fornecedor, FornecedorDTO.class);
+                    } else {
+                        dto = mapper.map(u, UsuarioDTO.class);
+                    }
 
                     if (!Perfil.MASTER.equals(u.getPerfil())) {
                         boolean exibirPatrocinadores = false;

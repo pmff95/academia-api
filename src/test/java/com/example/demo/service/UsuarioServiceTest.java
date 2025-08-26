@@ -4,8 +4,11 @@ import com.example.demo.common.response.ApiReturn;
 import com.example.demo.common.security.SecurityUtils;
 import com.example.demo.common.security.UsuarioLogado;
 import com.example.demo.domain.enums.Perfil;
+import com.example.demo.domain.enums.TipoFornecedor;
 import com.example.demo.dto.UsuarioDTO;
+import com.example.demo.dto.FornecedorDTO;
 import com.example.demo.entity.Usuario;
+import com.example.demo.entity.Fornecedor;
 import com.example.demo.repository.UsuarioRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -33,6 +36,9 @@ class UsuarioServiceTest {
     @Mock
     private EmailService emailService;
 
+    @Mock
+    private AlunoPagamentoService alunoPagamentoService;
+
     private final ModelMapper mapper = new ModelMapper();
 
     @Test
@@ -45,7 +51,7 @@ class UsuarioServiceTest {
 
         when(usuarioRepository.findByUuid(uuid)).thenReturn(Optional.of(usuario));
 
-        UsuarioService service = new UsuarioService(usuarioRepository, mapper, passwordEncoder, emailService);
+        UsuarioService service = new UsuarioService(usuarioRepository, mapper, passwordEncoder, emailService, alunoPagamentoService);
 
         try (var mocked = Mockito.mockStatic(SecurityUtils.class)) {
             mocked.when(SecurityUtils::getUsuarioLogadoDetalhes)
@@ -71,7 +77,7 @@ class UsuarioServiceTest {
 
         when(usuarioRepository.findByUuid(uuid)).thenReturn(Optional.of(usuario));
 
-        UsuarioService service = new UsuarioService(usuarioRepository, mapper, passwordEncoder, emailService);
+        UsuarioService service = new UsuarioService(usuarioRepository, mapper, passwordEncoder, emailService, alunoPagamentoService);
 
         try (var mocked = Mockito.mockStatic(SecurityUtils.class)) {
             mocked.when(SecurityUtils::getUsuarioLogadoDetalhes)
@@ -82,6 +88,31 @@ class UsuarioServiceTest {
             UsuarioDTO dto = result.getResult();
             assertNull(dto.getExibirPatrocinadores());
             assertNull(dto.getExibirMarketplace());
+        }
+    }
+
+    @Test
+    void shouldReturnFornecedorTypeWhenLoggedUserIsFornecedor() {
+        UUID uuid = UUID.randomUUID();
+
+        Fornecedor fornecedor = new Fornecedor();
+        fornecedor.setUuid(uuid);
+        fornecedor.setPerfil(Perfil.FORNECEDOR);
+        fornecedor.setTipo(TipoFornecedor.SUPLEMENTO);
+
+        when(usuarioRepository.findByUuid(uuid)).thenReturn(Optional.of(fornecedor));
+
+        UsuarioService service = new UsuarioService(usuarioRepository, mapper, passwordEncoder, emailService, alunoPagamentoService);
+
+        try (var mocked = Mockito.mockStatic(SecurityUtils.class)) {
+            mocked.when(SecurityUtils::getUsuarioLogadoDetalhes)
+                    .thenReturn(new UsuarioLogado(uuid, null, Perfil.FORNECEDOR));
+
+            ApiReturn<UsuarioDTO> result = service.buscarUsuarioLogado();
+
+            UsuarioDTO dto = result.getResult();
+            assertTrue(dto instanceof FornecedorDTO);
+            assertEquals(TipoFornecedor.SUPLEMENTO, ((FornecedorDTO) dto).getTipo());
         }
     }
 }
