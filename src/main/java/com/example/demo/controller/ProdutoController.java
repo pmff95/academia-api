@@ -4,6 +4,7 @@ import com.example.demo.common.response.ApiReturn;
 import com.example.demo.common.security.SecurityUtils;
 import com.example.demo.common.security.UsuarioLogado;
 import com.example.demo.dto.ProdutoDTO;
+import com.example.demo.dto.ProdutoFiltroDTO;
 import com.example.demo.service.ProdutoService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.data.domain.Page;
@@ -38,6 +39,12 @@ public class ProdutoController {
     public ResponseEntity<ApiReturn<Page<ProdutoDTO>>> listar(Pageable pageable) {
         UsuarioLogado usuarioLogado = SecurityUtils.getUsuarioLogadoDetalhes();
         return ResponseEntity.ok(ApiReturn.of(service.findByFornecedor(usuarioLogado.getUuid(), pageable)));
+    }
+
+    @PostMapping("/filtro")
+    public ResponseEntity<ApiReturn<Page<ProdutoDTO>>> filtrar(@RequestBody ProdutoFiltroDTO filtro,
+                                                               Pageable pageable) {
+        return ResponseEntity.ok(ApiReturn.of(service.filtrar(filtro, pageable)));
     }
 
     @GetMapping("/{uuid}")
