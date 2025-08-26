@@ -10,7 +10,7 @@ public class ProdutoDTO {
     private String descricao;
     private String tipo;
     private String marca;
-    private List<List<ProdutoDetalheDTO>> detalhe;
+    private List<ProdutoDetalheDTO> detalhe;
     private Boolean ativo;
 
     public UUID getUuid() {
@@ -61,11 +61,11 @@ public class ProdutoDTO {
         this.marca = marca;
     }
 
-    public List<List<ProdutoDetalheDTO>> getDetalhe() {
+    public List<ProdutoDetalheDTO> getDetalhe() {
         return detalhe;
     }
 
-    public void setDetalhe(List<List<ProdutoDetalheDTO>> detalhe) {
+    public void setDetalhe(List<ProdutoDetalheDTO> detalhe) {
         this.detalhe = detalhe;
     }
 

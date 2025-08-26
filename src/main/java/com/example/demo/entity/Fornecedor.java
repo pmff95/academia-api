@@ -11,7 +11,7 @@ import java.util.List;
 @DiscriminatorValue("FORNECEDOR")
 public class Fornecedor extends Usuario {
     @Enumerated(EnumType.STRING)
-    @Column(name = "tipo_fornecedor", nullable = false)
+    @Column(name = "tipo_fornecedor", nullable = true)
     private TipoFornecedor tipo;
 
     @OneToMany(mappedBy = "fornecedor", cascade = CascadeType.ALL, orphanRemoval = true)

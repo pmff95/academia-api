@@ -21,8 +21,9 @@ public class Produto {
     private String descricao;
     private String tipo;
     private String marca;
-    @ElementCollection
+    @OneToMany(mappedBy = "produto", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ProdutoDetalhe> detalhe;
+
     private boolean ativo = true;
 
     @PrePersist

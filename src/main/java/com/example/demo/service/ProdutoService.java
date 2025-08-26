@@ -1,5 +1,8 @@
 package com.example.demo.service;
 
+import com.example.demo.common.security.SecurityUtils;
+import com.example.demo.common.security.UsuarioLogado;
+import com.example.demo.domain.enums.Perfil;
 import com.example.demo.dto.ProdutoDTO;
 import com.example.demo.entity.Fornecedor;
 import com.example.demo.entity.Produto;
@@ -11,6 +14,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.UUID;
 
@@ -34,9 +38,17 @@ public class ProdutoService {
     }
 
     @Transactional
-    public String create(ProdutoDTO dto) {
-        Fornecedor fornecedor = fornecedorRepository.findById(dto.getFornecedorUuid())
-                .orElseThrow(() -> new ApiException("Fornecedor não encontrado"));
+    public String create(ProdutoDTO dto, MultipartFile imagem) {
+        UsuarioLogado usuarioLogado = SecurityUtils.getUsuarioLogadoDetalhes();
+
+        Fornecedor fornecedor;
+        if (usuarioLogado.possuiPerfil(Perfil.FORNECEDOR)) {
+            fornecedor = fornecedorRepository.findById(usuarioLogado.getUuid())
+                    .orElseThrow(() -> new ApiException("Fornecedor do usuário logado não encontrado"));
+        } else {
+            fornecedor = fornecedorRepository.findByUuid(dto.getFornecedorUuid())
+                    .orElseThrow(() -> new ApiException("Fornecedor não encontrado"));
+        }
         Produto entity = mapper.toEntity(dto);
         entity.setFornecedor(fornecedor);
         repository.save(entity);

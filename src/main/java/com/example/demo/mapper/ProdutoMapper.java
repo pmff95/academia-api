@@ -7,7 +7,6 @@ import com.example.demo.entity.ProdutoDetalhe;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,26 +20,31 @@ public class ProdutoMapper {
 
     public ProdutoDTO toDto(Produto entity) {
         ProdutoDTO dto = mapper.map(entity, ProdutoDTO.class);
-        dto.setFornecedorUuid(entity.getFornecedor().getUuid());
+
+        if (entity.getFornecedor() != null) {
+            dto.setFornecedorUuid(entity.getFornecedor().getUuid());
+        }
+
         if (entity.getDetalhe() != null) {
             List<ProdutoDetalheDTO> detalhes = entity.getDetalhe().stream()
                     .map(d -> mapper.map(d, ProdutoDetalheDTO.class))
                     .collect(Collectors.toList());
-            dto.setDetalhe(Collections.singletonList(detalhes));
+            dto.setDetalhe(detalhes); // ✅ lista simples
         }
+
         return dto;
     }
 
     public Produto toEntity(ProdutoDTO dto) {
         Produto entity = mapper.map(dto, Produto.class);
+
         if (dto.getDetalhe() != null) {
             List<ProdutoDetalhe> detalhes = dto.getDetalhe().stream()
-                    .flatMap(List::stream)
                     .map(d -> mapper.map(d, ProdutoDetalhe.class))
                     .collect(Collectors.toList());
-            entity.setDetalhe(detalhes);
+            entity.setDetalhe(detalhes); // ✅ lista simples
         }
+
         return entity;
     }
 }
-
