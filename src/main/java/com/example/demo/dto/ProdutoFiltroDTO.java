@@ -13,6 +13,7 @@ public class ProdutoFiltroDTO {
     private List<String> volumes;
     private Boolean promocao;
     private List<String> marcas;
+    private List<String> tipos;
 
     public String getNome() {
         return nome;
@@ -84,6 +85,14 @@ public class ProdutoFiltroDTO {
 
     public void setMarcas(List<String> marcas) {
         this.marcas = marcas;
+    }
+
+    public List<String> getTipos() {
+        return tipos;
+    }
+
+    public void setTipos(List<String> tipos) {
+        this.tipos = tipos;
     }
 }
 

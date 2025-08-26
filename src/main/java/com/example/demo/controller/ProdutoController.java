@@ -12,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -30,7 +31,7 @@ public class ProdutoController {
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("hasAnyRole('FORNECEDOR','MASTER','ADMIN')")
     public ResponseEntity<ApiReturn<String>> criar(
-            @RequestPart("dto") ProdutoDTO dto,
+            @RequestPart("dto") @Valid ProdutoDTO dto,
             @RequestPart(value = "imagem", required = false) MultipartFile imagem) {
         return ResponseEntity.ok(ApiReturn.of(service.create(dto, imagem)));
     }
@@ -55,7 +56,7 @@ public class ProdutoController {
     @PutMapping("/{uuid}")
     @PreAuthorize("hasAnyRole('FORNECEDOR','MASTER','ADMIN')")
     public ResponseEntity<ApiReturn<String>> atualizar(@PathVariable UUID uuid,
-                                                       @RequestBody ProdutoDTO dto) {
+                                                       @RequestBody @Valid ProdutoDTO dto) {
         return ResponseEntity.ok(ApiReturn.of(service.update(uuid, dto)));
     }
 
