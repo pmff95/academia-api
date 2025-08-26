@@ -14,6 +14,4 @@ public interface AcademiaRepository extends JpaRepository<Academia, UUID> {
     Academia findByUuid(UUID uuid);
 
     Page<Academia> findByNomeContainingIgnoreCase(String nome, Pageable pageable);
-
-    Optional<Academia> findByCodigo(String codigo);
 }

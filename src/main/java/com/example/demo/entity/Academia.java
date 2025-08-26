@@ -15,9 +15,6 @@ public class Academia {
     @Column(nullable = false)
     private String nome;
 
-    @Column(nullable = false, unique = true)
-    private String codigo;
-
     private String uf;
     private String cidade;
     private String cep;
@@ -40,10 +37,6 @@ public class Academia {
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "admin_uuid", referencedColumnName = "uuid", nullable = false)
     private Usuario admin;
-
-    public void setCodigo(String codigo) {
-        this.codigo = codigo != null ? codigo.toUpperCase() : null;
-    }
 
     @PrePersist
     private void gerarUuid() {

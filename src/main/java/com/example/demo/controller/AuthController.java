@@ -49,7 +49,7 @@ public class AuthController {
             if (authentication.isAuthenticated()) {
                 UserDetails userDetails = (UserDetails) authentication.getPrincipal();
                 Usuario usuario = usuarioService.buscarPorLogin(request.getUsername());
-                boolean primeiroAcesso = usuario != null && usuario.getUltimoAcesso() == null;
+                boolean primeiroAcesso = usuario != null && usuario.isPrimeiroAcesso();
                 if (usuario != null) {
                     usuarioService.registrarUltimoAcesso(usuario);
                 }
@@ -102,7 +102,7 @@ public class AuthController {
                 return ResponseEntity.ok(ApiReturn.of(new AuthResponse(
                         jwtService.generateToken(claims, userDetails),
                         jwtService.generateRefreshToken(claims, userDetails),
-                        false,
+                        usuario.isPrimeiroAcesso(),
                         usuario.getNome(),
                         usuario.getEmail(),
                         usuario.getPerfil().name(),

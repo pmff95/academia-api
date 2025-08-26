@@ -21,6 +21,7 @@ public class UsuarioDTO {
     private String cidade;
     private Perfil perfil;
     private Tema tema;
+    private Boolean primeiroAcesso;
     private Boolean exibirPatrocinadores;
     private Boolean exibirMarketplace;
     private AlunoPagamentoDTO ultimoPagamento;
@@ -143,6 +144,14 @@ public class UsuarioDTO {
 
     public void setTema(Tema tema) {
         this.tema = tema;
+    }
+
+    public Boolean getPrimeiroAcesso() {
+        return primeiroAcesso;
+    }
+
+    public void setPrimeiroAcesso(Boolean primeiroAcesso) {
+        this.primeiroAcesso = primeiroAcesso;
     }
 
     public Boolean getExibirPatrocinadores() {
