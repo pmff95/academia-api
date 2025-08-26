@@ -12,7 +12,6 @@ public class AcademiaDTO {
     private String logradouro;
     private String bairro;
     private String telefone;
-    private String codigo;
     private UsuarioDTO admin;
     private Integer limiteAlunos;
     private Boolean exibirPatrocinadores;
@@ -88,14 +87,6 @@ public class AcademiaDTO {
 
     public void setTelefone(String telefone) {
         this.telefone = telefone;
-    }
-
-    public String getCodigo() {
-        return codigo;
-    }
-
-    public void setCodigo(String codigo) {
-        this.codigo = codigo;
     }
 
     public UsuarioDTO getAdmin() {

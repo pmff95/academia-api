@@ -10,7 +10,6 @@ import com.example.demo.entity.Professor;
 import com.example.demo.entity.Usuario;
 import com.example.demo.exception.ApiException;
 import com.example.demo.mapper.AlunoMapper;
-import com.example.demo.repository.AcademiaRepository;
 import com.example.demo.repository.AlunoRepository;
 import com.example.demo.repository.ProfessorRepository;
 import com.example.demo.repository.UsuarioRepository;
@@ -35,7 +34,6 @@ public class AlunoService {
     private final UsuarioRepository usuarioRepository;
     private final PasswordEncoder passwordEncoder;
     private final EmailService emailService;
-    private final AcademiaRepository academiaRepository;
     private final AlunoPagamentoService alunoPagamentoService;
 
     public AlunoService(AlunoRepository repository,
@@ -44,11 +42,9 @@ public class AlunoService {
                         UsuarioRepository usuarioRepository,
                         PasswordEncoder passwordEncoder,
                         EmailService emailService,
-                        AcademiaRepository academiaRepository,
                         AlunoPagamentoService alunoPagamentoService) {
         this.repository = repository;
         this.mapper = mapper;
-        this.academiaRepository = academiaRepository;
         this.professorRepository = professorRepository;
         this.usuarioRepository = usuarioRepository;
         this.passwordEncoder = passwordEncoder;
@@ -64,6 +60,7 @@ public class AlunoService {
         entity.setLogradouro(dto.getLogradouro());
         entity.setUf(dto.getUf());
         entity.setCidade(dto.getCidade());
+        entity.setPrimeiroAcesso(true);
         String senha = SenhaUtil.gerarSenhaNumerica(6);
         entity.setSenha(passwordEncoder.encode(senha));
         entity.setPerfil(Perfil.ALUNO);
@@ -73,23 +70,11 @@ public class AlunoService {
             entity.setProfessor(professor);
         }
 
-        UsuarioLogado usuario = SecurityUtils.getUsuarioLogadoDetalhes();
-        boolean isMaster = usuario != null && usuario.possuiPerfil(Perfil.MASTER);
-        Academia academia;
-        if (usuario != null && !isMaster) {
-            academia = academiaRepository.findByUuid(usuario.getAcademiaUuid());
-            if (academia == null) {
-                throw new ApiException("Usuário precisa ter uma academia associada");
-            }
-            entity.setAcademia(academia);
-        } else {
-            if (dto.getCodigoAcademia() == null || dto.getCodigoAcademia().isBlank()) {
-                throw new ApiException("Código da academia é obrigatório");
-            }
-            academia = academiaRepository.findByCodigo(dto.getCodigoAcademia().toUpperCase())
-                    .orElseThrow(() -> new ApiException("Academia não encontrada"));
-            entity.setAcademia(academia);
+        Academia academia = obterAcademiaUsuario();
+        if (academia == null) {
+            throw new ApiException("Usuário precisa ter uma academia associada");
         }
+        entity.setAcademia(academia);
 
         if (academia.getLimiteAlunos() != null) {
             long count = repository.countByAcademiaUuid(academia.getUuid());
@@ -170,6 +155,12 @@ public class AlunoService {
             entity.setProfessor(professor);
         } else {
             entity.setProfessor(null);
+        }
+
+        UsuarioLogado usuarioLogado = SecurityUtils.getUsuarioLogadoDetalhes();
+        if (usuarioLogado != null && usuarioLogado.possuiPerfil(Perfil.ALUNO)
+                && usuarioLogado.getUuid().equals(uuid)) {
+            entity.setPrimeiroAcesso(false);
         }
 
         repository.save(entity);
