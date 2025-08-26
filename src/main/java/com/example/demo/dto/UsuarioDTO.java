@@ -1,5 +1,6 @@
 package com.example.demo.dto;
 
+import com.example.demo.common.validation.annotation.CPF;
 import com.example.demo.domain.enums.Perfil;
 import com.example.demo.domain.enums.Tema;
 import java.time.LocalDate;
@@ -8,6 +9,7 @@ import java.util.UUID;
 public class UsuarioDTO {
     private UUID uuid;
     private String nome;
+    @CPF
     private String cpf;
     private LocalDate dataNascimento;
     private String telefone;
