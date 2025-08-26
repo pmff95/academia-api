@@ -86,10 +86,6 @@ public class ProdutoService {
                 predicates.add(root.get("marca").in(filtro.getMarcas()));
             }
 
-            if (filtro.getTipos() != null && !filtro.getTipos().isEmpty()) {
-                predicates.add(root.get("tipo").in(filtro.getTipos()));
-            }
-
             if (filtro.getTamanhos() != null && !filtro.getTamanhos().isEmpty()) {
                 predicates.add(detalhe.get("tamanho").in(filtro.getTamanhos()));
             }
@@ -118,8 +114,8 @@ public class ProdutoService {
                 predicates.add(cb.lessThanOrEqualTo(detalhe.get("preco"), filtro.getPrecoMax()));
             }
 
-            if (filtro.getTipo() != null) {
-                predicates.add(cb.lessThanOrEqualTo(detalhe.get("tipo"), filtro.getTipo()));
+            if (filtro.getTipo() != null && !filtro.getTipo().isBlank()) {
+                predicates.add(cb.equal(root.get("tipo"), filtro.getTipo()));
             }
 
             return cb.and(predicates.toArray(new Predicate[0]));

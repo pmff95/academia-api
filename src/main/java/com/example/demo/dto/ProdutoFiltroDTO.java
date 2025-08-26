@@ -8,7 +8,7 @@ import java.util.List;
 public class ProdutoFiltroDTO {
     private String nome;
     private BigDecimal precoMin;
-    private TipoFornecedor tipo;
+    private String tipo;
     private BigDecimal precoMax;
     private List<String> tamanhos;
     private List<String> cores;
@@ -16,7 +16,6 @@ public class ProdutoFiltroDTO {
     private List<String> volumes;
     private Boolean promocao;
     private List<String> marcas;
-    private List<String> tipos;
 
     public String getNome() {
         return nome;
@@ -34,11 +33,11 @@ public class ProdutoFiltroDTO {
         this.precoMin = precoMin;
     }
 
-    public TipoFornecedor getTipo() {
+    public String getTipo() {
         return tipo;
     }
 
-    public void setTipo(TipoFornecedor tipo) {
+    public void setTipo(String tipo) {
         this.tipo = tipo;
     }
 
@@ -98,12 +97,6 @@ public class ProdutoFiltroDTO {
         this.marcas = marcas;
     }
 
-    public List<String> getTipos() {
-        return tipos;
-    }
 
-    public void setTipos(List<String> tipos) {
-        this.tipos = tipos;
-    }
 }
 
