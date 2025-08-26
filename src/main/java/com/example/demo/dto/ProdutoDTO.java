@@ -1,5 +1,6 @@
 package com.example.demo.dto;
 
+import jakarta.validation.constraints.NotBlank;
 import java.util.List;
 import java.util.UUID;
 
@@ -8,6 +9,7 @@ public class ProdutoDTO {
     private UUID fornecedorUuid;
     private String nome;
     private String descricao;
+    @NotBlank
     private String tipo;
     private String marca;
     private List<ProdutoDetalheDTO> detalhe;

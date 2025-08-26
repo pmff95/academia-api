@@ -86,6 +86,10 @@ public class ProdutoService {
                 predicates.add(root.get("marca").in(filtro.getMarcas()));
             }
 
+            if (filtro.getTipos() != null && !filtro.getTipos().isEmpty()) {
+                predicates.add(root.get("tipo").in(filtro.getTipos()));
+            }
+
             if (filtro.getTamanhos() != null && !filtro.getTamanhos().isEmpty()) {
                 predicates.add(detalhe.get("tamanho").in(filtro.getTamanhos()));
             }
