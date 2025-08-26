@@ -1,6 +1,8 @@
 package com.example.demo.controller;
 
 import com.example.demo.common.response.ApiReturn;
+import com.example.demo.common.security.SecurityUtils;
+import com.example.demo.common.security.UsuarioLogado;
 import com.example.demo.dto.ProdutoDTO;
 import com.example.demo.service.ProdutoService;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -33,9 +35,9 @@ public class ProdutoController {
     }
 
     @GetMapping
-    public ResponseEntity<ApiReturn<Page<ProdutoDTO>>> listar(@RequestParam UUID fornecedorUuid,
-                                                              Pageable pageable) {
-        return ResponseEntity.ok(ApiReturn.of(service.findByFornecedor(fornecedorUuid, pageable)));
+    public ResponseEntity<ApiReturn<Page<ProdutoDTO>>> listar(Pageable pageable) {
+        UsuarioLogado usuarioLogado = SecurityUtils.getUsuarioLogadoDetalhes();
+        return ResponseEntity.ok(ApiReturn.of(service.findByFornecedor(usuarioLogado.getUuid(), pageable)));
     }
 
     @GetMapping("/{uuid}")

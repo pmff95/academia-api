@@ -51,6 +51,9 @@ public class ProdutoService {
         }
         Produto entity = mapper.toEntity(dto);
         entity.setFornecedor(fornecedor);
+        if (entity.getDetalhe() != null) {
+            entity.getDetalhe().forEach(d -> d.setProduto(entity));
+        }
         repository.save(entity);
         return "Produto criado";
     }
@@ -77,6 +80,9 @@ public class ProdutoService {
         entity.setMarca(mapped.getMarca());
         entity.setDetalhe(mapped.getDetalhe());
         entity.setAtivo(dto.getAtivo() != null ? dto.getAtivo() : entity.isAtivo());
+        if (entity.getDetalhe() != null) {
+            entity.getDetalhe().forEach(d -> d.setProduto(entity));
+        }
         repository.save(entity);
         return "Produto atualizado";
     }
