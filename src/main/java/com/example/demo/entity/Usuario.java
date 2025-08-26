@@ -2,6 +2,7 @@ package com.example.demo.entity;
 
 import com.example.demo.domain.enums.Perfil;
 import com.example.demo.domain.enums.Tema;
+import com.example.demo.common.validation.annotation.CPF;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
@@ -24,6 +25,7 @@ public class Usuario {
     @Column(nullable = false)
     private String nome;
 
+    @CPF
     @Column(nullable = false, unique = true)
     private String cpf;
 
