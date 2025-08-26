@@ -3,7 +3,6 @@ package com.example.demo.entity;
 import jakarta.persistence.*;
 import lombok.Data;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
@@ -20,18 +19,10 @@ public class Produto {
 
     private String nome;
     private String descricao;
-    @ElementCollection
-    private List<String> tamanhos;
-    @ElementCollection
-    private List<String> cores;
-    @ElementCollection
-    private List<String> sabores;
+    private String tipo;
     private String marca;
-    private Integer quantidade;
-    private Integer estoque;
-    private BigDecimal preco;
-    private BigDecimal precoDesconto;
-    private String imagemUrl;
+    @ElementCollection
+    private List<ProdutoDetalhe> detalhe;
     private boolean ativo = true;
 
     @PrePersist

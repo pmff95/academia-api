@@ -9,7 +9,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.UUID;
 
@@ -25,9 +24,8 @@ public class ProdutoController {
 
     @PostMapping
     @PreAuthorize("hasAnyRole('FORNECEDOR','MASTER','ADMIN')")
-    public ResponseEntity<ApiReturn<String>> criar(@RequestPart("dto") ProdutoDTO dto,
-                                                   @RequestPart(value = "imagem", required = false) MultipartFile imagem) {
-        return ResponseEntity.ok(ApiReturn.of(service.create(dto, imagem)));
+    public ResponseEntity<ApiReturn<String>> criar(@RequestBody ProdutoDTO dto) {
+        return ResponseEntity.ok(ApiReturn.of(service.create(dto)));
     }
 
     @GetMapping
@@ -44,9 +42,8 @@ public class ProdutoController {
     @PutMapping("/{uuid}")
     @PreAuthorize("hasAnyRole('FORNECEDOR','MASTER','ADMIN')")
     public ResponseEntity<ApiReturn<String>> atualizar(@PathVariable UUID uuid,
-                                                       @RequestPart("dto") ProdutoDTO dto,
-                                                       @RequestPart(value = "imagem", required = false) MultipartFile imagem) {
-        return ResponseEntity.ok(ApiReturn.of(service.update(uuid, dto, imagem)));
+                                                       @RequestBody ProdutoDTO dto) {
+        return ResponseEntity.ok(ApiReturn.of(service.update(uuid, dto)));
     }
 
     @DeleteMapping("/{uuid}")

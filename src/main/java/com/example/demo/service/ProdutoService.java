@@ -11,9 +11,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.UUID;
 
 @Service
@@ -36,19 +34,11 @@ public class ProdutoService {
     }
 
     @Transactional
-    public String create(ProdutoDTO dto, MultipartFile imagem) {
+    public String create(ProdutoDTO dto) {
         Fornecedor fornecedor = fornecedorRepository.findById(dto.getFornecedorUuid())
                 .orElseThrow(() -> new ApiException("Fornecedor não encontrado"));
         Produto entity = mapper.toEntity(dto);
         entity.setFornecedor(fornecedor);
-//        if (imagem != null && !imagem.isEmpty()) {
-//            try {
-//                String url = cloudflareService.upload(imagem);
-//                entity.setImagemUrl(url);
-//            } catch (IOException e) {
-//                throw new ApiException("Erro ao enviar imagem");
-//            }
-//        }
         repository.save(entity);
         return "Produto criado";
     }
@@ -65,28 +55,16 @@ public class ProdutoService {
     }
 
     @Transactional
-    public String update(UUID uuid, ProdutoDTO dto, MultipartFile imagem) {
+    public String update(UUID uuid, ProdutoDTO dto) {
         Produto entity = repository.findById(uuid)
                 .orElseThrow(() -> new ApiException("Produto não encontrado"));
-        entity.setNome(dto.getNome());
-        entity.setDescricao(dto.getDescricao());
-        entity.setTamanhos(dto.getTamanhos());
-        entity.setCores(dto.getCores());
-        entity.setSabores(dto.getSabores());
-        entity.setMarca(dto.getMarca());
-        entity.setQuantidade(dto.getQuantidade());
-        entity.setEstoque(dto.getEstoque());
-        entity.setPreco(dto.getPreco());
-        entity.setPrecoDesconto(dto.getPrecoDesconto());
+        Produto mapped = mapper.toEntity(dto);
+        entity.setNome(mapped.getNome());
+        entity.setDescricao(mapped.getDescricao());
+        entity.setTipo(mapped.getTipo());
+        entity.setMarca(mapped.getMarca());
+        entity.setDetalhe(mapped.getDetalhe());
         entity.setAtivo(dto.getAtivo() != null ? dto.getAtivo() : entity.isAtivo());
-//        if (imagem != null && !imagem.isEmpty()) {
-//            try {
-//                String url = cloudflareService.upload(imagem);
-//                entity.setImagemUrl(url);
-//            } catch (IOException e) {
-//                throw new ApiException("Erro ao enviar imagem");
-//            }
-//        }
         repository.save(entity);
         return "Produto atualizado";
     }

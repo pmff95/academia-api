@@ -1,6 +1,5 @@
 package com.example.demo.dto;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
@@ -9,15 +8,9 @@ public class ProdutoDTO {
     private UUID fornecedorUuid;
     private String nome;
     private String descricao;
-    private List<String> tamanhos;
-    private List<String> cores;
-    private List<String> sabores;
+    private String tipo;
     private String marca;
-    private Integer quantidade;
-    private Integer estoque;
-    private BigDecimal preco;
-    private BigDecimal precoDesconto;
-    private String imagemUrl;
+    private List<List<ProdutoDetalheDTO>> detalhe;
     private Boolean ativo;
 
     public UUID getUuid() {
@@ -52,28 +45,12 @@ public class ProdutoDTO {
         this.descricao = descricao;
     }
 
-    public List<String> getTamanhos() {
-        return tamanhos;
+    public String getTipo() {
+        return tipo;
     }
 
-    public void setTamanhos(List<String> tamanhos) {
-        this.tamanhos = tamanhos;
-    }
-
-    public List<String> getCores() {
-        return cores;
-    }
-
-    public void setCores(List<String> cores) {
-        this.cores = cores;
-    }
-
-    public List<String> getSabores() {
-        return sabores;
-    }
-
-    public void setSabores(List<String> sabores) {
-        this.sabores = sabores;
+    public void setTipo(String tipo) {
+        this.tipo = tipo;
     }
 
     public String getMarca() {
@@ -84,44 +61,12 @@ public class ProdutoDTO {
         this.marca = marca;
     }
 
-    public Integer getQuantidade() {
-        return quantidade;
+    public List<List<ProdutoDetalheDTO>> getDetalhe() {
+        return detalhe;
     }
 
-    public void setQuantidade(Integer quantidade) {
-        this.quantidade = quantidade;
-    }
-
-    public Integer getEstoque() {
-        return estoque;
-    }
-
-    public void setEstoque(Integer estoque) {
-        this.estoque = estoque;
-    }
-
-    public BigDecimal getPreco() {
-        return preco;
-    }
-
-    public void setPreco(BigDecimal preco) {
-        this.preco = preco;
-    }
-
-    public BigDecimal getPrecoDesconto() {
-        return precoDesconto;
-    }
-
-    public void setPrecoDesconto(BigDecimal precoDesconto) {
-        this.precoDesconto = precoDesconto;
-    }
-
-    public String getImagemUrl() {
-        return imagemUrl;
-    }
-
-    public void setImagemUrl(String imagemUrl) {
-        this.imagemUrl = imagemUrl;
+    public void setDetalhe(List<List<ProdutoDetalheDTO>> detalhe) {
+        this.detalhe = detalhe;
     }
 
     public Boolean getAtivo() {
