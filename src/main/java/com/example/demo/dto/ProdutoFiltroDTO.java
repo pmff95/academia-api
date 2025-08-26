@@ -1,11 +1,14 @@
 package com.example.demo.dto;
 
+import com.example.demo.domain.enums.TipoFornecedor;
+
 import java.math.BigDecimal;
 import java.util.List;
 
 public class ProdutoFiltroDTO {
     private String nome;
     private BigDecimal precoMin;
+    private TipoFornecedor tipo;
     private BigDecimal precoMax;
     private List<String> tamanhos;
     private List<String> cores;
@@ -28,6 +31,14 @@ public class ProdutoFiltroDTO {
 
     public void setPrecoMin(BigDecimal precoMin) {
         this.precoMin = precoMin;
+    }
+
+    public TipoFornecedor getTipo() {
+        return tipo;
+    }
+
+    public void setTipo(TipoFornecedor tipo) {
+        this.tipo = tipo;
     }
 
     public BigDecimal getPrecoMax() {

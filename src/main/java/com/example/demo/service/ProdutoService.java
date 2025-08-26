@@ -114,6 +114,10 @@ public class ProdutoService {
                 predicates.add(cb.lessThanOrEqualTo(detalhe.get("preco"), filtro.getPrecoMax()));
             }
 
+            if (filtro.getTipo() != null) {
+                predicates.add(cb.lessThanOrEqualTo(detalhe.get("tipo"), filtro.getTipo()));
+            }
+
             return cb.and(predicates.toArray(new Predicate[0]));
         };
 

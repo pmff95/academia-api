@@ -48,7 +48,7 @@ public class ProdutoController {
     }
 
     @GetMapping("/{uuid}")
-    public ResponseEntity<ApiReturn<ProdutoDTO>> buscar(@PathVariable UUID uuid) {
+    public ResponseEntity<ApiReturn<ProdutoDTO>> detalhar(@PathVariable UUID uuid) {
         return ResponseEntity.ok(ApiReturn.of(service.findByUuid(uuid)));
     }
 
