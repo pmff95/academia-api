@@ -41,6 +41,7 @@ public class FornecedorService {
     @Transactional
     public String create(FornecedorDTO dto) {
         Fornecedor entity = mapper.toEntity(dto);
+        entity.setTipo(dto.getTipo());
         entity.setNumero(dto.getNumero());
         entity.setCep(dto.getCep());
         entity.setLogradouro(dto.getLogradouro());
@@ -93,6 +94,7 @@ public class FornecedorService {
         entity.setLogradouro(dto.getLogradouro());
         entity.setUf(dto.getUf());
         entity.setCidade(dto.getCidade());
+        entity.setTipo(dto.getTipo());
         repository.save(entity);
         return "Fornecedor atualizado";
     }
