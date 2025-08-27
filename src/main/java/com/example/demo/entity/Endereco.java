@@ -5,31 +5,22 @@ import lombok.Data;
 
 import java.util.UUID;
 
-/**
- * Pagamento registrado no Mercado Pago com associação ao usuário e endereço de entrega.
- */
-
 @Data
 @Entity
-public class MercadoPagoPagamento {
+public class Endereco {
 
     @Id
     @Column(nullable = false, unique = true, updatable = false)
     private UUID uuid;
 
-    private String mercadoPagoId;
-
-    private String status;
-
-    private String tipo;
-
-    private String detalhe;
-
     @ManyToOne(optional = false)
     private Usuario usuario;
 
-    @ManyToOne(optional = false)
-    private Endereco endereco;
+    private String logradouro;
+    private String bairro;
+    private String cidade;
+    private String uf;
+    private String cep;
 
     @PrePersist
     private void prePersist() {
