@@ -13,4 +13,20 @@ public interface ProfessorRepository extends JpaRepository<Professor, UUID> {
     Page<Professor> findByNomeContainingIgnoreCase(String nome, Pageable pageable);
 
     Page<Professor> findByAcademiaUuidAndNomeContainingIgnoreCase(UUID uuid, String nome, Pageable pageable);
+
+    Page<Professor> findByCrefIsNotNull(Pageable pageable);
+
+    Page<Professor> findByCrefIsNull(Pageable pageable);
+
+    Page<Professor> findByNomeContainingIgnoreCaseAndCrefIsNotNull(String nome, Pageable pageable);
+
+    Page<Professor> findByNomeContainingIgnoreCaseAndCrefIsNull(String nome, Pageable pageable);
+
+    Page<Professor> findByAcademiaUuidAndCrefIsNotNull(UUID uuid, Pageable pageable);
+
+    Page<Professor> findByAcademiaUuidAndCrefIsNull(UUID uuid, Pageable pageable);
+
+    Page<Professor> findByAcademiaUuidAndNomeContainingIgnoreCaseAndCrefIsNotNull(UUID uuid, String nome, Pageable pageable);
+
+    Page<Professor> findByAcademiaUuidAndNomeContainingIgnoreCaseAndCrefIsNull(UUID uuid, String nome, Pageable pageable);
 }
