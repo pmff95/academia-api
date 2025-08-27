@@ -22,7 +22,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
     private final UserDetailsService userDetailsService; // valida o token
-    private final UsuarioRepository usuarioRepository;         // carrega domínio
+    private final UsuarioRepository usuarioRepository;
 
     public JwtAuthenticationFilter(JwtService jwtService,
                                    UserDetailsService userDetailsService,
@@ -53,7 +53,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            var userDetails = userDetailsService.loadUserByUsername(username); // só para validar e pegar roles
+            var userDetails = userDetailsService.loadUserByUsername(username);
             if (jwtService.isTokenValid(jwt, userDetails)) {
                 var usuario = usuarioRepository.findByEmail(username).orElse(null);
                 if (usuario != null) {

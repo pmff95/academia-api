@@ -18,7 +18,9 @@ import java.util.Map;
 public class MercadoPagoController {
     private final MercadoPagoService service;
 
-    public MercadoPagoController(MercadoPagoService service) {
+    public MercadoPagoController(
+            MercadoPagoService service
+    ) {
         this.service = service;
     }
 

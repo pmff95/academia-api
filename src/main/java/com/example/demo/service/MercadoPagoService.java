@@ -7,13 +7,15 @@ import com.example.demo.repository.MercadoPagoPagamentoRepository;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mercadopago.MercadoPagoConfig;
+import com.mercadopago.client.common.IdentificationRequest;
 import com.mercadopago.client.payment.PaymentClient;
 import com.mercadopago.client.payment.PaymentCreateRequest;
-import com.mercadopago.client.payment.PaymentPayerIdentificationRequest;
 import com.mercadopago.client.payment.PaymentPayerRequest;
 import com.mercadopago.client.preference.PreferenceClient;
 import com.mercadopago.client.preference.PreferenceItemRequest;
 import com.mercadopago.client.preference.PreferenceRequest;
+import com.mercadopago.exceptions.MPApiException;
+import com.mercadopago.exceptions.MPException;
 import com.mercadopago.resources.payment.Payment;
 import com.mercadopago.resources.preference.Preference;
 import org.springframework.beans.factory.annotation.Value;
@@ -34,69 +36,101 @@ public class MercadoPagoService {
         this.pagamentoRepository = pagamentoRepository;
     }
 
+
     public MercadoPagoPagamento pagarCartao(MercadoPagoCartaoDTO dto) {
         MercadoPagoConfig.setAccessToken(accessToken);
-
         PaymentClient client = new PaymentClient();
 
-        PaymentPayerIdentificationRequest identification = PaymentPayerIdentificationRequest.builder()
-                .type(dto.getDocType())
-                .number(dto.getDocNumber())
-                .build();
+        try {
+            IdentificationRequest identification = IdentificationRequest.builder()
+                    .type(dto.getDocType())
+                    .number(dto.getDocNumber())
+                    .build();
 
-        PaymentPayerRequest payer = PaymentPayerRequest.builder()
-                .email(dto.getEmail())
-                .identification(identification)
-                .build();
+            PaymentPayerRequest payer = PaymentPayerRequest.builder()
+                    .email(dto.getEmail())
+                    .identification(identification)
+                    .build();
 
-        PaymentCreateRequest request = PaymentCreateRequest.builder()
-                .transactionAmount(dto.getValor())
-                .token(dto.getToken())
-                .description(dto.getDescricao())
-                .installments(dto.getParcelas())
-                .paymentMethodId(dto.getMetodo())
-                .payer(payer)
-                .build();
+            PaymentCreateRequest request = PaymentCreateRequest.builder()
+                    .transactionAmount(dto.getValor())
+                    .token(dto.getToken())
+                    .description(dto.getDescricao())
+                    .installments(dto.getParcelas())
+                    .paymentMethodId(dto.getMetodo())
+                    .payer(payer)
+                    .build();
 
-        Payment payment = client.create(request);
+            Payment payment = client.create(request);
 
-        MercadoPagoPagamento pagamento = new MercadoPagoPagamento();
-        pagamento.setMercadoPagoId(payment.getId().toString());
-        pagamento.setStatus(payment.getStatus());
-        pagamento.setTipo("CARTAO");
-        pagamentoRepository.save(pagamento);
+            MercadoPagoPagamento pagamento = new MercadoPagoPagamento();
+            pagamento.setMercadoPagoId(payment.getId().toString());
+            pagamento.setStatus(payment.getStatus());
+            pagamento.setTipo("CARTAO");
+            pagamentoRepository.save(pagamento);
 
-        return pagamento;
+            return pagamento;
+
+        } catch (MPException | MPApiException e) {
+            e.printStackTrace(); // ou logger
+
+            // Aqui você pode até salvar um registro de erro no banco
+            MercadoPagoPagamento erro = new MercadoPagoPagamento();
+            erro.setStatus("ERRO");
+            erro.setTipo("CARTAO");
+            erro.setDetalhe(e.getMessage()); // exemplo
+            pagamentoRepository.save(erro);
+
+            throw new RuntimeException("Erro ao criar pagamento no Mercado Pago", e);
+        }
     }
+
 
     public MercadoPagoPagamento criarQrCode(MercadoPagoQrCodeDTO dto) {
         MercadoPagoConfig.setAccessToken(accessToken);
-
-        PreferenceItemRequest item = PreferenceItemRequest.builder()
-                .title(dto.getDescricao())
-                .quantity(1)
-                .unitPrice(dto.getValor())
-                .currencyId("BRL")
-                .build();
-
-        PreferenceRequest request = PreferenceRequest.builder()
-                .items(List.of(item))
-                .build();
-
         PreferenceClient client = new PreferenceClient();
-        Preference preference = client.create(request);
 
-        MercadoPagoPagamento pagamento = new MercadoPagoPagamento();
-        pagamento.setMercadoPagoId(preference.getId());
-        pagamento.setStatus("pending");
-        pagamento.setTipo("QRCODE");
-        if (preference.getInitPoint() != null) {
-            pagamento.setDetalhe(preference.getInitPoint());
+        try {
+            PreferenceItemRequest item = PreferenceItemRequest.builder()
+                    .title(dto.getDescricao())
+                    .quantity(1)
+                    .unitPrice(dto.getValor())
+                    .currencyId("BRL")
+                    .build();
+
+            PreferenceRequest request = PreferenceRequest.builder()
+                    .items(List.of(item))
+                    .build();
+
+            Preference preference = client.create(request);
+
+            MercadoPagoPagamento pagamento = new MercadoPagoPagamento();
+            pagamento.setMercadoPagoId(preference.getId());
+            pagamento.setStatus("PENDING"); // Mercado Pago inicia como pending
+            pagamento.setTipo("QRCODE");
+
+            // 🔹 Se QR Code disponível, salvar a URL
+            if (preference.getInitPoint() != null) {
+                pagamento.setDetalhe(preference.getInitPoint());
+            }
+
+            pagamentoRepository.save(pagamento);
+            return pagamento;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+
+            // 🔹 Registra o erro no banco
+            MercadoPagoPagamento erro = new MercadoPagoPagamento();
+            erro.setStatus("ERRO");
+            erro.setTipo("QRCODE");
+            erro.setDetalhe(e.getMessage());
+            pagamentoRepository.save(erro);
+
+            throw new RuntimeException("Erro ao criar QR Code no Mercado Pago", e);
         }
-        pagamentoRepository.save(pagamento);
-
-        return pagamento;
     }
+
 
     public void tratarWebhook(String payload, Map<String, String> headers) {
         try {
@@ -106,7 +140,7 @@ public class MercadoPagoService {
                 String id = node.get("data").get("id").asText();
                 MercadoPagoConfig.setAccessToken(accessToken);
                 PaymentClient client = new PaymentClient();
-                Payment payment = client.get(id);
+                Payment payment = client.get(Long.valueOf(id));
                 pagamentoRepository.findByMercadoPagoId(id).ifPresent(pag -> {
                     pag.setStatus(payment.getStatus());
                     pagamentoRepository.save(pag);
