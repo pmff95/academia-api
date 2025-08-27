@@ -6,7 +6,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import java.util.Collection;
-import java.util.List;
+import java.util.Collections;
 import java.util.UUID;
 
 /**
@@ -29,7 +29,7 @@ public class UsuarioLogado implements UserDetails {
     }
 
     public UUID getAcademiaUuid() {
-        return academiaUuid != null ? academiaUuid : null;
+        return academiaUuid;
     }
 
     /**
@@ -41,7 +41,7 @@ public class UsuarioLogado implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority("ROLE_" + perfil.name()));
+        return Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + perfil.name()));
     }
 
     @Override
