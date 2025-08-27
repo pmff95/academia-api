@@ -1,6 +1,7 @@
 package com.example.demo.dto;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 
 public class MercadoPagoCartaoDTO {
     private String token;
@@ -11,6 +12,10 @@ public class MercadoPagoCartaoDTO {
     private String email;
     private String docType;
     private String docNumber;
+
+    private UUID enderecoUuid;
+
+    private EnderecoDTO endereco;
 
     public String getToken() {
         return token;
@@ -74,5 +79,21 @@ public class MercadoPagoCartaoDTO {
 
     public void setDocNumber(String docNumber) {
         this.docNumber = docNumber;
+    }
+
+    public UUID getEnderecoUuid() {
+        return enderecoUuid;
+    }
+
+    public void setEnderecoUuid(UUID enderecoUuid) {
+        this.enderecoUuid = enderecoUuid;
+    }
+
+    public EnderecoDTO getEndereco() {
+        return endereco;
+    }
+
+    public void setEndereco(EnderecoDTO endereco) {
+        this.endereco = endereco;
     }
 }

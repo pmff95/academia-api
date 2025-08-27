@@ -2,8 +2,16 @@ package com.example.demo.service;
 
 import com.example.demo.dto.MercadoPagoCartaoDTO;
 import com.example.demo.dto.MercadoPagoQrCodeDTO;
+import com.example.demo.dto.EnderecoDTO;
 import com.example.demo.entity.MercadoPagoPagamento;
+import com.example.demo.entity.Endereco;
+import com.example.demo.entity.Usuario;
+import com.example.demo.exception.ApiException;
 import com.example.demo.repository.MercadoPagoPagamentoRepository;
+import com.example.demo.repository.EnderecoRepository;
+import com.example.demo.repository.UsuarioRepository;
+import com.example.demo.common.security.SecurityUtils;
+import com.example.demo.common.security.UsuarioLogado;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mercadopago.MercadoPagoConfig;
@@ -23,6 +31,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @Service
 public class MercadoPagoService {
@@ -31,9 +40,15 @@ public class MercadoPagoService {
     private String accessToken;
 
     private final MercadoPagoPagamentoRepository pagamentoRepository;
+    private final UsuarioRepository usuarioRepository;
+    private final EnderecoRepository enderecoRepository;
 
-    public MercadoPagoService(MercadoPagoPagamentoRepository pagamentoRepository) {
+    public MercadoPagoService(MercadoPagoPagamentoRepository pagamentoRepository,
+                              UsuarioRepository usuarioRepository,
+                              EnderecoRepository enderecoRepository) {
         this.pagamentoRepository = pagamentoRepository;
+        this.usuarioRepository = usuarioRepository;
+        this.enderecoRepository = enderecoRepository;
     }
 
 
@@ -67,6 +82,7 @@ public class MercadoPagoService {
             pagamento.setMercadoPagoId(payment.getId().toString());
             pagamento.setStatus(payment.getStatus());
             pagamento.setTipo("CARTAO");
+            preencherUsuarioEndereco(pagamento, dto.getEnderecoUuid(), dto.getEndereco());
             pagamentoRepository.save(pagamento);
 
             return pagamento;
@@ -114,6 +130,7 @@ public class MercadoPagoService {
                 pagamento.setDetalhe(preference.getInitPoint());
             }
 
+            preencherUsuarioEndereco(pagamento, dto.getEnderecoUuid(), dto.getEndereco());
             pagamentoRepository.save(pagamento);
             return pagamento;
 
@@ -149,5 +166,37 @@ public class MercadoPagoService {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private void preencherUsuarioEndereco(MercadoPagoPagamento pagamento,
+                                          UUID enderecoUuid,
+                                          EnderecoDTO enderecoDto) {
+        UsuarioLogado usuarioLogado = SecurityUtils.getUsuarioLogadoDetalhes();
+        if (usuarioLogado == null) {
+            throw new ApiException("Usuário não autenticado");
+        }
+
+        Usuario usuario = usuarioRepository.findByUuid(usuarioLogado.getUuid())
+                .orElseThrow(() -> new ApiException("Usuário não encontrado"));
+
+        Endereco endereco;
+        if (enderecoUuid != null) {
+            endereco = enderecoRepository.findById(enderecoUuid)
+                    .orElseThrow(() -> new ApiException("Endereço não encontrado"));
+        } else if (enderecoDto != null) {
+            endereco = new Endereco();
+            endereco.setUsuario(usuario);
+            endereco.setLogradouro(enderecoDto.getLogradouro());
+            endereco.setBairro(enderecoDto.getBairro());
+            endereco.setCidade(enderecoDto.getCidade());
+            endereco.setUf(enderecoDto.getUf());
+            endereco.setCep(enderecoDto.getCep());
+            endereco = enderecoRepository.save(endereco);
+        } else {
+            throw new ApiException("Endereço obrigatório");
+        }
+
+        pagamento.setUsuario(usuario);
+        pagamento.setEndereco(endereco);
     }
 }
