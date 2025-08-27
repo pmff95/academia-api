@@ -35,9 +35,12 @@ public class ProfessorController {
 
     @GetMapping
     @PreAuthorize("hasAnyRole('MASTER','ADMIN')")
-    public ResponseEntity<ApiReturn<Page<ProfessorDTO>>> listar(@RequestParam(required = false) String nome,
-                                                                Pageable pageable) {
-        return ResponseEntity.ok(ApiReturn.of(service.findAll(nome, pageable)));
+    public ResponseEntity<ApiReturn<Page<ProfessorDTO>>> listar(
+            @RequestParam(required = false) String nome,
+            @RequestParam(required = false) UUID alunoUuid,
+            @RequestParam(required = false) Boolean possuiCref,
+            Pageable pageable) {
+        return ResponseEntity.ok(ApiReturn.of(service.findAll(nome, alunoUuid, possuiCref, pageable)));
     }
 
     @GetMapping("/{uuid}")
