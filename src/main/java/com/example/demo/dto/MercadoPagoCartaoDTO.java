@@ -107,4 +107,5 @@ public class MercadoPagoCartaoDTO {
     public void setItens(List<MercadoPagoItemDTO> itens) {
         this.itens = itens;
     }
+
 }
