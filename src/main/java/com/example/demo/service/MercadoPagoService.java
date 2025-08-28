@@ -3,7 +3,9 @@ package com.example.demo.service;
 import com.example.demo.dto.MercadoPagoCartaoDTO;
 import com.example.demo.dto.MercadoPagoQrCodeDTO;
 import com.example.demo.entity.MercadoPagoPagamento;
+import com.example.demo.entity.CompraHistorico;
 import com.example.demo.repository.MercadoPagoPagamentoRepository;
+import com.example.demo.repository.CompraHistoricoRepository;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mercadopago.MercadoPagoConfig;
@@ -31,9 +33,12 @@ public class MercadoPagoService {
     private String accessToken;
 
     private final MercadoPagoPagamentoRepository pagamentoRepository;
+    private final CompraHistoricoRepository historicoRepository;
 
-    public MercadoPagoService(MercadoPagoPagamentoRepository pagamentoRepository) {
+    public MercadoPagoService(MercadoPagoPagamentoRepository pagamentoRepository,
+                              CompraHistoricoRepository historicoRepository) {
         this.pagamentoRepository = pagamentoRepository;
+        this.historicoRepository = historicoRepository;
     }
 
 
@@ -144,6 +149,15 @@ public class MercadoPagoService {
                 pagamentoRepository.findByMercadoPagoId(id).ifPresent(pag -> {
                     pag.setStatus(payment.getStatus());
                     pagamentoRepository.save(pag);
+
+                    if ("approved".equalsIgnoreCase(payment.getStatus()) &&
+                            !historicoRepository.existsByPagamento(pag)) {
+                        CompraHistorico historico = new CompraHistorico();
+                        historico.setPagamento(pag);
+                        historico.setDescricao(payment.getDescription());
+                        historico.setValor(payment.getTransactionAmount());
+                        historicoRepository.save(historico);
+                    }
                 });
             }
         } catch (Exception e) {
