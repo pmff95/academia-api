@@ -52,9 +52,7 @@ public class MercadoPagoService {
         this.pagamentoRepository = pagamentoRepository;
         this.usuarioRepository = usuarioRepository;
         this.produtoRepository = produtoRepository;
-
     }
-
 
     public MercadoPagoPagamento pagarCartao(MercadoPagoCartaoDTO dto) {
         MercadoPagoConfig.setAccessToken(accessToken);
@@ -214,6 +212,15 @@ public class MercadoPagoService {
                 pagamentoRepository.findByMercadoPagoId(id).ifPresent(pag -> {
                     pag.setStatus(payment.getStatus());
                     pagamentoRepository.save(pag);
+
+                    if ("approved".equalsIgnoreCase(payment.getStatus()) &&
+                            !historicoRepository.existsByPagamento(pag)) {
+                        CompraHistorico historico = new CompraHistorico();
+                        historico.setPagamento(pag);
+                        historico.setDescricao(payment.getDescription());
+                        historico.setValor(payment.getTransactionAmount());
+                        historicoRepository.save(historico);
+                    }
                 });
             }
         } catch (Exception e) {
