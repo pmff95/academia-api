@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * Pagamento registrado no Mercado Pago com associação ao usuário e endereço de entrega.
+ * Pagamento registrado no Mercado Pago com associação ao usuário e dados de entrega/contato.
  */
 
 @Data
@@ -30,11 +30,18 @@ public class MercadoPagoPagamento {
     @ManyToOne(optional = false)
     private Usuario usuario;
 
-    @ManyToOne(optional = false)
-    private Endereco endereco;
-
     @OneToMany(mappedBy = "pagamento", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<MercadoPagoPagamentoProduto> produtos = new ArrayList<>();
+
+    private String logradouro;
+    private String numero;
+    private String bairro;
+    private String cidade;
+    private String uf;
+    private String cep;
+    private String nomeContato;
+    private String telefone;
+    private String telefoneSecundario;
 
     @PrePersist
     private void prePersist() {

@@ -2,6 +2,7 @@ package com.example.demo.dto;
 
 public class EnderecoDTO {
     private String logradouro;
+    private String numero;
     private String bairro;
     private String cidade;
     private String uf;
@@ -13,6 +14,14 @@ public class EnderecoDTO {
 
     public void setLogradouro(String logradouro) {
         this.logradouro = logradouro;
+    }
+
+    public String getNumero() {
+        return numero;
+    }
+
+    public void setNumero(String numero) {
+        this.numero = numero;
     }
 
     public String getBairro() {
