@@ -11,6 +11,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
+import java.util.List;
 import java.util.UUID;
 
 @Tag(name = "Fornecedores")
@@ -40,6 +41,12 @@ public class FornecedorController {
     @PreAuthorize("hasAnyRole('MASTER','ADMIN')")
     public ResponseEntity<ApiReturn<FornecedorDTO>> buscar(@PathVariable UUID uuid) {
         return ResponseEntity.ok(ApiReturn.of(service.findByUuid(uuid)));
+    }
+
+    @PostMapping("/uuids")
+    @PreAuthorize("hasAnyRole('MASTER','ADMIN')")
+    public ResponseEntity<ApiReturn<List<FornecedorDTO>>> buscarPorUuids(@RequestBody List<UUID> uuids) {
+        return ResponseEntity.ok(ApiReturn.of(service.findByUuids(uuids)));
     }
 
     @PutMapping("/{uuid}")

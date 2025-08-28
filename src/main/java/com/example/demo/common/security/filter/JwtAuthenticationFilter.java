@@ -60,8 +60,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     boolean usuarioAtivo = usuario.isAtivo();
                     boolean academiaAtiva = usuario.getAcademia() == null || usuario.getAcademia().isAtivo();
                     if (usuarioAtivo && academiaAtiva) {
-                        var academiaUuid = usuario.getAcademia() != null ? usuario.getAcademia().getUuid() : null;
-                        var principal = new UsuarioLogado(usuario.getUuid(), academiaUuid, usuario.getPerfil());
+                        var principal = new UsuarioLogado(usuario.getUuid(), usuario.getPerfil());
                         var authToken = new UsernamePasswordAuthenticationToken(
                                 principal, null, userDetails.getAuthorities());
                         authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));

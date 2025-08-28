@@ -24,6 +24,9 @@ public class Produto {
     @OneToMany(mappedBy = "produto", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ProdutoDetalhe> detalhe;
 
+    @OneToMany(mappedBy = "produto", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ProdutoFavorito> favoritos;
+
     private boolean ativo = true;
 
     @PrePersist
