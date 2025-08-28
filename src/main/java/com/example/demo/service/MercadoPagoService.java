@@ -5,9 +5,15 @@ import com.example.demo.dto.MercadoPagoQrCodeDTO;
 import com.example.demo.dto.EnderecoDTO;
 import com.example.demo.dto.MercadoPagoItemDTO;
 import com.example.demo.entity.MercadoPagoPagamento;
-import com.example.demo.entity.CompraHistorico;
+import com.example.demo.entity.MercadoPagoPagamentoProduto;
+import com.example.demo.entity.Produto;
+import com.example.demo.entity.Usuario;
+import com.example.demo.exception.ApiException;
 import com.example.demo.repository.MercadoPagoPagamentoRepository;
-import com.example.demo.repository.CompraHistoricoRepository;
+import com.example.demo.repository.UsuarioRepository;
+import com.example.demo.repository.ProdutoRepository;
+import com.example.demo.common.security.SecurityUtils;
+import com.example.demo.common.security.UsuarioLogado;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mercadopago.MercadoPagoConfig;
@@ -28,7 +34,6 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -38,15 +43,16 @@ public class MercadoPagoService {
     private String accessToken;
 
     private final MercadoPagoPagamentoRepository pagamentoRepository;
-    private final CompraHistoricoRepository historicoRepository;
+    private final UsuarioRepository usuarioRepository;
+    private final ProdutoRepository produtoRepository;
 
     public MercadoPagoService(MercadoPagoPagamentoRepository pagamentoRepository,
-                              CompraHistoricoRepository historicoRepository) {
+                              UsuarioRepository usuarioRepository,
+                              ProdutoRepository produtoRepository) {
         this.pagamentoRepository = pagamentoRepository;
-        this.historicoRepository = historicoRepository;
-
+        this.usuarioRepository = usuarioRepository;
+        this.produtoRepository = produtoRepository;
     }
-
 
     public MercadoPagoPagamento pagarCartao(MercadoPagoCartaoDTO dto) {
         MercadoPagoConfig.setAccessToken(accessToken);
@@ -93,7 +99,7 @@ public class MercadoPagoService {
             pagamento.setMercadoPagoId(payment.getId().toString());
             pagamento.setStatus(payment.getStatus());
             pagamento.setTipo("CARTAO");
-            preencherUsuarioEndereco(pagamento, dto.getEnderecoUuid(), dto.getEndereco());
+            preencherUsuarioEndereco(pagamento, dto.getEndereco(), dto.getNomeContato(), dto.getTelefone(), dto.getTelefoneSecundario());
 
             if (itens != null) {
                 List<MercadoPagoPagamentoProduto> produtos = itens.stream().map(itemDto -> {
@@ -160,7 +166,7 @@ public class MercadoPagoService {
                 pagamento.setDetalhe(preference.getInitPoint());
             }
 
-            preencherUsuarioEndereco(pagamento, dto.getEnderecoUuid(), dto.getEndereco());
+            preencherUsuarioEndereco(pagamento, dto.getEndereco(), dto.getNomeContato(), dto.getTelefone(), dto.getTelefoneSecundario());
 
             if (itens != null) {
                 List<MercadoPagoPagamentoProduto> produtos = itens.stream().map(itemDto -> {
@@ -223,8 +229,10 @@ public class MercadoPagoService {
     }
 
     private void preencherUsuarioEndereco(MercadoPagoPagamento pagamento,
-                                          UUID enderecoUuid,
-                                          EnderecoDTO enderecoDto) {
+                                          EnderecoDTO enderecoDto,
+                                          String nomeContato,
+                                          String telefone,
+                                          String telefoneSecundario) {
         UsuarioLogado usuarioLogado = SecurityUtils.getUsuarioLogadoDetalhes();
         if (usuarioLogado == null) {
             throw new ApiException("Usuário não autenticado");
@@ -233,24 +241,34 @@ public class MercadoPagoService {
         Usuario usuario = usuarioRepository.findByUuid(usuarioLogado.getUuid())
                 .orElseThrow(() -> new ApiException("Usuário não encontrado"));
 
-        Endereco endereco;
-        if (enderecoUuid != null) {
-            endereco = enderecoRepository.findById(enderecoUuid)
-                    .orElseThrow(() -> new ApiException("Endereço não encontrado"));
-        } else if (enderecoDto != null) {
-            endereco = new Endereco();
-            endereco.setUsuario(usuario);
-            endereco.setLogradouro(enderecoDto.getLogradouro());
-            endereco.setBairro(enderecoDto.getBairro());
-            endereco.setCidade(enderecoDto.getCidade());
-            endereco.setUf(enderecoDto.getUf());
-            endereco.setCep(enderecoDto.getCep());
-            endereco = enderecoRepository.save(endereco);
-        } else {
-            throw new ApiException("Endereço obrigatório");
+        if (enderecoDto != null) {
+            usuario.setLogradouro(enderecoDto.getLogradouro());
+            usuario.setNumero(enderecoDto.getNumero());
+            usuario.setBairro(enderecoDto.getBairro());
+            usuario.setCidade(enderecoDto.getCidade());
+            usuario.setUf(enderecoDto.getUf());
+            usuario.setCep(enderecoDto.getCep());
         }
 
+        if (telefone != null) {
+            usuario.setTelefone(telefone);
+        }
+
+        if (telefoneSecundario != null) {
+            usuario.setTelefoneSecundario(telefoneSecundario);
+        }
+
+        usuarioRepository.save(usuario);
+
         pagamento.setUsuario(usuario);
-        pagamento.setEndereco(endereco);
+        pagamento.setLogradouro(usuario.getLogradouro());
+        pagamento.setNumero(usuario.getNumero());
+        pagamento.setBairro(usuario.getBairro());
+        pagamento.setCidade(usuario.getCidade());
+        pagamento.setUf(usuario.getUf());
+        pagamento.setCep(usuario.getCep());
+        pagamento.setTelefone(usuario.getTelefone());
+        pagamento.setTelefoneSecundario(usuario.getTelefoneSecundario());
+        pagamento.setNomeContato(nomeContato != null ? nomeContato : usuario.getNome());
     }
 }

@@ -47,6 +47,8 @@ public class Usuario {
 
     private String logradouro;
 
+    private String bairro;
+
     private String uf;
 
     private String cidade;
