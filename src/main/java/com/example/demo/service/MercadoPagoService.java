@@ -131,7 +131,6 @@ public class MercadoPagoService {
             pagamento.setStatus("PENDING"); // Mercado Pago inicia como pending
             pagamento.setTipo("QRCODE");
 
-            // 🔹 Se QR Code disponível, salvar a URL
             if (preference.getInitPoint() != null) {
                 pagamento.setDetalhe(preference.getInitPoint());
             }

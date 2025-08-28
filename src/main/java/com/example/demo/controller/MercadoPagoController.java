@@ -25,13 +25,11 @@ public class MercadoPagoController {
     }
 
     @PostMapping("/cartao")
-    @PreAuthorize("hasAnyRole('MASTER','ADMIN')")
     public ResponseEntity<ApiReturn<MercadoPagoPagamento>> pagarCartao(@RequestBody MercadoPagoCartaoDTO dto) {
         return ResponseEntity.ok(ApiReturn.of(service.pagarCartao(dto)));
     }
 
     @PostMapping("/qrcode")
-    @PreAuthorize("hasAnyRole('MASTER','ADMIN')")
     public ResponseEntity<ApiReturn<MercadoPagoPagamento>> criarQrCode(@RequestBody MercadoPagoQrCodeDTO dto) {
         return ResponseEntity.ok(ApiReturn.of(service.criarQrCode(dto)));
     }

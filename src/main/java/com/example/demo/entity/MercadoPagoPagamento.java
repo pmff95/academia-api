@@ -25,6 +25,7 @@ public class MercadoPagoPagamento {
 
     private String tipo;
 
+    @Column(length = 2048)
     private String detalhe;
 
     @ManyToOne(optional = false)
