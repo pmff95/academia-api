@@ -1,6 +1,8 @@
 package com.example.demo.dto;
 
 import java.math.BigDecimal;
+import java.util.List;
+
 import java.util.UUID;
 
 public class MercadoPagoQrCodeDTO {
@@ -10,6 +12,8 @@ public class MercadoPagoQrCodeDTO {
     private UUID enderecoUuid;
 
     private EnderecoDTO endereco;
+
+    private List<MercadoPagoItemDTO> itens;
 
     public String getDescricao() {
         return descricao;
@@ -41,5 +45,13 @@ public class MercadoPagoQrCodeDTO {
 
     public void setEndereco(EnderecoDTO endereco) {
         this.endereco = endereco;
+    }
+
+    public List<MercadoPagoItemDTO> getItens() {
+        return itens;
+    }
+
+    public void setItens(List<MercadoPagoItemDTO> itens) {
+        this.itens = itens;
     }
 }

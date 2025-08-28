@@ -3,6 +3,8 @@ package com.example.demo.entity;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -30,6 +32,9 @@ public class MercadoPagoPagamento {
 
     @ManyToOne(optional = false)
     private Endereco endereco;
+
+    @OneToMany(mappedBy = "pagamento", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<MercadoPagoPagamentoProduto> produtos = new ArrayList<>();
 
     @PrePersist
     private void prePersist() {

@@ -3,13 +3,17 @@ package com.example.demo.service;
 import com.example.demo.dto.MercadoPagoCartaoDTO;
 import com.example.demo.dto.MercadoPagoQrCodeDTO;
 import com.example.demo.dto.EnderecoDTO;
+import com.example.demo.dto.MercadoPagoItemDTO;
 import com.example.demo.entity.MercadoPagoPagamento;
+import com.example.demo.entity.MercadoPagoPagamentoProduto;
 import com.example.demo.entity.Endereco;
+import com.example.demo.entity.Produto;
 import com.example.demo.entity.Usuario;
 import com.example.demo.exception.ApiException;
 import com.example.demo.repository.MercadoPagoPagamentoRepository;
 import com.example.demo.repository.EnderecoRepository;
 import com.example.demo.repository.UsuarioRepository;
+import com.example.demo.repository.ProdutoRepository;
 import com.example.demo.common.security.SecurityUtils;
 import com.example.demo.common.security.UsuarioLogado;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -29,9 +33,11 @@ import com.mercadopago.resources.preference.Preference;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class MercadoPagoService {
@@ -42,13 +48,17 @@ public class MercadoPagoService {
     private final MercadoPagoPagamentoRepository pagamentoRepository;
     private final UsuarioRepository usuarioRepository;
     private final EnderecoRepository enderecoRepository;
+    private final ProdutoRepository produtoRepository;
 
     public MercadoPagoService(MercadoPagoPagamentoRepository pagamentoRepository,
                               UsuarioRepository usuarioRepository,
-                              EnderecoRepository enderecoRepository) {
+                              EnderecoRepository enderecoRepository,
+                              ProdutoRepository produtoRepository) {
         this.pagamentoRepository = pagamentoRepository;
         this.usuarioRepository = usuarioRepository;
         this.enderecoRepository = enderecoRepository;
+        this.produtoRepository = produtoRepository;
+
     }
 
 
@@ -67,10 +77,25 @@ public class MercadoPagoService {
                     .identification(identification)
                     .build();
 
+            List<MercadoPagoItemDTO> itens = dto.getItens();
+            BigDecimal total;
+            String descricao;
+            if (itens != null && !itens.isEmpty()) {
+                total = itens.stream()
+                        .map(i -> i.getValor().multiply(BigDecimal.valueOf(i.getQuantidade())))
+                        .reduce(BigDecimal.ZERO, BigDecimal::add);
+                descricao = itens.stream()
+                        .map(MercadoPagoItemDTO::getTitulo)
+                        .collect(Collectors.joining(", "));
+            } else {
+                total = dto.getValor();
+                descricao = dto.getDescricao();
+            }
+
             PaymentCreateRequest request = PaymentCreateRequest.builder()
-                    .transactionAmount(dto.getValor())
+                    .transactionAmount(total)
                     .token(dto.getToken())
-                    .description(dto.getDescricao())
+                    .description(descricao)
                     .installments(dto.getParcelas())
                     .paymentMethodId(dto.getMetodo())
                     .payer(payer)
@@ -83,6 +108,21 @@ public class MercadoPagoService {
             pagamento.setStatus(payment.getStatus());
             pagamento.setTipo("CARTAO");
             preencherUsuarioEndereco(pagamento, dto.getEnderecoUuid(), dto.getEndereco());
+
+            if (itens != null) {
+                List<MercadoPagoPagamentoProduto> produtos = itens.stream().map(itemDto -> {
+                    Produto produto = produtoRepository.findById(itemDto.getProdutoUuid())
+                            .orElseThrow(() -> new ApiException("Produto não encontrado"));
+                    MercadoPagoPagamentoProduto pp = new MercadoPagoPagamentoProduto();
+                    pp.setPagamento(pagamento);
+                    pp.setProduto(produto);
+                    pp.setQuantidade(itemDto.getQuantidade());
+                    pp.setValor(itemDto.getValor());
+                    return pp;
+                }).collect(Collectors.toList());
+                pagamento.setProdutos(produtos);
+            }
+
             pagamentoRepository.save(pagamento);
 
             return pagamento;
@@ -107,15 +147,19 @@ public class MercadoPagoService {
         PreferenceClient client = new PreferenceClient();
 
         try {
-            PreferenceItemRequest item = PreferenceItemRequest.builder()
-                    .title(dto.getDescricao())
-                    .quantity(1)
-                    .unitPrice(dto.getValor())
-                    .currencyId("BRL")
-                    .build();
+            List<MercadoPagoItemDTO> itens = dto.getItens();
+            List<PreferenceItemRequest> items = itens == null ? List.of() : itens.stream()
+                    .map(i -> PreferenceItemRequest.builder()
+                            .id(i.getProdutoUuid().toString())
+                            .title(i.getTitulo())
+                            .quantity(i.getQuantidade())
+                            .unitPrice(i.getValor())
+                            .currencyId("BRL")
+                            .build())
+                    .collect(Collectors.toList());
 
             PreferenceRequest request = PreferenceRequest.builder()
-                    .items(List.of(item))
+                    .items(items)
                     .build();
 
             Preference preference = client.create(request);
@@ -131,6 +175,21 @@ public class MercadoPagoService {
             }
 
             preencherUsuarioEndereco(pagamento, dto.getEnderecoUuid(), dto.getEndereco());
+
+            if (itens != null) {
+                List<MercadoPagoPagamentoProduto> produtos = itens.stream().map(itemDto -> {
+                    Produto produto = produtoRepository.findById(itemDto.getProdutoUuid())
+                            .orElseThrow(() -> new ApiException("Produto não encontrado"));
+                    MercadoPagoPagamentoProduto pp = new MercadoPagoPagamentoProduto();
+                    pp.setPagamento(pagamento);
+                    pp.setProduto(produto);
+                    pp.setQuantidade(itemDto.getQuantidade());
+                    pp.setValor(itemDto.getValor());
+                    return pp;
+                }).collect(Collectors.toList());
+                pagamento.setProdutos(produtos);
+            }
+
             pagamentoRepository.save(pagamento);
             return pagamento;
 
