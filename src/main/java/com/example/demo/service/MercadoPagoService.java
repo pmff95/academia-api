@@ -4,11 +4,9 @@ import com.example.demo.dto.MercadoPagoCartaoDTO;
 import com.example.demo.dto.MercadoPagoQrCodeDTO;
 import com.example.demo.dto.EnderecoDTO;
 import com.example.demo.dto.MercadoPagoItemDTO;
-import com.example.demo.entity.MercadoPagoPagamento;
-import com.example.demo.entity.MercadoPagoPagamentoProduto;
-import com.example.demo.entity.Produto;
-import com.example.demo.entity.Usuario;
+import com.example.demo.entity.*;
 import com.example.demo.exception.ApiException;
+import com.example.demo.repository.CompraHistoricoRepository;
 import com.example.demo.repository.MercadoPagoPagamentoRepository;
 import com.example.demo.repository.UsuarioRepository;
 import com.example.demo.repository.ProdutoRepository;
@@ -45,13 +43,13 @@ public class MercadoPagoService {
     private final MercadoPagoPagamentoRepository pagamentoRepository;
     private final UsuarioRepository usuarioRepository;
     private final ProdutoRepository produtoRepository;
+    private final CompraHistoricoRepository historicoRepository;
 
-    public MercadoPagoService(MercadoPagoPagamentoRepository pagamentoRepository,
-                              UsuarioRepository usuarioRepository,
-                              ProdutoRepository produtoRepository) {
+    public MercadoPagoService(MercadoPagoPagamentoRepository pagamentoRepository, UsuarioRepository usuarioRepository, CompraHistoricoRepository historicoRepository, ProdutoRepository produtoRepository) {
         this.pagamentoRepository = pagamentoRepository;
         this.usuarioRepository = usuarioRepository;
         this.produtoRepository = produtoRepository;
+        this.historicoRepository = historicoRepository;
     }
 
     public MercadoPagoPagamento pagarCartao(MercadoPagoCartaoDTO dto) {
@@ -59,39 +57,22 @@ public class MercadoPagoService {
         PaymentClient client = new PaymentClient();
 
         try {
-            IdentificationRequest identification = IdentificationRequest.builder()
-                    .type(dto.getDocType())
-                    .number(dto.getDocNumber())
-                    .build();
+            IdentificationRequest identification = IdentificationRequest.builder().type(dto.getDocType()).number(dto.getDocNumber()).build();
 
-            PaymentPayerRequest payer = PaymentPayerRequest.builder()
-                    .email(dto.getEmail())
-                    .identification(identification)
-                    .build();
+            PaymentPayerRequest payer = PaymentPayerRequest.builder().email(dto.getEmail()).identification(identification).build();
 
             List<MercadoPagoItemDTO> itens = dto.getItens();
             BigDecimal total;
             String descricao;
             if (itens != null && !itens.isEmpty()) {
-                total = itens.stream()
-                        .map(i -> i.getValor().multiply(BigDecimal.valueOf(i.getQuantidade())))
-                        .reduce(BigDecimal.ZERO, BigDecimal::add);
-                descricao = itens.stream()
-                        .map(MercadoPagoItemDTO::getTitulo)
-                        .collect(Collectors.joining(", "));
+                total = itens.stream().map(i -> i.getValor().multiply(BigDecimal.valueOf(i.getQuantidade()))).reduce(BigDecimal.ZERO, BigDecimal::add);
+                descricao = itens.stream().map(MercadoPagoItemDTO::getTitulo).collect(Collectors.joining(", "));
             } else {
                 total = dto.getValor();
                 descricao = dto.getDescricao();
             }
 
-            PaymentCreateRequest request = PaymentCreateRequest.builder()
-                    .transactionAmount(total)
-                    .token(dto.getToken())
-                    .description(descricao)
-                    .installments(dto.getParcelas())
-                    .paymentMethodId(dto.getMetodo())
-                    .payer(payer)
-                    .build();
+            PaymentCreateRequest request = PaymentCreateRequest.builder().transactionAmount(total).token(dto.getToken()).description(descricao).installments(dto.getParcelas()).paymentMethodId(dto.getMetodo()).payer(payer).build();
 
             Payment payment = client.create(request);
 
@@ -103,8 +84,7 @@ public class MercadoPagoService {
 
             if (itens != null) {
                 List<MercadoPagoPagamentoProduto> produtos = itens.stream().map(itemDto -> {
-                    Produto produto = produtoRepository.findById(itemDto.getProdutoUuid())
-                            .orElseThrow(() -> new ApiException("Produto não encontrado"));
+                    Produto produto = produtoRepository.findById(itemDto.getProdutoUuid()).orElseThrow(() -> new ApiException("Produto não encontrado"));
                     MercadoPagoPagamentoProduto pp = new MercadoPagoPagamentoProduto();
                     pp.setPagamento(pagamento);
                     pp.setProduto(produto);
@@ -140,19 +120,9 @@ public class MercadoPagoService {
 
         try {
             List<MercadoPagoItemDTO> itens = dto.getItens();
-            List<PreferenceItemRequest> items = itens == null ? List.of() : itens.stream()
-                    .map(i -> PreferenceItemRequest.builder()
-                            .id(i.getProdutoUuid().toString())
-                            .title(i.getTitulo())
-                            .quantity(i.getQuantidade())
-                            .unitPrice(i.getValor())
-                            .currencyId("BRL")
-                            .build())
-                    .collect(Collectors.toList());
+            List<PreferenceItemRequest> items = itens == null ? List.of() : itens.stream().map(i -> PreferenceItemRequest.builder().id(i.getProdutoUuid().toString()).title(i.getTitulo()).quantity(i.getQuantidade()).unitPrice(i.getValor()).currencyId("BRL").build()).collect(Collectors.toList());
 
-            PreferenceRequest request = PreferenceRequest.builder()
-                    .items(items)
-                    .build();
+            PreferenceRequest request = PreferenceRequest.builder().items(items).build();
 
             Preference preference = client.create(request);
 
@@ -170,8 +140,7 @@ public class MercadoPagoService {
 
             if (itens != null) {
                 List<MercadoPagoPagamentoProduto> produtos = itens.stream().map(itemDto -> {
-                    Produto produto = produtoRepository.findById(itemDto.getProdutoUuid())
-                            .orElseThrow(() -> new ApiException("Produto não encontrado"));
+                    Produto produto = produtoRepository.findById(itemDto.getProdutoUuid()).orElseThrow(() -> new ApiException("Produto não encontrado"));
                     MercadoPagoPagamentoProduto pp = new MercadoPagoPagamentoProduto();
                     pp.setPagamento(pagamento);
                     pp.setProduto(produto);
@@ -213,8 +182,7 @@ public class MercadoPagoService {
                     pag.setStatus(payment.getStatus());
                     pagamentoRepository.save(pag);
 
-                    if ("approved".equalsIgnoreCase(payment.getStatus()) &&
-                            !historicoRepository.existsByPagamento(pag)) {
+                    if ("approved".equalsIgnoreCase(payment.getStatus()) && !historicoRepository.existsByPagamento(pag)) {
                         CompraHistorico historico = new CompraHistorico();
                         historico.setPagamento(pag);
                         historico.setDescricao(payment.getDescription());
@@ -228,18 +196,13 @@ public class MercadoPagoService {
         }
     }
 
-    private void preencherUsuarioEndereco(MercadoPagoPagamento pagamento,
-                                          EnderecoDTO enderecoDto,
-                                          String nomeContato,
-                                          String telefone,
-                                          String telefoneSecundario) {
+    private void preencherUsuarioEndereco(MercadoPagoPagamento pagamento, EnderecoDTO enderecoDto, String nomeContato, String telefone, String telefoneSecundario) {
         UsuarioLogado usuarioLogado = SecurityUtils.getUsuarioLogadoDetalhes();
         if (usuarioLogado == null) {
             throw new ApiException("Usuário não autenticado");
         }
 
-        Usuario usuario = usuarioRepository.findByUuid(usuarioLogado.getUuid())
-                .orElseThrow(() -> new ApiException("Usuário não encontrado"));
+        Usuario usuario = usuarioRepository.findByUuid(usuarioLogado.getUuid()).orElseThrow(() -> new ApiException("Usuário não encontrado"));
 
         if (enderecoDto != null) {
             usuario.setLogradouro(enderecoDto.getLogradouro());
