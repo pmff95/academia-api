@@ -38,7 +38,6 @@ public class FornecedorController {
     }
 
     @GetMapping("/{uuid}")
-    @PreAuthorize("hasAnyRole('MASTER','ADMIN')")
     public ResponseEntity<ApiReturn<FornecedorDTO>> buscar(@PathVariable UUID uuid) {
         return ResponseEntity.ok(ApiReturn.of(service.findByUuid(uuid)));
     }
