@@ -3,7 +3,13 @@ package com.example.demo.entity;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
+
+/**
+ * Pagamento registrado no Mercado Pago com associação ao usuário e endereço de entrega.
+ */
 
 @Data
 @Entity
@@ -20,6 +26,15 @@ public class MercadoPagoPagamento {
     private String tipo;
 
     private String detalhe;
+
+    @ManyToOne(optional = false)
+    private Usuario usuario;
+
+    @ManyToOne(optional = false)
+    private Endereco endereco;
+
+    @OneToMany(mappedBy = "pagamento", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<MercadoPagoPagamentoProduto> produtos = new ArrayList<>();
 
     @PrePersist
     private void prePersist() {
