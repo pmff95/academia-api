@@ -18,7 +18,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import jakarta.transaction.Transactional;
 
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class FornecedorService {
@@ -77,6 +79,12 @@ public class FornecedorService {
         Fornecedor entity = repository.findById(uuid)
                 .orElseThrow(() -> new ApiException("Fornecedor não encontrado"));
         return mapper.toDto(entity);
+    }
+
+    public List<FornecedorDTO> findByUuids(List<UUID> uuids) {
+        return repository.findAllById(uuids).stream()
+                .map(mapper::toDto)
+                .collect(Collectors.toList());
     }
 
     @Transactional
